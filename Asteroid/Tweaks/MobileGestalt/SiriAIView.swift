@@ -114,7 +114,7 @@ struct SiriAIView: View {
                 let selectorNames = ["defaultWorkspace", "sharedWorkspace"]
                 var workspace: AnyObject?
                 for name in selectorNames {
-                    guard let klass = NSClassFromString("LSApplicationWorkspace"),
+                    guard let klass = NSClassFromString("LSApplicationWorkspace") as? NSObject.Type,
                           klass.responds(to: NSSelectorFromString(name)) else { continue }
                     workspace = klass.perform(NSSelectorFromString(name))?.takeUnretainedValue()
                     if workspace != nil { break }

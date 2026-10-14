@@ -19,6 +19,7 @@ struct DynamicIslandView: View {
                             if #available(iOS 17.0, *) {
                                 Text("iPhone 16 Pro").tag(2622)
                                 Text("iPhone 16 Pro Max").tag(2868)
+                                Text("iPhone 18 Pro").tag(2738)
                             }
                             Text("Original").tag(mgSubtype)
                         }

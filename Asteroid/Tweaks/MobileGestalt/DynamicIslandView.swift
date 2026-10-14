@@ -25,13 +25,13 @@ struct DynamicIslandView: View {
                         Spacer()
                     }
                 } header: {
-                    HeaderLabel("Custom", symbol: "fan")
+                    HeaderLabel("Artwork", symbol: "paintbrush")
                 }
 
                 Section {
-                    PlainToggle("Enable Dynamic Island", icon: "airplane", isOn: store.mgKeyBinding([MGKey.island]))
+                    PlainToggle("Enable Dynamic Island", icon: "", isOn: store.mgKeyBinding([MGKey.island]))
                 } header: {
-                    HeaderLabel("Dynamic Island", symbol: "island")
+                    HeaderLabel("Dynamic Island", symbol: "airplane")
                 } footer: {
                     Text("Controls the Dynamic Island capability and its placement.")
                 }

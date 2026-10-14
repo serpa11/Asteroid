@@ -102,6 +102,12 @@ final class GestaltStore: ObservableObject {
             cacheExtra["5pYKlGnYYBzGvAlIU8RjEQ"] = "t8130"
             cacheExtra["h63QSdBCiT/z0WU6rdQv6Q"] = "LL"
             cacheExtra["yK+xavymRGZ3xWc1tb8XDg"] = "LL/A"
+            cacheExtra["xOJfWykLmQCc8lKlzMlrLA"] = 1
+            cacheExtra["K/R1GfGfCkXvEhaPS2Vrng"] = 1
+            cacheExtra["waGD2UTpntjbDXD1r3oALQ"] = 1
+            cacheExtra["WXi7NQbOKnEX4vPQFeZAdQ"] = 1
+            cacheExtra["PTQ+ABwag03BwO/CKvIK/A"] = 1
+            cacheExtra["0AJUv/uYPsRiZNGpWJ7zfg"] = 1
             let regModel: String
             switch spoof {
             case "iPhone17,1": regModel = "A3083"
@@ -120,6 +126,12 @@ final class GestaltStore: ObservableObject {
             cacheExtra.removeObject(forKey: "h63QSdBCiT/z0WU6rdQv6Q")
             cacheExtra.removeObject(forKey: "yK+xavymRGZ3xWc1tb8XDg")
             cacheExtra.removeObject(forKey: "97JDvERpVwO+GHtthIh7hA")
+            cacheExtra.removeObject(forKey: "xOJfWykLmQCc8lKlzMlrLA")
+            cacheExtra.removeObject(forKey: "K/R1GfGfCkXvEhaPS2Vrng")
+            cacheExtra.removeObject(forKey: "waGD2UTpntjbDXD1r3oALQ")
+            cacheExtra.removeObject(forKey: "WXi7NQbOKnEX4vPQFeZAdQ")
+            cacheExtra.removeObject(forKey: "PTQ+ABwag03BwO/CKvIK/A")
+            cacheExtra.removeObject(forKey: "0AJUv/uYPsRiZNGpWJ7zfg")
         }
     }
 
@@ -131,6 +143,12 @@ final class GestaltStore: ObservableObject {
         cacheExtra["5pYKlGnYYBzGvAlIU8RjEQ"] = "t8130"
         cacheExtra["h63QSdBCiT/z0WU6rdQv6Q"] = "LL"
         cacheExtra["yK+xavymRGZ3xWc1tb8XDg"] = "LL/A"
+            cacheExtra["xOJfWykLmQCc8lKlzMlrLA"] = 1
+                        cacheExtra["K/R1GfGfCkXvEhaPS2Vrng"] = 1
+                        cacheExtra["waGD2UTpntjbDXD1r3oALQ"] = 1
+                        cacheExtra["WXi7NQbOKnEX4vPQFeZAdQ"] = 1
+                        cacheExtra["PTQ+ABwag03BwO/CKvIK/A"] = 1
+                        cacheExtra["0AJUv/uYPsRiZNGpWJ7zfg"] = 1
         let regModel: String
         switch spoof {
         case "iPhone17,1": regModel = "A3083"

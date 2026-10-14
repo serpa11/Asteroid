@@ -24,17 +24,7 @@ struct ContentView: View {
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                             ForEach(items, id: \.self) { item in
                                 NavigationLink(destination: GestaltView(title: item, showSiriEligibility: false, showHardwareDynamicIsland: false, showDeviceSpoofing: false, showArtworkSubtype: false).environmentObject(mgr)) {
-                                    VStack(spacing: 8) {
-                                        Image(systemName: "square.grid.2x2")
-                                            .font(.title3)
-                                            .foregroundStyle(Color.orange)
-                                        Text(item)
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                    .frame(maxWidth: .infinity, minHeight: 90)
-                                    .background(Color.black.opacity(0.65), in: .rect(cornerRadius: 16))
-                                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.orange.opacity(0.35)))
+                                    HomeGridCard(title: item)
                                 }
                             }
                         }
@@ -73,4 +63,21 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+}
+
+struct HomeGridCard: View {
+    let title: String
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: "square.grid.2x2")
+                .font(.title3)
+                .foregroundStyle(Color.orange)
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, minHeight: 90)
+        .background(Color.black.opacity(0.65), in: .rect(cornerRadius: 16))
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.orange.opacity(0.35)))
+    }
 }

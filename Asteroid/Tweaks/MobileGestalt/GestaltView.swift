@@ -28,6 +28,7 @@ struct GestaltView: View {
     @AppStorage("showCustomKeys") private var showCustomKeys = false
     @AppStorage("mgCustKeyArray") var customKeys: [MGCustomKey] = []
     @State private var mgProductType = ""
+    @AppStorage("mgSiriAI") private var mgSiriAI = false
     
     @State private var showInfoSheet = false
     @State private var idiotButtonTimerComplete = false
@@ -109,8 +110,16 @@ struct GestaltView: View {
                         PlainToggle("Disable Region Restrictions", isOn: store.mgRegionRestrictionsBinding())
                     }
                     if !isAppleIntellHD() || mgOverrideGates {
-                        PlainToggle("Enable Apple Intelligence", minVrs: 18.1, isOn: store.mgKeyBinding([MGKey.appIntell]))
+                        PlainToggle("Enable Apple Intelligence Classic", minVrs: 18.1, isOn: store.mgKeyBinding([MGKey.appIntell]))
                             .onChange(of: store.mgKeyBinding([MGKey.appIntell]).wrappedValue) { (oldVal, newVal) in
+                                if newVal {
+                                    store.mgPullKeys([MGKey.intBuild, MGKey.intInstall])
+                                }
+                            }
+                    }
+                    if !isAppleIntellHD() || mgOverrideGates {
+                        PlainToggle("Enable Siri AI (Beta)", minVrs: 26.0, isOn: store.mgSiriAIBinding())
+                            .onChange(of: store.mgSiriAIBinding().wrappedValue) { (oldVal, newVal) in
                                 if newVal {
                                     store.mgPullKeys([MGKey.intBuild, MGKey.intInstall])
                                 }
@@ -310,6 +319,8 @@ struct GestaltView: View {
             }
             .onAppear {
                 store.mgCurrentDict = mgLoadData()
+                mgSiriAI = store.strVal(forKey: "h63QSdBCiT/z0WU6rdQv6Q") == "LL"
+                    && store.cacheExtra["A62OafQ85EJAiiqKn4agtg"] as? Int == 1
                 let isWritable = fm.isWritableFile(atPath: MGURL.fsGestaltURL.path)
                 if !isWritable {
                     let res = BadQuery().grantAccess(atPath: MGURL.fsGestaltURL.deletingLastPathComponent().path, toFileName: "com.apple.MobileGestalt.plist")

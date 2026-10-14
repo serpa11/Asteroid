@@ -114,6 +114,32 @@ final class GestaltStore: ObservableObject {
     }
     
     // MARK: bindings
+    func mgSiriAIBinding() -> Binding<Bool> {
+        return Binding(get: {
+            return self.cacheExtra["A62OafQ85EJAiiqKn4agtg"] as? Int == 1
+                && self.cacheExtra["h63QSdBCiT/z0WU6rdQv6Q"] as? String == "LL"
+                && self.cacheExtra["yK+xavymRGZ3xWc1tb8XDg"] as? String == "LL/A"
+        }, set: { enabled in
+            self.objectWillChange.send()
+            if enabled {
+                self.cacheExtra["A62OafQ85EJAiiqKn4agtg"] = 1
+                self.cacheExtra["h9jDsbgj7xIVeIQ8S3/X3Q"] = "iPhone16,1"
+                self.cacheExtra["oYicEKzVTz4/CxxE05pEgQ"] = "D83AP"
+                self.cacheExtra["5pYKlGnYYBzGvAlIU8RjEQ"] = "t8130"
+                self.cacheExtra["h63QSdBCiT/z0WU6rdQv6Q"] = "LL"
+                self.cacheExtra["yK+xavymRGZ3xWc1tb8XDg"] = "LL/A"
+                self.cacheExtra["97JDvERpVwO+GHtthIh7hA"] = "A3083"
+            } else {
+                self.cacheExtra.removeObject(forKey: "A62OafQ85EJAiiqKn4agtg")
+                self.cacheExtra.removeObject(forKey: "h9jDsbgj7xIVeIQ8S3/X3Q")
+                self.cacheExtra.removeObject(forKey: "oYicEKzVTz4/CxxE05pEgQ")
+                self.cacheExtra.removeObject(forKey: "5pYKlGnYYBzGvAlIU8RjEQ")
+                self.cacheExtra.removeObject(forKey: "h63QSdBCiT/z0WU6rdQv6Q")
+                self.cacheExtra.removeObject(forKey: "yK+xavymRGZ3xWc1tb8XDg")
+                self.cacheExtra.removeObject(forKey: "97JDvERpVwO+GHtthIh7hA")
+            }
+        })
+    }
     func mgKeyBinding(_ keys: [String], defaultValue: Int = 0, enableValue: Int = 1) -> Binding<Bool> {
         return Binding(get: {
             if let value = self.cacheExtra[keys.first!] as? Int {

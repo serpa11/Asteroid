@@ -99,8 +99,8 @@ struct GestaltView: View {
                 }
                 
                 Section {
-                    PlainToggle("Enable Internal Install", infoType: .info, infoMessage: MGMsg.intInstall, isOn: store.mgKeyBinding([MGKey.intInstall]))
-                    PlainToggle("Enable Internal Build", infoType: .info, infoMessage: MGMsg.intBuild, isOn: store.mgKeyBinding([MGKey.intBuild]))
+                    PlainToggle("Enable Internal Install", infoType: .none, infoMessage: MGMsg.intInstall, isOn: store.mgKeyBinding([MGKey.intInstall]))
+                    PlainToggle("Enable Internal Build", infoType: .none, infoMessage: MGMsg.intBuild, isOn: store.mgKeyBinding([MGKey.intBuild]))
                 } header: {
                     HeaderLabel("Internal", symbol: "ant")
                 }
@@ -124,7 +124,7 @@ struct GestaltView: View {
                             }
                     }
                     if !isAppleIntellHD() || mgOverrideGates {
-                        PlainToggle("Enable Siri AI (Beta)", minVrs: 26.0, isOn: $mgSiriAI)
+                        PlainToggle("Enable Siri AI (Beta)", infoType: .info, infoTitle: "Siri AI (Beta)", infoMessage: "Enables the all new Siri AI beta from iOS 27 release in WWDC26 by Apple, if it does not work it means you may need to report the bug in our github so we can try fixing it as soon as possible.", minVrs: 26.0, isOn: $mgSiriAI)
                             .onChange(of: mgSiriAI) { (oldVal, newVal) in
                                 if newVal {
                                     mgClassicIntell = false
@@ -226,7 +226,7 @@ struct GestaltView: View {
                         PlainToggle("Enable Stage Manager", isOn: store.mgKeyBinding([MGKey.stageMgr]))
                     }
                     if store.strVal(forKey: MGKey.deviceClass) == "iPhone" || mgOverrideGates {
-                        PlainToggle("Enable iPadOS UI", infoType: .warning, infoMessage: MGMsg.ipadOS, isOn: store.mgTrollPadBinding())
+                        PlainToggle("Enable iPadOS UI", infoType: .none, infoMessage: MGMsg.ipadOS, isOn: store.mgTrollPadBinding())
                     }
                 } header: {
                     HeaderLabel("iPadOS", symbol: "ipad")
@@ -278,7 +278,7 @@ struct GestaltView: View {
                                         presentShareSheet(with: MGURL.savedGestaltURL)
                                     }
                                     Button("Reset Saved Gestalt", role: .destructive) {
-                                        Alertinator.shared.alert(title: "Warning!", body: MGMsg.mgResetSavWarn, action: {
+                                        Alertinator.shared.alert(title: "Notice", body: MGMsg.mgResetSavWarn, action: {
                                             try? fm.removeItem(at: MGURL.savedGestaltURL)
                                             let _ = mgLoadData()
                                         })
@@ -288,7 +288,7 @@ struct GestaltView: View {
                                 }
                                 
                                 Section {
-                                    PlainToggle("Show Hidden Tweaks", infoType: .warning, infoMessage: MGMsg.hidTweakWarn, isOn: $mgOverrideGates)
+                                    PlainToggle("Show Hidden Tweaks", infoType: .none, infoMessage: MGMsg.hidTweakWarn, isOn: $mgOverrideGates)
                                     Toggle("Show Custom Keys", isOn: $showCustomKeys)
                                     Toggle("Overwrite Atomically", isOn: $mgWriteAtomically)
                                 } footer: {
@@ -318,11 +318,7 @@ struct GestaltView: View {
                 NavigationStack {
                     VStack {
                         InfoSheet(title: "Before you begin...") {
-                            InfoSheetCell(title: "Important Warning!", symbol: "exclamationmark.triangle.fill", context: MGMsg.support)
-                                .modifier(SectionPlatter())
                             InfoSheetCell(title: "Apple Intelligence (Classic)", symbol: "apple.intelligence", context: MGMsg.spoofAI)
-                            InfoSheetCell(title: "iPadOS UI", symbol: "ipad", context: MGMsg.ipadOS)
-                            InfoSheetCell(title: "Region Restrictions", symbol: "map", context: MGMsg.region)
                         } button: {
                             Button("Apply") {
                                 showInfoSheet = false

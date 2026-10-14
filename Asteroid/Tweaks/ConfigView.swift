@@ -73,7 +73,7 @@ struct ConfigView: View {
                 }
                 
                 Section {
-                    PlainToggle("Enable Supervision", infoType: .warning, infoTitle: "Supervision Warning!", infoMessage: CNMsg.supWarning, isOn: $supervised)
+                    PlainToggle("Enable Supervision", infoType: .none, infoTitle: "Supervision Notice", infoMessage: CNMsg.supWarning, isOn: $supervised)
                     if supervised {
                         TextField("Organization Name", text: $orgName)
                     }

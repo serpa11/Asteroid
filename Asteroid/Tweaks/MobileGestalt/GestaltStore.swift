@@ -96,7 +96,50 @@ final class GestaltStore: ObservableObject {
     func mgSetSiriAIEnabled(_ enabled: Bool, spoof: String) {
         self.objectWillChange.send()
         if enabled {
-            self.mgSetSiriAIProfile(spoof)
+            cacheExtra["A62OafQ85EJAiiqKn4agtg"] = 1
+            cacheExtra["h9jDsbgj7xIVeIQ8S3/X3Q"] = spoof
+            cacheExtra["oYicEKzVTz4/CxxE05pEgQ"] = "D83AP"
+            cacheExtra["5pYKlGnYYBzGvAlIU8RjEQ"] = "t8130"
+            cacheExtra["h63QSdBCiT/z0WU6rdQv6Q"] = "LL"
+            cacheExtra["yK+xavymRGZ3xWc1tb8XDg"] = "LL/A"
+            let regModel: String
+            switch spoof {
+            case "iPhone17,1": regModel = "A3083"
+            case "iPhone17,2": regModel = "A3084"
+            case "iPhone18,1": regModel = "A3256"
+            case "iPhone18,2": regModel = "A3257"
+            case "iPhone18,4": regModel = "A3260"
+            default: regModel = "A3083"
+            }
+            cacheExtra["97JDvERpVwO+GHtthIh7hA"] = regModel
+
+            // hard spoof: flip broad eligibility/cache capabilities to 1
+            let hardKeys = [
+                MGKey.island, MGKey.AOTime, MGKey.AOD, MGKey.AODVibrancy, MGKey.chargeLim, MGKey.bootChime,
+                MGKey.intInstall, MGKey.intBuild, MGKey.srd, MGKey.appIntell, MGKey.crashDet, MGKey.pwm,
+                MGKey.appPencil, MGKey.camButton, MGKey.grapPefr, MGKey.actButton, MGKey.tapToWake,
+                MGKey.stageMgr
+            ] + MGKey.ipadosCacheEx
+            for key in hardKeys {
+                cacheExtra[key] = 1
+            }
+            // additional generic AI/Siri capability strings
+            for extraKey in [
+                "A62OafQ85EJAiiqKn4agtg",
+                "EqrsVvjcYDdxHBiQmGhAWw",
+                "LBJfwOEzExRxzlAnSuI7eg",
+                "XYlJKKkj2hztRP1NWWnhlw",
+                "HCzWusHQwZDea6nNhaKndw",
+                "6IejgN+1Fmu5/QrZFOIeNw",
+                "yhHcB0iH0d1XzPO/CFd3ow",
+                "CwvKxM2cEogD3p+HYgaW0Q",
+                "oOV1jhJbdV3AddkcCg0AEA",
+                "cT44WE1EohiwRzhsZ8xEsw",
+                "yZf3GTRMGTuwSV/lD7Cagw",
+                "qeaj75wk3HF4DwQ8qbIi7g"
+            ] {
+                cacheExtra[extraKey] = 1
+            }
         } else {
             cacheExtra.removeObject(forKey: "h9jDsbgj7xIVeIQ8S3/X3Q")
             cacheExtra.removeObject(forKey: "oYicEKzVTz4/CxxE05pEgQ")
@@ -219,7 +262,7 @@ final class GestaltStore: ObservableObject {
             set: { enabled in
                 self.objectWillChange.send()
                 if enabled {
-                    Alertinator.shared.alert(title: "Warning!", body: MGMsg.region)
+                    Alertinator.shared.alert(title: "Notice", body: MGMsg.region)
                     self.cacheExtra[MGKey.regionCode] = "LL"
                     self.cacheExtra[MGKey.regionSysconfig] = "LL/A"
                 } else {

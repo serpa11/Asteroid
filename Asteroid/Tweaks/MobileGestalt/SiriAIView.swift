@@ -12,6 +12,7 @@ struct SiriAIView: View {
     @AppStorage("mgSiriAISpoof") private var mgSiriAISpoof = "iPhone17,1"
     @State private var mgClassicIntell = false
     @Environment(\.colorScheme) private var colorScheme
+    @State private var siriInstallProgress: Double?
 
     var body: some View {
         NavigationStack {
@@ -73,9 +74,17 @@ struct SiriAIView: View {
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                             Button("Install now") {
-                                tryInstallSiriApp()
+                                Task { await tryInstallSiriApp() }
                             }
                             .buttonStyle(ConfirmButtonStyle())
+                            .disabled(siriInstallProgress != nil)
+
+                            if let progress = siriInstallProgress {
+                                ProgressView(value: progress)
+                                    .progressViewStyle(.linear)
+                                    .tint(.orange)
+                                    .padding(.top, 4)
+                            }
                         }
                     }
                 } header: {
@@ -147,17 +156,15 @@ struct SiriAIView: View {
         }
     }
 
-    private func tryInstallSiriApp() {
+    private func tryInstallSiriApp() async {
         let candidatePaths = ["/Applications/Siri.app", "/System/Applications/Siri.app", "/System/Applications/Utilities/Siri.app"]
         let siriAppURL = candidatePaths.map { URL(fileURLWithPath: $0) }.first { FileManager.default.fileExists(atPath: $0.path) }
-        Task.detached(priority: .userInitiated) {
-            guard let siriAppURL = siriAppURL else {
-                await MainActor.run {
-                    Alertinator.shared.alert(title: "Install Siri App", body: "No Siri app bundle was found in the expected system locations.")
-                }
-                return
-            }
 
+        siriInstallProgress = 0.1
+        let outcome = await Task.detached(priority: .userInitiated) { () -> (Bool, String) in
+            guard let siriAppURL = siriAppURL else {
+                return (false, "No Siri app bundle was found in the expected system locations.")
+            }
             var result = "Found \(siriAppURL.path). The installation request was attempted."
             let selectorNames = ["defaultWorkspace", "sharedWorkspace"]
             var workspace: AnyObject?
@@ -187,14 +194,21 @@ struct SiriAIView: View {
             }
 
             result += " Registration status: \(installed ? "installed" : "not registered")."
+            return (installed, result)
+        }.value
 
-            await MainActor.run {
-                Alertinator.shared.alert(title: "Install Siri App", body: result)
+        if outcome.0 {
+            withAnimation(.linear(duration: 0.3)) {
+                siriInstallProgress = 1
             }
+            Alertinator.shared.alert(title: "Install Siri App", body: outcome.1)
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
+        } else {
+            siriInstallProgress = nil
+            Alertinator.shared.alert(title: "Install Siri App", body: outcome.1)
         }
+        siriInstallProgress = nil
     }
-
-}
 
 #Preview {
     SiriAIView()

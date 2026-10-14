@@ -82,7 +82,7 @@ struct ConfigView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle("Configurations")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

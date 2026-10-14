@@ -52,7 +52,7 @@ struct InfoViewer: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle("\(file.type.rawValue.capitalized) Info")
             .navigationBarTitleDisplayMode(.inline)
             .listStyle(.insetGrouped)

@@ -83,7 +83,7 @@ struct ModifyItemPage: View {
             }
         }
         .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle("\(item.key)")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(isEditing)

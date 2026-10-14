@@ -32,7 +32,7 @@ struct PlistViewer: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle(file.fileURL.lastPathComponent)
             .navigationBarTitleDisplayMode(.inline)
             .listStyle(.inset)

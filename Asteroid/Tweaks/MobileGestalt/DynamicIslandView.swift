@@ -48,7 +48,7 @@ struct DynamicIslandView: View {
             }
             .navigationTitle("Dynamic Island")
             .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .onAppear {
                 guard let dict = NSMutableDictionary(contentsOf: MGURL.fsGestaltURL) else { return }
                 store.mgCurrentDict = dict

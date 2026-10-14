@@ -239,7 +239,7 @@ struct GestaltView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -303,7 +303,7 @@ struct GestaltView: View {
                                 }
                             }
                             .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle("Gestalt Settings")
                         } label: {
                             Label("MobileGestalt Settings", systemImage: "gear")

@@ -82,7 +82,7 @@ struct FileBrowserView: View {
             }
         }
         .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle(path.lastPathComponent)
         .navigationBarTitleDisplayMode(.inline)
         .customListStyle(listStyle)
@@ -249,7 +249,7 @@ struct FileBrowserView: View {
                             }
                         }
                         .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle("File Browser Settings")
                     } label: {
                         Label("Settings", systemImage: "gearshape")

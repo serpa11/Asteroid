@@ -16,7 +16,7 @@ struct TerminalPlatter: ViewModifier {
         content
             .frame(height: 250)
             .padding(.horizontal)
-            .background(LinearGradient(colors: [Color(red: 0.06, green: 0.08, blue: 0.10), Color.black], startPoint: .topLeading, endPoint: .bottomTrailing), in: .rect(cornerRadius: terminalRad))
+            .background(LinearGradient(colors: [Color(red: 0.06, green: 0.08, blue: 0.10), Color(UIColor.systemBackground)], startPoint: .topLeading, endPoint: .bottomTrailing), in: .rect(cornerRadius: terminalRad))
             .overlay(RoundedRectangle(cornerRadius: terminalRad).stroke(Color.orange.opacity(0.45)))
     }
 }

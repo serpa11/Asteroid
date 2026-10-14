@@ -120,7 +120,7 @@ struct PosterBoardView: View {
             .foregroundStyle(Color(.label))
         }
         .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle("Wallpapers")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -199,7 +199,7 @@ struct PosterBoardView: View {
                             }
                         }
                         .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle("PosterBoard Settings")
                     } label: {
                         Label("Settings", systemImage: "gearshape")

@@ -43,7 +43,7 @@ struct FMRootView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle("File Browser")
         }
     }

@@ -56,7 +56,7 @@ struct CustomKeyView: View {
             }
         }
         .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle("Custom Keys")
         .scrollDismissesKeyboard(.interactively)
         .sheet(item: $itemToEdit) { item in
@@ -94,7 +94,7 @@ struct CustomKeyView: View {
                 }
                 .padding(.horizontal)
                 .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .navigationTitle("Modify Key")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {

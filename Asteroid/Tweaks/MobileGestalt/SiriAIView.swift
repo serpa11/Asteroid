@@ -94,7 +94,7 @@ struct SiriAIView: View {
             }
             .navigationTitle("Siri AI")
             .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Color(UIColor.systemBackground))
             .onAppear {
                 if let dict = NSMutableDictionary(contentsOf: MGURL.fsGestaltURL) {
                     store.mgCurrentDict = dict
@@ -107,37 +107,57 @@ struct SiriAIView: View {
     }
 
     private func tryInstallSiriApp() {
-        let siriAppURL = URL(fileURLWithPath: "/Applications/Siri.app")
+        let candidatePaths = ["/Applications/Siri.app", "/System/Applications/Siri.app", "/System/Applications/Utilities/Siri.app"]
+        let siriAppURL = candidatePaths.map { URL(fileURLWithPath: $0) }.first { FileManager.default.fileExists(atPath: $0.path) }
         Task.detached(priority: .userInitiated) {
-            var result = "The Siri app installation request could not be completed."
-            if FileManager.default.fileExists(atPath: siriAppURL.path) {
-                let selectorNames = ["defaultWorkspace", "sharedWorkspace"]
-                var workspace: AnyObject?
-                for name in selectorNames {
-                    guard let klass = NSClassFromString("LSApplicationWorkspace") as? NSObject.Type,
-                          klass.responds(to: NSSelectorFromString(name)) else { continue }
-                    workspace = klass.perform(NSSelectorFromString(name))?.takeUnretainedValue()
-                    if workspace != nil { break }
+            guard let siriAppURL else {
+                await MainActor.run {
+                    Alertinator.shared.alert(title: "Install Siri App", body: "No Siri app bundle was found in the expected system locations.")
                 }
+                return
+            }
 
-                if let workspace,
-                   workspace.responds(to: NSSelectorFromString("installApplication:withOptions:error:")),
-                   let installer = workspace as? LSAppInstalling {
-                    var error: NSError?
-                    let success = installer.installApplication?(siriAppURL, withOptions: nil, error: &error) ?? false
-                    if success {
-                        result = "Siri app installation request submitted."
-                    } else if let error {
-                        result = error.localizedDescription
-                    } else {
-                        result = "The system declined the Siri app installation request. It was not expected to succeed."
-                    }
+            var result = "Found \(siriAppURL.path). The installation request was attempted."
+            let selectorNames = ["defaultWorkspace", "sharedWorkspace"]
+            var workspace: AnyObject?
+            for name in selectorNames {
+                guard let klass = NSClassFromString("LSApplicationWorkspace") as? NSObject.Type,
+                      klass.responds(to: NSSelectorFromString(name)) else { continue }
+                workspace = klass.perform(NSSelectorFromString(name))?.takeUnretainedValue()
+                if workspace != nil { break }
+            }
+
+            var installed = false
+            if let workspace,
+               workspace.responds(to: NSSelectorFromString("installApplication:withOptions:error:")),
+               let installer = workspace as? LSAppInstalling {
+                var error: NSError?
+                installed = installer.installApplication?(siriAppURL, withOptions: nil, error: &error) ?? false
+                if installed {
+                    result += " The system accepted the Siri app installation request."
+                } else if let error {
+                    result += " System response: \(error.localizedDescription)"
                 } else {
-                    result = "The installation API is unavailable. It was not expected to succeed."
+                    result += " The system declined the request, so the app was not registered."
                 }
             } else {
-                result = "No Siri app bundle was found at /Applications/Siri.app."
+                result += " The private installation workspace is unavailable."
             }
+
+            // A second concrete attempt: determine whether the bundle can at least be read/copied.
+            let copyURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Siri.app")
+            if let copyURL {
+                try? FileManager.default.removeItem(at: copyURL)
+                do {
+                    if !FileManager.default.fileExists(atPath: copyURL.path) {
+                        try FileManager.default.copyItem(at: siriAppURL, to: copyURL)
+                    }
+                    result += " Siri bundle data was accessible. Registration status: \(installed ? "installed" : "not registered")."
+                } catch {
+                    result += " Bundle access error: \(error.localizedDescription)"
+                }
+            }
+
             await MainActor.run {
                 Alertinator.shared.alert(title: "Install Siri App", body: result)
             }

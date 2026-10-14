@@ -186,16 +186,7 @@ struct SiriAIView: View {
                 result += " The private installation workspace is unavailable."
             }
 
-            let copyURL = URL.temporaryDirectory.appendingPathComponent("Siri.app")
-            try? FileManager.default.removeItem(at: copyURL)
-            do {
-                if !FileManager.default.fileExists(atPath: copyURL.path) {
-                    try FileManager.default.copyItem(at: siriAppURL, to: copyURL)
-                }
-                result += " Siri bundle data was accessible. Registration status: \(installed ? "installed" : "not registered")."
-            } catch {
-                result += " Bundle access error: \(error.localizedDescription)"
-            }
+            result += " Registration status: \(installed ? "installed" : "not registered")."
 
             await MainActor.run {
                 Alertinator.shared.alert(title: "Install Siri App", body: result)

@@ -80,7 +80,7 @@ struct GestaltView: View {
                         TextField("Device Name", text: $mgDeviceName)
                     }
                 } header: {
-                    HeaderLabel("Artwork", symbol: "paintbrush.pointed")
+                    HeaderLabel("Custom", symbol: "fan")
                 }
                 
                 if showHardwareDynamicIsland && (!isDynamIslandHD() || !isAODHD() || !isBootChimeHD() || !isChargeLimitHD() || mgOverrideGates) {

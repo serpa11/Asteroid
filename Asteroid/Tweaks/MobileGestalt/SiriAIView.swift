@@ -203,7 +203,6 @@ struct SiriAIView: View {
             }
         }
     }
-}
 
 #Preview {
     SiriAIView()

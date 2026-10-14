@@ -45,4 +45,3 @@ struct SettingsView: View {
         }
     }
 }
-PY

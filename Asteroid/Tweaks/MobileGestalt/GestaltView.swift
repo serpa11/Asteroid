@@ -60,6 +60,8 @@ struct GestaltView: View {
                             }
                             if doubleSysVrs() >= 26.0 {
                                 Text("iPhone Air").tag(2736)
+                                Text("iPhone 18 Pro").tag(2738)
+                                Text("iPhone Duo").tag(3120)
                             }
                             if isHomeButtonHD() {
                                 Text("iPhone X Gestures").tag(2436)
@@ -88,6 +90,9 @@ struct GestaltView: View {
                         if showHardwareDynamicIsland && (!isDynamIslandHD() || mgOverrideGates) {
                             PlainToggle("Enable Dynamic Island", minVrs: 19.0, isOn: store.mgKeyBinding([MGKey.island]))
                         }
+                        if !isDynamIslandHD() || mgOverrideGates {
+                            PlainToggle("Enable Vertical Face ID", minVrs: 18.0, isOn: store.mgKeyBinding([MGKey.verticalFaceID]))
+                        }
                         if !isAODHD() || mgOverrideGates {
                             PlainToggle("Enable AOD", minVrs: 18.0, isOn: store.mgKeyBinding([MGKey.AOD, MGKey.AOTime]))
                             if store.isEnabled([MGKey.AOD]) {
@@ -104,14 +109,6 @@ struct GestaltView: View {
                         HeaderLabel("Hardware Features", symbol: "gearshape")
                     }
                 }
-                
-                Section {
-                    PlainToggle("Enable Internal Install", infoType: .none, infoMessage: MGMsg.intInstall, isOn: store.mgKeyBinding([MGKey.intInstall]))
-                    PlainToggle("Enable Internal Build", infoType: .none, infoMessage: MGMsg.intBuild, isOn: store.mgKeyBinding([MGKey.intBuild]))
-                } header: {
-                    HeaderLabel("Internal", symbol: "ant")
-                }
-                .disabled(store.isEnabled([MGKey.appIntell]))
                 
                 Section {
                     PlainToggle("Enable SRD UI", minVrs: 26.0, isOn: store.mgKeyBinding([MGKey.srd]))
@@ -299,7 +296,6 @@ struct GestaltView: View {
                                 }
                                 
                                 Section {
-                                    PlainToggle("Show Hidden Tweaks", infoType: .none, infoMessage: MGMsg.hidTweakWarn, isOn: $mgOverrideGates)
                                     Toggle("Show Custom Keys", isOn: $showCustomKeys)
                                     Toggle("Safe Reboot", isOn: $mgWriteAtomically)
                                 } footer: {

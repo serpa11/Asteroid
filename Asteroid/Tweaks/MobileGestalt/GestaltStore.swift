@@ -68,6 +68,7 @@ enum MGKey {
     static let crashDet = "HCzWusHQwZDea6nNhaKndw" // DeviceSupportsCollisionSOS
     static let pwm = "6IejgN+1Fmu5/QrZFOIeNw" // DeviceSupportsPulseWidthMaximization
     static let appPencil = "yhHcB0iH0d1XzPO/CFd3ow" // DeviceSupportsApplePencil
+    static let verticalFaceID = "eP/CPXY0Q1CoIqAWn/J97g" // DeviceSupportsLandscapeFaceID
     static let camButton = "CwvKxM2cEogD3p+HYgaW0Q" // CameraButtonCapability
     static let grapPefr = "oOV1jhJbdV3AddkcCg0AEA" // apple-graphics-performance-tier
     static let actButton = "cT44WE1EohiwRzhsZ8xEsw" // RingerButtonCapability

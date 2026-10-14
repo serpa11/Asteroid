@@ -24,11 +24,6 @@ struct DynamicIslandView: View {
                         }
                         Spacer()
                     }
-                    Toggle("Custom Device Name", isOn: $mgEnableDeviceName)
-                        .tint(.orange)
-                    if mgEnableDeviceName {
-                        TextField("Device Name", text: $mgDeviceName)
-                    }
                 } header: {
                     HeaderLabel("Artwork", symbol: "paintbrush.pointed")
                 }

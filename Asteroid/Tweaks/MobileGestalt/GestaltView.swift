@@ -13,6 +13,8 @@ struct GestaltView: View {
     var title: String = "More MobileGestalt Tweaks"
     var showSiriEligibility: Bool = true
     var showHardwareDynamicIsland: Bool = true
+    var showDeviceSpoofing: Bool = true
+    var showArtworkSubtype: Bool = true
     @EnvironmentObject private var mgr: AsteroidManager
     @StateObject private var store = GestaltStore.shared
     @AppStorage("mgOverrideGates") private var mgOverrideGates = false
@@ -42,6 +44,7 @@ struct GestaltView: View {
         NavigationStack {
             List {
                 Section {
+                    if showArtworkSubtype {
                     HStack {
                         Picker("Subtype", selection: $mgSubtype) {
                             Text("Original (\(mgOgSubtype))").tag(mgOgSubtype)
@@ -70,6 +73,7 @@ struct GestaltView: View {
                                 .frame(width: 24, height: 22)
                         }
                         .buttonStyle(.plain)
+                    }
                     }
                     Toggle("Custom Device Name", isOn: $mgEnableDeviceName)
                     if mgEnableDeviceName {
@@ -162,6 +166,7 @@ struct GestaltView: View {
                             }
                         }
                     }
+                    if showDeviceSpoofing {
                     HStack(spacing: 10) {
                         Picker("Spoofing", selection: $mgProductType) {
                             Text("Default").tag(ogMachineName)
@@ -196,6 +201,7 @@ struct GestaltView: View {
                                 .frame(width: 24, height: 22)
                         }
                         .buttonStyle(.plain)
+                    }
                     }
                 } header: {
                     HeaderLabel("Eligibility", symbol: "flag")

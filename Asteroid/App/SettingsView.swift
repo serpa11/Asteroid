@@ -33,7 +33,6 @@ struct SettingsView: View {
                 Section {
                     LinkCreditCell(image: Image("serpa11"), name: "serpa11", description: "Developer.", url: "https://github.com/serpa11")
                     LinkCreditCell(image: Image("Skylo"), name: "Skylo", description: "The coolest and best person.", url: "https://x.com/heyskylo")
-                    LinkCreditCell(image: Image("lunginspector"), name: "lunginspector", description: "Original Erosion UI author.", url: "https://github.com/lunginspector")
                 } header: {
                     HeaderLabel("Credits", symbol: "star")
                 }

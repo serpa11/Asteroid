@@ -15,51 +15,26 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            List {
-                Section {
-                    LogView()
-                        .modifier(TerminalPlatter())
-                } header: {
-                    HeaderLabel("Logs", symbol: "apple.terminal")
+            GestaltView(title: "Home", showSiriEligibility: false, showHardwareDynamicIsland: false, showDeviceSpoofing: false, showArtworkSubtype: false)
+                .environmentObject(mgr)
+                .sheet(isPresented: $showSettings) {
+                    SettingsView()
                 }
-                
-                Section {
-                    Button("Respring") {
-                        mgr.shouldRespring = true
-                    }
-                } header: {
-                    HeaderLabel("Actions", symbol: "gearshape")
-                }
-
-                Section {
-                    NavigationLink(destination: GestaltView(title: "Home Gestalt Tweaks", showSiriEligibility: false, showHardwareDynamicIsland: false).environmentObject(mgr)) {
-                        Text("Home Gestalt Tweaks")
-                    }
-                } header: {
-                    HeaderLabel("Gestalt", symbol: "gearshape")
-                }
-            }
-            .scrollContentBackground(.hidden)
-            .background(Color.black)
-            .navigationTitle("Asteroid")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showSettings = true
-                    } label: {
-                        Label("Settings", systemImage: "gear")
-                            .labelStyle(.iconOnly)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showSettings = true
+                        } label: {
+                            Label("Settings", systemImage: "gear")
+                                .labelStyle(.iconOnly)
+                        }
                     }
                 }
-            }
-            .sheet(isPresented: $showSettings) {
-                SettingsView()
-            }
-            .onAppear {
-                if ogMachineName.isEmpty {
-                    ogMachineName = machineName()
+                .onAppear {
+                    if ogMachineName.isEmpty {
+                        ogMachineName = machineName()
+                    }
                 }
-            }
         }
     }
 }

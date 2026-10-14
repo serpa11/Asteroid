@@ -1,0 +1,26 @@
+{
+  "fill": "automatic",
+  "groups": [
+    {
+      "layers": [
+        {
+          "image-name": "asteroid.png",
+          "name": "asteroid",
+          "position": {
+            "scale": 1.0,
+            "translation-in-points": [
+              0,
+              0
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "supported-platforms": {
+    "circles": [
+      "watchOS"
+    ],
+    "squares": "shared"
+  }
+}

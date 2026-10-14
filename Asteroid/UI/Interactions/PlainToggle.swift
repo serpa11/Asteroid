@@ -53,7 +53,7 @@ struct PlainToggle: View {
                     }
                 }
             }
-            .tint(.cyan)
+            .tint(.orange)
         }
     }
 }

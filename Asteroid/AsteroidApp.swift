@@ -44,17 +44,23 @@ struct AsteroidApp: App {
                         Label("Home", systemImage: "house")
                     }
                     .id(0)
-                TweaksView()
+                GestaltView()
                     .tabItem {
-                        Label("Tweaks", systemImage: "wrench.and.screwdriver")
+                        Label("Siri AI", systemImage: "sparkles")
                     }
                     .id(1)
+                TweaksView()
+                    .tabItem {
+                        Label("More Tweaks", systemImage: "wrench.and.screwdriver")
+                    }
+                    .id(2)
                 FMRootView()
                     .tabItem {
                         Label("File Browser", systemImage: "folder")
                     }
-                    .id(2)
+                    .id(3)
             }
+            .tint(.orange)
             .environmentObject(mgr)
             .onAppear {
                 pipe.fileHandleForReading.readabilityHandler = { fh in

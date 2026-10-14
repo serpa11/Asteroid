@@ -234,7 +234,7 @@ struct GestaltView: View {
             }
             .scrollContentBackground(.hidden)
             .background(Color.black)
-            .navigationTitle("MobileGestalt")
+            .navigationTitle("More MobileGestalt Tweaks")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

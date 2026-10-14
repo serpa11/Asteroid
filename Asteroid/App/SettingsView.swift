@@ -10,7 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     @AppStorage("autoRespring") var autoRespring = false
-    
+
     var body: some View {
         NavigationStack {
             List {
@@ -21,7 +21,7 @@ struct SettingsView: View {
                 } footer: {
                     Text("Automatically resprings your device after applying a tweak.")
                 }
-                
+
                 Section {
                     AppInfoCell(build: build)
                 } header: {
@@ -31,11 +31,13 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    LinkCreditCell(image: Image("serpa11"), name: "serpa11", description: "Developer.", url: "https://github.com/serpa11")
+                    LinkCreditCell(image: Image("serpa11"), name: "serpa11", description: "Developer.", url: "")
+                    LinkCreditCell(image: Image("Skylo"), name: "Skylo", description: "The coolest and best person.", url: "")
+                    LinkCreditCell(image: Image("lunginspector"), name: "lunginspector", description: "Original Erosion UI author.", url: "")
                 } header: {
                     HeaderLabel("Credits", symbol: "star")
                 }
-                
+
             }
             .navigationTitle("Settings")
             .toolbar {
@@ -50,3 +52,4 @@ struct SettingsView: View {
         }
     }
 }
+PY

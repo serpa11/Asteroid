@@ -10,6 +10,9 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct GestaltView: View {
+    var title: String = "More MobileGestalt Tweaks"
+    var showSiriEligibility: Bool = true
+    var showHardwareDynamicIsland: Bool = true
     @EnvironmentObject private var mgr: AsteroidManager
     @StateObject private var store = GestaltStore.shared
     @AppStorage("mgOverrideGates") private var mgOverrideGates = false
@@ -76,9 +79,9 @@ struct GestaltView: View {
                     HeaderLabel("Artwork", symbol: "paintbrush.pointed")
                 }
                 
-                if !isDynamIslandHD() || !isAODHD() || !isBootChimeHD() || !isChargeLimitHD() || mgOverrideGates {
+                if showHardwareDynamicIsland && (!isDynamIslandHD() || !isAODHD() || !isBootChimeHD() || !isChargeLimitHD() || mgOverrideGates) {
                     Section {
-                        if !isDynamIslandHD() || mgOverrideGates {
+                        if showHardwareDynamicIsland && (!isDynamIslandHD() || mgOverrideGates) {
                             PlainToggle("Enable Dynamic Island", minVrs: 19.0, isOn: store.mgKeyBinding([MGKey.island]))
                         }
                         if !isAODHD() || mgOverrideGates {
@@ -111,7 +114,7 @@ struct GestaltView: View {
                     if showRegionTweak {
                         PlainToggle("Disable Region Restrictions", isOn: store.mgRegionRestrictionsBinding())
                     }
-                    if !isAppleIntellHD() || mgOverrideGates {
+                    if showSiriEligibility && (!isAppleIntellHD() || mgOverrideGates) {
                         PlainToggle("Enable Apple Intelligence Classic", minVrs: 18.1, isOn: $mgClassicIntell)
                             .onChange(of: mgClassicIntell) { (oldVal, newVal) in
                                 if newVal {
@@ -234,7 +237,7 @@ struct GestaltView: View {
             }
             .scrollContentBackground(.hidden)
             .background(Color.black)
-            .navigationTitle("More MobileGestalt Tweaks")
+            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -292,7 +295,7 @@ struct GestaltView: View {
                                 Section {
                                     PlainToggle("Show Hidden Tweaks", infoType: .none, infoMessage: MGMsg.hidTweakWarn, isOn: $mgOverrideGates)
                                     Toggle("Show Custom Keys", isOn: $showCustomKeys)
-                                    Toggle("Atomic Write Mode (Reboot Safe)", isOn: $mgWriteAtomically)
+                                    Toggle("Safe Reboot", isOn: $mgWriteAtomically)
                                 } footer: {
                                     Text("When atomic writes are enabled, MobileGestalt will not revert after a reboot.")
                                 }

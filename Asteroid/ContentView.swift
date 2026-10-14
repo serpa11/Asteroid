@@ -30,6 +30,14 @@ struct ContentView: View {
                 } header: {
                     HeaderLabel("Actions", symbol: "gearshape")
                 }
+
+                Section {
+                    NavigationLink(destination: GestaltView(title: "Home Gestalt Tweaks", showSiriEligibility: false, showHardwareDynamicIsland: false).environmentObject(mgr)) {
+                        Text("Home Gestalt Tweaks")
+                    }
+                } header: {
+                    HeaderLabel("Gestalt", symbol: "gearshape")
+                }
             }
             .scrollContentBackground(.hidden)
             .background(Color.black)

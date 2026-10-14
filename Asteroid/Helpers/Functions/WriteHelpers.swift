@@ -57,6 +57,14 @@ func writeFileAtomically(_ data: Data, to url: URL) -> (Bool, String) {
         guard verify == data else {
             return (false, fileWriteErr.verificationFailed.localizedDescription)
         }
+
+        let dirFd = url.deletingLastPathComponent().path.withCString {
+            open($0, O_RDONLY | O_DIRECTORY)
+        }
+        if dirFd >= 0 {
+            _ = fsync(dirFd)
+            close(dirFd)
+        }
     } catch {
         if ftruncate(fd, 0) == 0,
            lseek(fd, 0, SEEK_SET) >= 0 {

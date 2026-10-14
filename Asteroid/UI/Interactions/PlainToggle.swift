@@ -20,7 +20,7 @@ struct PlainToggle: View {
     var minVrs: Double
     var maxVrs: Double
     @Binding var isOn: Bool
-    
+
     public init(_ text: String, icon: String = "", infoType: ToggleInfoType = .none, infoTitle: String = "Information", infoMessage: String = "", minVrs: Double = 0.0, maxVrs: Double = 100.0, isOn: Binding<Bool>) {
         self.text = text
         self.icon = icon
@@ -31,7 +31,7 @@ struct PlainToggle: View {
         self.minVrs = minVrs
         self.maxVrs = maxVrs
     }
-    
+
     public var body: some View {
         if doubleSysVrs() >= minVrs && doubleSysVrs() <= maxVrs {
             Toggle(isOn: $isOn) {
@@ -53,7 +53,7 @@ struct PlainToggle: View {
                     }
                 }
             }
+            .tint(.orange)
         }
     }
 }
-

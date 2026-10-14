@@ -113,33 +113,6 @@ final class GestaltStore: ObservableObject {
             }
             cacheExtra["97JDvERpVwO+GHtthIh7hA"] = regModel
 
-            // hard spoof: flip broad eligibility/cache capabilities to 1
-            let hardKeys = [
-                MGKey.island, MGKey.AOTime, MGKey.AOD, MGKey.AODVibrancy, MGKey.chargeLim, MGKey.bootChime,
-                MGKey.intInstall, MGKey.intBuild, MGKey.srd, MGKey.appIntell, MGKey.crashDet, MGKey.pwm,
-                MGKey.appPencil, MGKey.camButton, MGKey.grapPefr, MGKey.actButton, MGKey.tapToWake,
-                MGKey.stageMgr
-            ] + MGKey.ipadosCacheEx
-            for key in hardKeys {
-                cacheExtra[key] = 1
-            }
-            // additional generic AI/Siri capability strings
-            for extraKey in [
-                "A62OafQ85EJAiiqKn4agtg",
-                "EqrsVvjcYDdxHBiQmGhAWw",
-                "LBJfwOEzExRxzlAnSuI7eg",
-                "XYlJKKkj2hztRP1NWWnhlw",
-                "HCzWusHQwZDea6nNhaKndw",
-                "6IejgN+1Fmu5/QrZFOIeNw",
-                "yhHcB0iH0d1XzPO/CFd3ow",
-                "CwvKxM2cEogD3p+HYgaW0Q",
-                "oOV1jhJbdV3AddkcCg0AEA",
-                "cT44WE1EohiwRzhsZ8xEsw",
-                "yZf3GTRMGTuwSV/lD7Cagw",
-                "qeaj75wk3HF4DwQ8qbIi7g"
-            ] {
-                cacheExtra[extraKey] = 1
-            }
         } else {
             cacheExtra.removeObject(forKey: "h9jDsbgj7xIVeIQ8S3/X3Q")
             cacheExtra.removeObject(forKey: "oYicEKzVTz4/CxxE05pEgQ")

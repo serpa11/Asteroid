@@ -14,6 +14,11 @@ struct ContentView: View {
                     SettingsView()
                 }
                 .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Respring") {
+                            mgr.shouldRespring = true
+                        }
+                    }
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
                             showSettings = true

@@ -29,6 +29,8 @@ struct GestaltView: View {
     @AppStorage("mgCustKeyArray") var customKeys: [MGCustomKey] = []
     @State private var mgProductType = ""
     @AppStorage("mgSiriAI") private var mgSiriAI = false
+    @AppStorage("mgSiriAISpoof") private var mgSiriAISpoof = "iPhone17,1"
+    @State private var mgClassicIntell = false
     
     @State private var showInfoSheet = false
     @State private var idiotButtonTimerComplete = false
@@ -110,20 +112,52 @@ struct GestaltView: View {
                         PlainToggle("Disable Region Restrictions", isOn: store.mgRegionRestrictionsBinding())
                     }
                     if !isAppleIntellHD() || mgOverrideGates {
-                        PlainToggle("Enable Apple Intelligence Classic", minVrs: 18.1, isOn: store.mgKeyBinding([MGKey.appIntell]))
-                            .onChange(of: store.mgKeyBinding([MGKey.appIntell]).wrappedValue) { (oldVal, newVal) in
+                        PlainToggle("Enable Apple Intelligence Classic", minVrs: 18.1, isOn: $mgClassicIntell)
+                            .onChange(of: mgClassicIntell) { (oldVal, newVal) in
                                 if newVal {
-                                    store.mgPullKeys([MGKey.intBuild, MGKey.intInstall])
+                                    mgSiriAI = false
+                                    store.mgSetSiriAIEnabled(false, spoof: mgSiriAISpoof)
+                                    store.cacheExtra["A62OafQ85EJAiiqKn4agtg"] = 1
+                                } else if !mgSiriAI {
+                                    store.cacheExtra.removeObject(forKey: "A62OafQ85EJAiiqKn4agtg")
                                 }
                             }
                     }
                     if !isAppleIntellHD() || mgOverrideGates {
-                        PlainToggle("Enable Siri AI (Beta)", minVrs: 26.0, isOn: store.mgSiriAIBinding())
-                            .onChange(of: store.mgSiriAIBinding().wrappedValue) { (oldVal, newVal) in
+                        PlainToggle("Enable Siri AI (Beta)", minVrs: 26.0, isOn: $mgSiriAI)
+                            .onChange(of: mgSiriAI) { (oldVal, newVal) in
                                 if newVal {
+                                    mgClassicIntell = false
+                                    store.mgSetSiriAIEnabled(true, spoof: mgSiriAISpoof)
                                     store.mgPullKeys([MGKey.intBuild, MGKey.intInstall])
+                                } else {
+                                    store.mgSetSiriAIEnabled(false, spoof: mgSiriAISpoof)
                                 }
                             }
+                        if mgSiriAI {
+                            HStack(spacing: 10) {
+                                Picker("Siri AI Spoofing", selection: $mgSiriAISpoof) {
+                                    Text("iPhone 16 Pro").tag("iPhone17,1")
+                                    Text("iPhone 16 Pro Max").tag("iPhone17,2")
+                                    Text("iPhone 17 Pro").tag("iPhone18,1")
+                                    Text("iPhone 17 Pro Max").tag("iPhone18,2")
+                                    Text("iPhone Air").tag("iPhone18,4")
+                                }
+                                Spacer()
+                                Button {
+                                    Alertinator.shared.alert(title: "Siri AI Spoofing", body: "Chooses the iPhone model used for the Siri AI cache profile. Only modern supported models are offered.")
+                                } label: {
+                                    Image(systemName: "info.circle")
+                                        .frame(width: 24, height: 22)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                            .onChange(of: mgSiriAISpoof) { (_, newValue) in
+                                if mgSiriAI {
+                                    store.mgSetSiriAIProfile(newValue)
+                                }
+                            }
+                        }
                     }
                     HStack(spacing: 10) {
                         Picker("Spoofing", selection: $mgProductType) {
@@ -321,6 +355,7 @@ struct GestaltView: View {
                 store.mgCurrentDict = mgLoadData()
                 mgSiriAI = store.strVal(forKey: "h63QSdBCiT/z0WU6rdQv6Q") == "LL"
                     && store.cacheExtra["A62OafQ85EJAiiqKn4agtg"] as? Int == 1
+                mgClassicIntell = !mgSiriAI && (store.cacheExtra["A62OafQ85EJAiiqKn4agtg"] as? Int == 1)
                 let isWritable = fm.isWritableFile(atPath: MGURL.fsGestaltURL.path)
                 if !isWritable {
                     let res = BadQuery().grantAccess(atPath: MGURL.fsGestaltURL.deletingLastPathComponent().path, toFileName: "com.apple.MobileGestalt.plist")

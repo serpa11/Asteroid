@@ -93,6 +93,39 @@ final class GestaltStore: ObservableObject {
     init() {}
     
     // MARK: actions
+    func mgSetSiriAIEnabled(_ enabled: Bool, spoof: String) {
+        self.objectWillChange.send()
+        if enabled {
+            self.mgSetSiriAIProfile(spoof)
+        } else {
+            cacheExtra.removeObject(forKey: "h9jDsbgj7xIVeIQ8S3/X3Q")
+            cacheExtra.removeObject(forKey: "oYicEKzVTz4/CxxE05pEgQ")
+            cacheExtra.removeObject(forKey: "5pYKlGnYYBzGvAlIU8RjEQ")
+            cacheExtra.removeObject(forKey: "h63QSdBCiT/z0WU6rdQv6Q")
+            cacheExtra.removeObject(forKey: "yK+xavymRGZ3xWc1tb8XDg")
+            cacheExtra.removeObject(forKey: "97JDvERpVwO+GHtthIh7hA")
+        }
+    }
+
+    func mgSetSiriAIProfile(_ spoof: String) {
+        self.objectWillChange.send()
+        cacheExtra["A62OafQ85EJAiiqKn4agtg"] = 1
+        cacheExtra["h9jDsbgj7xIVeIQ8S3/X3Q"] = spoof
+        cacheExtra["oYicEKzVTz4/CxxE05pEgQ"] = "D83AP"
+        cacheExtra["5pYKlGnYYBzGvAlIU8RjEQ"] = "t8130"
+        cacheExtra["h63QSdBCiT/z0WU6rdQv6Q"] = "LL"
+        cacheExtra["yK+xavymRGZ3xWc1tb8XDg"] = "LL/A"
+        let regModel: String
+        switch spoof {
+        case "iPhone17,1": regModel = "A3083"
+        case "iPhone17,2": regModel = "A3084"
+        case "iPhone18,1": regModel = "A3256"
+        case "iPhone18,2": regModel = "A3257"
+        case "iPhone18,4": regModel = "A3260"
+        default: regModel = "A3083"
+        }
+        cacheExtra["97JDvERpVwO+GHtthIh7hA"] = regModel
+    }
     func mgPullKeys(_ keys: [String]) {
         for key in keys {
             cacheExtra.removeObject(forKey: key)

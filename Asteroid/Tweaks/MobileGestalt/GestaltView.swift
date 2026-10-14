@@ -292,7 +292,7 @@ struct GestaltView: View {
                                 Section {
                                     PlainToggle("Show Hidden Tweaks", infoType: .none, infoMessage: MGMsg.hidTweakWarn, isOn: $mgOverrideGates)
                                     Toggle("Show Custom Keys", isOn: $showCustomKeys)
-                                    Toggle("Overwrite Atomically", isOn: $mgWriteAtomically)
+                                    Toggle("Atomic Write Mode (Reboot Safe)", isOn: $mgWriteAtomically)
                                 } footer: {
                                     Text("When atomic writes are enabled, MobileGestalt will not revert after a reboot.")
                                 }

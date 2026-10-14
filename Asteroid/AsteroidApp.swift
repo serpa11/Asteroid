@@ -44,21 +44,26 @@ struct AsteroidApp: App {
                         Label("Home", systemImage: "house")
                     }
                     .id(0)
-                GestaltView()
+                SiriAIView()
                     .tabItem {
-                        Label("Siri AI", systemImage: "sparkles")
+                        Label("Siri AI", systemImage: "siri")
                     }
                     .id(1)
+                DynamicIslandView()
+                    .tabItem {
+                        Label("Dynamic Island", systemImage: "island")
+                    }
+                    .id(2)
                 TweaksView()
                     .tabItem {
                         Label("More Tweaks", systemImage: "wrench.and.screwdriver")
                     }
-                    .id(2)
+                    .id(3)
                 FMRootView()
                     .tabItem {
                         Label("File Browser", systemImage: "folder")
                     }
-                    .id(3)
+                    .id(4)
             }
             .tint(.orange)
             .environmentObject(mgr)

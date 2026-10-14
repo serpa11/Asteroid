@@ -21,7 +21,6 @@ struct TweaksView: View {
                 
                 Section {
                     if raveSupported() || weOnADebugBuild {
-                        NavigationLink("MobileGestalt", destination: GestaltView())
                         NavigationLink("Config Tweaks", destination: ConfigView())
                     }
                     NavigationLink("File Operations", destination: OperationsView())
@@ -31,7 +30,7 @@ struct TweaksView: View {
             }
             .scrollContentBackground(.hidden)
             .background(Color.black)
-            .navigationTitle("Tweaks")
+            .navigationTitle("More Tweaks")
         }
     }
 }

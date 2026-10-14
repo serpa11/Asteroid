@@ -16,8 +16,8 @@ struct ContentView: View {
     
     var body: some View {
         let items = ["SRD", "PWM", "Camera", "Action", "Tap", "Stage", "iPadOS", "Internal", "Apply"]
-        let style: ListStyle = homeLayout == 2 ? .grouped : .automatic
         return NavigationStack {
+                Group {
                 if homeLayout == 1 {
                     ScrollView {
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
@@ -32,8 +32,9 @@ struct ContentView: View {
                 } else {
                     GestaltView(title: "Home", showSiriEligibility: false, showHardwareDynamicIsland: false, showDeviceSpoofing: false, showArtworkSubtype: false)
                         .environmentObject(mgr)
-                        .listStyle(style)
+                        .listStyle(homeLayout == 2 ? .grouped : .automatic)
                 }
+            }
             .scrollContentBackground(.hidden)
             .background(Color.black)
             .navigationTitle("Home")

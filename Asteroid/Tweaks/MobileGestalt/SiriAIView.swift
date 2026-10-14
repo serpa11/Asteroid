@@ -83,6 +83,30 @@ struct SiriAIView: View {
                 }
 
                 Section {
+                    HStack(alignment: .top, spacing: 12) {
+                        Image(colorScheme == .dark ? "Siri_29_2025_dark" : "Siri_29_2025")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Revert back to Old Siri pre-Apple Intelligence")
+                                .font(.headline)
+                            Text("This will disable Apple Intelligence and Siri AI on your modern iPhone. To restore them, enable Classic Apple Intelligence from the options above.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                            Button("Revert now") {
+                                revertToOldSiri()
+                            }
+                            .buttonStyle(ConfirmButtonStyle())
+                        }
+                    }
+                } header: {
+                    HeaderLabel("Revert to Old Siri", symbol: "arrow.uturn.backward.circle")
+                }
+
+                Section {
                     Button("Apply MobileGestalt Changes") {
                         if let data = try? PropertyListSerialization.data(fromPropertyList: store.mgCurrentDict, format: .binary, options: 0) {
                             _ = mgWrite(data)
@@ -102,6 +126,23 @@ struct SiriAIView: View {
                 mgSiriAI = store.strVal(forKey: "h63QSdBCiT/z0WU6rdQv6Q") == "LL"
                     && store.cacheExtra["A62OafQ85EJAiiqKn4agtg"] as? Int == 1
                 mgClassicIntell = !mgSiriAI && (store.cacheExtra["A62OafQ85EJAiiqKn4agtg"] as? Int == 1)
+            }
+        }
+    }
+
+    private func revertToOldSiri() {
+        Task { @MainActor in
+            store.mgSetSiriAIEnabled(false, spoof: mgSiriAISpoof)
+            mgSiriAI = false
+            mgClassicIntell = false
+            store.cacheExtra.removeObject(forKey: "A62OafQ85EJAiiqKn4agtg")
+            for key in ["xOJfWykLmQCc8lKlzMlrLA", "K/R1GfGfCkXvEhaPS2Vrng", "waGD2UTpntjbDXD1r3oALQ", "WXi7NQbOKnEX4vPQFeZAdQ", "PTQ+ABwag03BwO/CKvIK/A", "0AJUv/uYPsRiZNGpWJ7zfg", "h9jDsbgj7xIVeIQ8S3/X3Q", "oYicEKzVTz4/CxxE05pEgQ", "5pYKlGnYYBzGvAlIU8RjEQ", "h63QSdBCiT/z0WU6rdQv6Q", "yK+xavymRGZ3xWc1tb8XDg", "97JDvERpVwO+GHtthIh7hA"] {
+                store.cacheExtra.removeObject(forKey: key)
+            }
+            if let data = try? PropertyListSerialization.data(fromPropertyList: store.mgCurrentDict, format: .binary, options: 0) {
+                _ = mgWrite(data)
+                Haptic.shared.play(.soft)
+                Alertinator.shared.alert(title: "Asteroid", body: "Apple Intelligence and Siri AI were removed. Respring if needed.")
             }
         }
     }
@@ -145,7 +186,7 @@ struct SiriAIView: View {
             }
 
             // A second concrete attempt: determine whether the bundle can at least be read/copied.
-            let copyURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Siri.app")
+            let copyURL = URL.temporaryDirectory.appendingPathComponent("Siri.app")
             if let copyURL {
                 try? FileManager.default.removeItem(at: copyURL)
                 do {

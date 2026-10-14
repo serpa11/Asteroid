@@ -51,7 +51,7 @@ struct AsteroidApp: App {
                     .id(1)
                 DynamicIslandView()
                     .tabItem {
-                        Label("Dynamic Island", systemImage: "paintbrush.pointed")
+                        Label("Dynamic Island", systemImage: "airplane")
                     }
                     .id(2)
                 TweaksView()

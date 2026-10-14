@@ -19,7 +19,7 @@ struct ConfirmButtonStyle: ButtonStyle {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .contentShape(.capsule)
-                .glassEffect(.regular.interactive().tint(isEnabled ? .cyan : Color.clear), in: .capsule)
+                .glassEffect(.regular.interactive().tint(isEnabled ? .orange : Color.clear), in: .capsule)
         } else {
             configuration.label
                 .buttonStyle(.plain)

@@ -130,7 +130,7 @@ struct GestaltView: View {
                                 }
                             }
                     }
-                    if !isAppleIntellHD() || mgOverrideGates {
+                    if showSiriEligibility && (!isAppleIntellHD() || mgOverrideGates) {
                         PlainToggle("Enable Siri AI (Beta)", infoType: .info, infoTitle: "Siri AI (Beta)", infoMessage: "Enables the all new Siri AI beta from iOS 27 release in WWDC26 by Apple, if it does not work it means you may need to report the bug in our github so we can try fixing it as soon as possible.", minVrs: 26.0, isOn: $mgSiriAI)
                             .onChange(of: mgSiriAI) { (oldVal, newVal) in
                                 if newVal {
@@ -310,7 +310,7 @@ struct GestaltView: View {
             .background(Color.black)
             .navigationTitle("Gestalt Settings")
                         } label: {
-                            Label("Settings", systemImage: "gear")
+                            Label("MobileGestalt Settings", systemImage: "gear")
                         }
                     } label: {
                         Label("Menu", systemImage: "ellipsis")

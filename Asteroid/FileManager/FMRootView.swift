@@ -42,6 +42,8 @@ struct FMRootView: View {
                     HeaderLabel("System", symbol: "gear")
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.black)
             .navigationTitle("File Browser")
         }
     }

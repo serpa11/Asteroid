@@ -31,6 +31,8 @@ struct PlistViewer: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.black)
             .navigationTitle(file.fileURL.lastPathComponent)
             .navigationBarTitleDisplayMode(.inline)
             .listStyle(.inset)

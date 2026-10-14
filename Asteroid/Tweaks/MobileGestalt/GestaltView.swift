@@ -232,6 +232,8 @@ struct GestaltView: View {
                     HeaderLabel("iPadOS", symbol: "ipad")
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.black)
             .navigationTitle("MobileGestalt")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -295,7 +297,9 @@ struct GestaltView: View {
                                     Text("When atomic writes are enabled, MobileGestalt will not revert after a reboot.")
                                 }
                             }
-                            .navigationTitle("Gestalt Settings")
+                            .scrollContentBackground(.hidden)
+            .background(Color.black)
+            .navigationTitle("Gestalt Settings")
                         } label: {
                             Label("Settings", systemImage: "gear")
                         }

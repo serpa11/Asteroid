@@ -31,6 +31,8 @@ struct ContentView: View {
                     HeaderLabel("Actions", symbol: "gearshape")
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.black)
             .navigationTitle("Asteroid")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

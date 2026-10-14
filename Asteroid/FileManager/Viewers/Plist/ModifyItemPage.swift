@@ -82,7 +82,9 @@ struct ModifyItemPage: View {
                 }
             }
         }
-        .navigationTitle("\(item.key)")
+        .scrollContentBackground(.hidden)
+            .background(Color.black)
+            .navigationTitle("\(item.key)")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(isEditing)
         .listStyle(.grouped)

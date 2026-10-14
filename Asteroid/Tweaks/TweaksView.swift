@@ -29,6 +29,8 @@ struct TweaksView: View {
                     HeaderLabel("System", symbol: "gear")
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.black)
             .navigationTitle("Tweaks")
         }
     }

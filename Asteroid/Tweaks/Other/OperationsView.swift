@@ -116,7 +116,9 @@ struct OperationsView: View {
                 HeaderLabel("Operations", symbol: "wrench.and.screwdriver")
             }
         }
-        .navigationTitle("File Operations")
+        .scrollContentBackground(.hidden)
+            .background(Color.black)
+            .navigationTitle("File Operations")
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [.item]) { result in
             handleImport(result)
         }

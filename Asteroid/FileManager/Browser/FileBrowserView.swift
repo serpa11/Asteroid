@@ -81,7 +81,9 @@ struct FileBrowserView: View {
                 }
             }
         }
-        .navigationTitle(path.lastPathComponent)
+        .scrollContentBackground(.hidden)
+            .background(Color.black)
+            .navigationTitle(path.lastPathComponent)
         .navigationBarTitleDisplayMode(.inline)
         .customListStyle(listStyle)
         .adaptiveListMargin()
@@ -246,7 +248,9 @@ struct FileBrowserView: View {
                                 HeaderLabel("Text Viewer", symbol: "doc.plaintext")
                             }
                         }
-                        .navigationTitle("File Browser Settings")
+                        .scrollContentBackground(.hidden)
+            .background(Color.black)
+            .navigationTitle("File Browser Settings")
                     } label: {
                         Label("Settings", systemImage: "gearshape")
                     }

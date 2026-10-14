@@ -77,7 +77,9 @@ struct KeypadView: View {
                 .padding(.top, 10)
             }
         }
-        .navigationTitle(isPad() ? "" : "Dialer Themer")
+        .scrollContentBackground(.hidden)
+            .background(Color.black)
+            .navigationTitle(isPad() ? "" : "Dialer Themer")
         .frame(maxWidth: 325)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

@@ -81,6 +81,8 @@ struct ConfigView: View {
                     HeaderLabel("Supervision", symbol: "eye")
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.black)
             .navigationTitle("Configurations")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

@@ -21,7 +21,9 @@ struct HeaderLabel: View {
             HStack(spacing: 10) {
                 Image(systemName: symbol)
                     .frame(width: 22, alignment: .center)
-                Text(label)
+                Text(label.uppercased())
+                    .font(.caption.weight(.semibold).monospaced())
+                    .foregroundStyle(Color.cyan)
             }
         } else {
             HStack(spacing: 8) {

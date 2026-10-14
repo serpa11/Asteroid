@@ -119,7 +119,9 @@ struct PosterBoardView: View {
             .padding(.horizontal, 15)
             .foregroundStyle(Color(.label))
         }
-        .navigationTitle("Wallpapers")
+        .scrollContentBackground(.hidden)
+            .background(Color.black)
+            .navigationTitle("Wallpapers")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             doSetupStuff()
@@ -196,7 +198,9 @@ struct PosterBoardView: View {
                                 Text("If you're having trouble applying custom wallpapers, try resetting any of the three extensions listed.")
                             }
                         }
-                        .navigationTitle("PosterBoard Settings")
+                        .scrollContentBackground(.hidden)
+            .background(Color.black)
+            .navigationTitle("PosterBoard Settings")
                     } label: {
                         Label("Settings", systemImage: "gearshape")
                     }

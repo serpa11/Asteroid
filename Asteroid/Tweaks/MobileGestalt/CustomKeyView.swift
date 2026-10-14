@@ -55,7 +55,9 @@ struct CustomKeyView: View {
                 }
             }
         }
-        .navigationTitle("Custom Keys")
+        .scrollContentBackground(.hidden)
+            .background(Color.black)
+            .navigationTitle("Custom Keys")
         .scrollDismissesKeyboard(.interactively)
         .sheet(item: $itemToEdit) { item in
             EditorPane(item: item)
@@ -91,7 +93,9 @@ struct CustomKeyView: View {
                         .modifier(TextFieldBackground())
                 }
                 .padding(.horizontal)
-                .navigationTitle("Modify Key")
+                .scrollContentBackground(.hidden)
+            .background(Color.black)
+            .navigationTitle("Modify Key")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {

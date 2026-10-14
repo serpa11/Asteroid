@@ -81,7 +81,7 @@ struct AsteroidApp: App {
                     Alertinator.shared.alert(title: "Your \(device.systemName) version is not supported!", body: AppMsg.unsupported, showCancel: false, actionLabel: "Exit", action: { exitinator() })
                 }
             }
-            .tint(.orange)
+            .environment(\.colorScheme, .dark)
             .overlay {
                 if mgr.shouldRespring {
                     RespringView()

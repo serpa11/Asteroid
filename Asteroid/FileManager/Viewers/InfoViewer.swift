@@ -51,6 +51,8 @@ struct InfoViewer: View {
                     HeaderLabel("Permissions", symbol: "shield")
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.black)
             .navigationTitle("\(file.type.rawValue.capitalized) Info")
             .navigationBarTitleDisplayMode(.inline)
             .listStyle(.insetGrouped)

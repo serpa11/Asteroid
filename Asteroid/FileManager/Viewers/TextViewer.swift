@@ -43,6 +43,8 @@ struct TextViewer: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(minHeight: 100, alignment: .topLeading)
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.black)
             .navigationTitle(fileURL.deletingPathExtension().lastPathComponent)
             .navigationBarTitleDisplayMode(.inline)
             .listStyle(.insetGrouped)

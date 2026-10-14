@@ -39,6 +39,8 @@ struct SettingsView: View {
                 }
 
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.black)
             .navigationTitle("Settings")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

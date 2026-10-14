@@ -210,6 +210,7 @@ struct SiriAIView: View {
         siriInstallProgress = nil
     }
 
+}
 #Preview {
     SiriAIView()
 }

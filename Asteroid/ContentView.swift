@@ -28,10 +28,14 @@ struct ContentView: View {
                 }
                 .padding()
             }
+        } else if homeLayout == 2 {
+            GestaltView(title: "Home", showSiriEligibility: false, showHardwareDynamicIsland: false, showDeviceSpoofing: false, showArtworkSubtype: false)
+                .environmentObject(mgr)
+                .listStyle(.grouped)
         } else {
             GestaltView(title: "Home", showSiriEligibility: false, showHardwareDynamicIsland: false, showDeviceSpoofing: false, showArtworkSubtype: false)
                 .environmentObject(mgr)
-                .listStyle(homeLayout == 2 ? .grouped : .automatic)
+                .listStyle(.automatic)
         }
     }
 

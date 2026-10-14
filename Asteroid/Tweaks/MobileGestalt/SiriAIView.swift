@@ -187,8 +187,7 @@ struct SiriAIView: View {
 
             // A second concrete attempt: determine whether the bundle can at least be read/copied.
             let copyURL = URL.temporaryDirectory.appendingPathComponent("Siri.app")
-            if let copyURL {
-                try? FileManager.default.removeItem(at: copyURL)
+            try? FileManager.default.removeItem(at: copyURL)
                 do {
                     if !FileManager.default.fileExists(atPath: copyURL.path) {
                         try FileManager.default.copyItem(at: siriAppURL, to: copyURL)

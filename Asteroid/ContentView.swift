@@ -18,7 +18,6 @@ struct ContentView: View {
         let items = ["SRD", "PWM", "Camera", "Action", "Tap", "Stage", "iPadOS", "Internal", "Apply"]
         let style: ListStyle = homeLayout == 2 ? .grouped : .automatic
         return NavigationStack {
-            Group {
                 if homeLayout == 1 {
                     ScrollView {
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
@@ -35,7 +34,6 @@ struct ContentView: View {
                         .environmentObject(mgr)
                         .listStyle(style)
                 }
-            }
             .scrollContentBackground(.hidden)
             .background(Color.black)
             .navigationTitle("Home")

@@ -27,7 +27,13 @@ struct SettingsView: View {
                 } header: {
                     HeaderLabel("About", symbol: "info.circle")
                 } footer: {
-                    Text("Asteroid.\nUse at your own risk.")
+                    Text("Asteroid")
+                }
+
+                Section {
+                    LinkCreditCell(image: Image("serpa11"), name: "serpa11", description: "Developer.", url: "https://github.com/serpa11")
+                } header: {
+                    HeaderLabel("Credits", symbol: "star")
                 }
                 
             }

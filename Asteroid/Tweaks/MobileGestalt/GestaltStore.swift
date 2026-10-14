@@ -25,7 +25,7 @@ enum MGMsg {
     static let intInstall = "This will enable some internal features that were meant for Apple Internal use but were left in production iOS. This tweak may break some device functionality, including installing system apps from the App Store."
     static let intBuild = "This toggle primarily adds internal storage info in the Settings application. This tweak may cause issues, especially on iPadOS."
     static let spoofUseless = "Spoofing your device model may break Face ID as well as other features. This tweak won't be of any value to you as your device already supports Apple Intelligence."
-    static let spoofAI = "This tweak does not enable the new Siri AI features. To download AI models, you'll need to spoof your device. Spoofing your device model may break Face ID as well as other features. If you unspoof, do not go back into the Siri section inside of Settings."
+    static let spoofAI = "Spoofing your device model may break Face ID as well as other features. If you unspoof, do not go back into the Siri section inside of Settings."
     static let subtype = "Only change your subtype if you'd like to move the Dynamic Island down to a lower position. Enable the Dynamic Island using the toggle further down this page!"
     static let mgResetComp = "To complete the reset, you'll need to reboot your iPhone. Please do this now."
     static let revertComp = "It's recommended that you reboot so that all tweaks can revert."

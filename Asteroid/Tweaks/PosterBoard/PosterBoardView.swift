@@ -255,6 +255,9 @@ struct PosterBoardView: View {
         if pbContainerPath.isEmpty {
             pbContainerPath = fsHandlers.getContainerPath(forMatch: "com.apple.PosterBoard")
         }
+        if !fm.isReadableFile(atPath: pbContainerPath) {
+            let _ = bq.grantAccess(atPath: pbContainerPath)
+        }
         if !fm.fileExists(atPath: AppURL.pb.path) {
             do {
                 try fm.createDirIfNeeded(at: AppURL.pb)

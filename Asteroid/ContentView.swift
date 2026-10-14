@@ -14,27 +14,30 @@ struct ContentView: View {
     @EnvironmentObject var mgr: AsteroidManager
     @State private var showSettings = false
     
-    var body: some View {
+    @ViewBuilder
+    var homeContent: some View {
         let items = ["SRD", "PWM", "Camera", "Action", "Tap", "Stage", "iPadOS", "Internal", "Apply"]
-        return NavigationStack {
-                Group {
-                if homeLayout == 1 {
-                    ScrollView {
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                            ForEach(items, id: \.self) { item in
-                                NavigationLink(destination: GestaltView(title: item, showSiriEligibility: false, showHardwareDynamicIsland: false, showDeviceSpoofing: false, showArtworkSubtype: false).environmentObject(mgr)) {
-                                    HomeGridCard(title: item)
-                                }
-                            }
+        if homeLayout == 1 {
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                    ForEach(items, id: \.self) { item in
+                        NavigationLink(destination: GestaltView(title: item, showSiriEligibility: false, showHardwareDynamicIsland: false, showDeviceSpoofing: false, showArtworkSubtype: false).environmentObject(mgr)) {
+                            HomeGridCard(title: item)
                         }
-                        .padding()
                     }
-                } else {
-                    GestaltView(title: "Home", showSiriEligibility: false, showHardwareDynamicIsland: false, showDeviceSpoofing: false, showArtworkSubtype: false)
-                        .environmentObject(mgr)
-                        .listStyle(homeLayout == 2 ? .grouped : .automatic)
                 }
+                .padding()
             }
+        } else {
+            GestaltView(title: "Home", showSiriEligibility: false, showHardwareDynamicIsland: false, showDeviceSpoofing: false, showArtworkSubtype: false)
+                .environmentObject(mgr)
+                .listStyle(homeLayout == 2 ? .grouped : .automatic)
+        }
+    }
+
+    var body: some View {
+        return NavigationStack {
+            homeContent
             .scrollContentBackground(.hidden)
             .background(Color.black)
             .navigationTitle("Home")

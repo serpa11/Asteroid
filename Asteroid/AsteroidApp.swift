@@ -18,12 +18,10 @@ var sema = DispatchSemaphore(value: 0)
 @main
 struct AsteroidApp: App {
     @StateObject private var mgr = AsteroidManager.shared
+    @StateObject private var appearance = AppearanceStore.shared
     @State private var currentTab = 0
-    @AppStorage("preferredColorScheme") private var preferredColorScheme = 0
-    @AppStorage("appAccentMode") private var appAccentMode = 0
-    
-    private var resolvedColorScheme: ColorScheme? {
-        switch preferredColorScheme {
+    private var preferredColorScheme: ColorScheme? {
+        switch appearance.preferredColorScheme {
         case 1: return .light
         case 2: return .dark
         default: return nil
@@ -81,16 +79,17 @@ struct AsteroidApp: App {
                     }
                     .id(5)
             }
-            .tint(appAccentColor())
+            .tint(appearance.appAccentColor)
             .transaction { transaction in
-                if UserDefaults.standard.bool(forKey: "reduceMotion") {
+                if appearance.reduceMotion {
                     transaction.animation = nil
-                } else if UserDefaults.standard.bool(forKey: "fastAnimations") {
+                } else if appearance.fastAnimations {
                     transaction.animation = transaction.animation?.speed(2.5)
                 }
             }
-            .preferredColorScheme(resolvedColorScheme)
+            .preferredColorScheme(preferredColorScheme)
             .environmentObject(mgr)
+            .environmentObject(appearance)
             .onAppear {
                 pipe.fileHandleForReading.readabilityHandler = { fh in
                     let data = fh.availableData
@@ -132,3 +131,4 @@ extension UIDocumentPickerViewController {
         return fix_init(forOpeningContentTypes: contentTypes, asCopy: true)
     }
 }
+

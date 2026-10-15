@@ -18,6 +18,7 @@ enum cornerRad {
 
 // MARK: SectionPlatter
 struct SectionPlatter: ViewModifier {
+    @EnvironmentObject private var appearance: AppearanceStore
     init() {}
 
     func body(content: Content) -> some View {
@@ -26,7 +27,7 @@ struct SectionPlatter: ViewModifier {
             .padding()
             .background(Color(UIColor.systemBackground).opacity(0.75), in: .rect(cornerRadius: cornerRad.platter))
             .overlay {
-                if UserDefaults.standard.bool(forKey: "glassBorders") {
+                if appearance.glassBorders {
                     RoundedRectangle(cornerRadius: cornerRad.platter)
                         .stroke(Color.accentColor.opacity(0.38))
                 }

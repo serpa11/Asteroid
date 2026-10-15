@@ -4,7 +4,7 @@ import SwiftUI
 struct SiriAIApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ConversationListView()
         }
     }
 }

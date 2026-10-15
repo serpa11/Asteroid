@@ -1,72 +1,142 @@
 import SwiftUI
 
-struct ContentView: View {
-    @State private var messages: [ChatMessage] = [
-        ChatMessage(role: .assistant, content: "Hi, I'm Siri. How can I help?")
-    ]
+struct ConversationListView: View {
+    @StateObject private var store = ConversationStore()
+    @State private var showChat = false
+    @State private var selectedConversationID: UUID?
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+
+                List {
+                    if store.conversations.isEmpty {
+                        Text("No conversations yet")
+                            .foregroundStyle(.secondary)
+                            .listRowBackground(Color.clear)
+                    } else {
+                        ForEach(store.conversations) { conversation in
+                            NavigationLink(value: conversation.id) {
+                                HStack(spacing: 12) {
+                                    Image(systemName: "message")
+                                        .foregroundStyle(.blue)
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(conversation.title)
+                                            .foregroundStyle(.white)
+                                            .font(.headline)
+                                            .lineLimit(1)
+                                        if let last = conversation.messages.last {
+                                            Text(last.content)
+                                                .foregroundStyle(.secondary)
+                                                .font(.subheadline)
+                                                .lineLimit(2)
+                                        } else {
+                                            Text("Empty conversation")
+                                                .foregroundStyle(.secondary)
+                                                .font(.subheadline)
+                                        }
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.vertical, 6)
+                            }
+                            .listRowBackground(Color.clear)
+                        }
+                        .onDelete { store.delete(at: $0) }
+                    }
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+            }
+            .navigationTitle("Siri")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        let conv = store.createConversation()
+                        selectedConversationID = conv.id
+                        showChat = true
+                    } label: {
+                        Image(systemName: "square.and.pencil")
+                            .font(.title3)
+                            .foregroundStyle(.white)
+                    }
+                }
+            }
+            .navigationDestination(isPresented: $showChat) {
+                if let id = selectedConversationID {
+                    ChatView(conversationID: id)
+                        .environmentObject(store)
+                }
+            }
+            .navigationDestination(for: UUID.self) { id in
+                ChatView(conversationID: id)
+                    .environmentObject(store)
+            }
+        }
+        .environmentObject(store)
+    }
+}
+
+struct ChatView: View {
+    let conversationID: UUID
+    @EnvironmentObject private var store: ConversationStore
     @State private var input = ""
     @State private var isThinking = false
     @State private var showSettings = false
-    @State private var glow = false
+    @Environment(\.dismiss) private var dismiss
 
-    private let service = ChatService.shared
+    private var conversation: Conversation? {
+        store.conversations.first { $0.id == conversationID }
+    }
 
     var body: some View {
         ZStack {
-            LinearGradient(colors: [.black, .indigo, .black], startPoint: .top, endPoint: .bottom)
-                .ignoresSafeArea()
+            Color.black.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                header
-
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(spacing: 14) {
-                            ForEach(messages) { message in
-                                bubble(message)
-                                    .id(message.id)
+                if let conversation {
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            LazyVStack(spacing: 14) {
+                                ForEach(conversation.messages) { message in
+                                    bubble(message)
+                                        .id(message.id)
+                                }
+                                if isThinking { thinkingIndicator }
                             }
-                            if isThinking {
-                                thinkingIndicator
-                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                    }
-                    .onChange(of: messages.count) { _ in
-                        withAnimation { proxy.scrollTo(messages.last?.id, anchor: .bottom) }
+                        .onChange(of: conversation.messages.count) { _ in
+                            withAnimation { proxy.scrollTo(conversation.messages.last?.id, anchor: .bottom) }
+                        }
                     }
                 }
 
                 inputBar
             }
         }
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button { dismiss() } label: {
+                    Image(systemName: "chevron.backward")
+                        .foregroundStyle(.white)
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button { showSettings = true } label: {
+                    Image(systemName: "gearshape")
+                        .foregroundStyle(.white)
+                }
+            }
+        }
         .sheet(isPresented: $showSettings) { SettingsView() }
     }
 
-    // MARK: Header
-    private var header: some View {
-        HStack {
-            Text("Siri")
-                .font(.system(size: 34, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
-            Spacer()
-            Button {
-                showSettings = true
-            } label: {
-                Image(systemName: "gearshape")
-                    .font(.title3)
-                    .foregroundStyle(.white)
-                    .padding(10)
-                    .background(.ultraThinMaterial, in: Circle())
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 16)
-        .padding(.bottom, 8)
-    }
-
-    // MARK: Bubble
     private func bubble(_ message: ChatMessage) -> some View {
         HStack {
             if message.role == .user { Spacer() }
@@ -84,10 +154,9 @@ struct ContentView: View {
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
                         .stroke(.white.opacity(0.12), lineWidth: 1)
                 )
-                .frame(maxWidth: 280 * 1.1, alignment: message.role == .user ? .trailing : .leading)
+                .frame(maxWidth: 300, alignment: message.role == .user ? .trailing : .leading)
             if message.role != .user { Spacer() }
         }
-        .siriGlass()
     }
 
     private var thinkingIndicator: some View {
@@ -102,7 +171,6 @@ struct ContentView: View {
         }
     }
 
-    // MARK: Input
     private var inputBar: some View {
         HStack(spacing: 10) {
             TextField("Ask Siri", text: $input)
@@ -134,29 +202,29 @@ struct ContentView: View {
     private func send() {
         let text = input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
-        messages.append(ChatMessage(role: .user, content: text))
+        let userMsg = ChatMessage(role: .user, content: text)
+        store.addMessage(userMsg, to: conversationID)
         input = ""
         isThinking = true
+
         Task {
             do {
-                let reply = try await service.send(messages: messages)
-                messages.append(ChatMessage(role: .assistant, content: reply.isEmpty ? "I didn't get a response." : reply))
+                let history = conversation?.messages ?? []
+                let reply = try await ChatService.shared.send(messages: history)
+                store.addMessage(ChatMessage(role: .assistant, content: reply.isEmpty ? "I didn't get a response." : reply), to: conversationID)
             } catch {
-                messages.append(ChatMessage(role: .assistant, content: "Error: \(error.localizedDescription)"))
+                store.addMessage(ChatMessage(role: .assistant, content: "Error: \(error.localizedDescription)"), to: conversationID)
             }
             isThinking = false
         }
     }
 }
 
-extension View {
-    func modify<T: View>(@ViewBuilder _ transform: (Self) -> T) -> T {
-        transform(self)
-    }
-}
+struct SiriAIAppPlaceholder { }
 
-// Liquid-glass helper
 extension View {
+    func modify<T: View>(@ViewBuilder _ transform: (Self) -> T) -> T { transform(self) }
+
     @ViewBuilder
     func siriGlass() -> some View {
         if #available(iOS 26, *) {
@@ -165,4 +233,7 @@ extension View {
             self.background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
         }
     }
+
+    @ViewBuilder
+    func siriGlassStatic() -> some View { self }
 }

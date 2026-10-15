@@ -50,21 +50,11 @@ struct AsteroidApp: App {
                         Label("More Tweaks", systemImage: "wrench.and.screwdriver")
                     }
                     .id(1)
-                SiriAIView()
-                    .tabItem {
-                        Label("Downloadables", systemImage: "arrow.down.circle")
-                    }
-                    .id(2)
-                RevertsView()
-                    .tabItem {
-                        Label("Reverts", systemImage: "arrow.uturn.backward.circle")
-                    }
-                    .id(3)
                 FMRootView()
                     .tabItem {
                         Label("File Browser", systemImage: "folder")
                     }
-                    .id(4)
+                    .id(2)
             }
             .tint(.orange)
             .environmentObject(mgr)

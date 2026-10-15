@@ -66,11 +66,7 @@ struct GestaltView: View {
                             if isHomeButtonHD() {
                                 Text("iPhone X Gestures").tag(2436)
                             }
-                        }
-                        if mgSubtype == 2436 {
-                            PlainToggle("Enable iPhone 18 Pro Dynamic Island", minVrs: 26.0, isOn: store.mgKeyBinding([MGKey.island]))
-                        }
-                        Spacer()
+                        }                        Spacer()
                         Button {
                             Alertinator.shared.alert(title: "Subtype Info", body: MGMsg.subtype)
                         } label: {

@@ -67,4 +67,5 @@ enum SysBID {
     static var phone = "com.apple.mobilephone"
     static var poster = "com.apple.PosterBoard"
     static var siri = "com.apple.siri"
+    static var imagePlayground = "com.apple.imageplayground"
 }

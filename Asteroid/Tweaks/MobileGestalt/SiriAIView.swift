@@ -17,6 +17,9 @@ struct SiriAIView: View {
     @State private var siriInstallProgress: Double?
     @State private var siriInstallError: String?
     @State private var siriInstallSucceeded = false
+    @State private var imagePlaygroundInstallProgress: Double?
+    @State private var imagePlaygroundInstallError: String?
+    @State private var imagePlaygroundInstallSucceeded = false
 
     var body: some View {
         NavigationStack {
@@ -123,6 +126,65 @@ struct SiriAIView: View {
                     HeaderLabel("Install Siri App", symbol: "app.badge")
                 }
 
+                Section {
+                    HStack(alignment: .top, spacing: 12) {
+                        Image("Image_Playground_2026")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Install the Image Playground app on unsupported iPhones")
+                                .font(.headline)
+                            Text("This will try installing the Image Playground app on your unsupported iPhone. It is not expected to succeed.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                            Button("Install now") {
+                                Task { await tryInstallImagePlaygroundApp() }
+                            }
+                            .buttonStyle(ConfirmButtonStyle())
+                            .disabled(imagePlaygroundInstallProgress != nil)
+
+                            if let progress = imagePlaygroundInstallProgress {
+                                ProgressView(value: progress)
+                                    .progressViewStyle(.linear)
+                                    .tint(.orange)
+                                    .padding(.top, 4)
+                                if let error = imagePlaygroundInstallError {
+                                    HStack(alignment: .top, spacing: 6) {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .foregroundStyle(.red)
+                                        Text(error)
+                                            .font(.footnote)
+                                            .foregroundStyle(.red)
+                                    }
+                                    .padding(.top, 2)
+                                }
+                                if imagePlaygroundInstallSucceeded {
+                                    HStack(spacing: 10) {
+                                        Button("Open") {
+                                            openApp(withBID: SysBID.imagePlayground)
+                                        }
+                                        .buttonStyle(.borderedProminent)
+                                        .tint(.orange)
+                                        .foregroundStyle(.white)
+
+                                        Button("Uninstall Image Playground App") {
+                                        }
+                                        .buttonStyle(.glass)
+                                        .tint(.orange)
+                                        .foregroundStyle(.orange)
+                                    }
+                                    .padding(.top, 6)
+                                }
+                            }
+                        }
+                    }
+                } header: {
+                    HeaderLabel("Install Image Playground App", symbol: "app.badge")
+                }
+                
                 Section {
                     HStack(alignment: .top, spacing: 12) {
                         Image(colorScheme == .dark ? "Siri_29_2025_dark" : "Siri_29_2025")
@@ -276,4 +338,83 @@ struct SiriAIView: View {
             }
         }
     }
+
+    private func tryInstallImagePlaygroundApp() async {
+        await MainActor.run {
+            imagePlaygroundInstallProgress = 0.1
+            imagePlaygroundInstallError = nil
+            imagePlaygroundInstallSucceeded = false
+        }
+        let result = await Task.detached(priority: .userInitiated) { () -> (Bool, String) in
+            let candidatePaths = ["/Applications/Image Playground.app", "/Applications/ImagePlayground.app", "/System/Applications/Image Playground.app", "/System/Applications/ImagePlayground.app"]
+            guard let appURL = candidatePaths.map({ URL(fileURLWithPath: $0) }).first(where: { FileManager.default.fileExists(atPath: $0.path) }) else {
+                return (false, "No Image Playground app bundle was found in the expected system locations. iOS declined the operation.")
+            }
+            var outcome = "Found \(appURL.path). The installation request was attempted."
+            var installed = false
+            let uicachePath = "/usr/bin/uicache"
+            if FileManager.default.fileExists(atPath: uicachePath) {
+                let first = strdup(uicachePath)
+                let second = strdup("-p")
+                let third = strdup(appURL.path)
+                var argv: [UnsafeMutablePointer<CChar>?] = [first, second, third, nil]
+                var pid: pid_t = 0
+                let spawnResult = posix_spawn(&pid, uicachePath, nil, nil, &argv, nil)
+                if spawnResult == 0 {
+                    var status: Int32 = 0
+                    waitpid(pid, &status, 0)
+                    if status == 0 {
+                        installed = true
+                        outcome += " uicache registered Image Playground.app."
+                    } else {
+                        outcome += " uicache exited status: \(status)."
+                    }
+                } else {
+                    outcome += " uicache spawn failed: \(spawnResult)."
+                }
+                if let first { free(first) }
+                if let second { free(second) }
+                if let third { free(third) }
+            }
+            let selectorNames = ["defaultWorkspace", "sharedWorkspace"]
+            var workspace: AnyObject?
+            for name in selectorNames {
+                guard let klass = NSClassFromString("LSApplicationWorkspace") as? NSObject.Type,
+                      klass.responds(to: NSSelectorFromString(name)) else { continue }
+                workspace = klass.perform(NSSelectorFromString(name))?.takeUnretainedValue()
+                if workspace != nil { break }
+            }
+            if let workspace = workspace, workspace.responds(to: NSSelectorFromString("installApplication:withOptions:error:")),
+               let installer = workspace as? LSAppInstalling {
+                var error: NSError?
+                let systemInstalled = installer.installApplication?(appURL, withOptions: nil, error: &error) ?? false
+                if systemInstalled {
+                    installed = true
+                    outcome += " The system accepted the Image Playground app installation request."
+                } else if let error = error {
+                    outcome += " System response: \(error.localizedDescription)"
+                } else {
+                    outcome += " The system declined the request, so the app was not registered."
+                }
+            } else {
+                outcome += " The private installation workspace is unavailable."
+            }
+            outcome += " Registration status: \(installed ? "installed" : "not registered")."
+            return (installed, outcome)
+        }.value
+        await MainActor.run {
+            withAnimation(.linear(duration: 0.25)) { imagePlaygroundInstallProgress = 1 }
+            if result.0 {
+                imagePlaygroundInstallSucceeded = true
+                imagePlaygroundInstallError = nil
+            } else {
+                imagePlaygroundInstallSucceeded = false
+                imagePlaygroundInstallError = result.1
+            }
+        }
+    }
+}
+
+#Preview {
+    SiriAIView()
 }

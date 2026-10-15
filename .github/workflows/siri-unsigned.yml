@@ -1,0 +1,55 @@
+name: Release Siri unsigned IPA
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "SiriAI/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: siri-unsigned-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: xcode-27
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Build unsigned archive
+        run: |
+          set -euo pipefail
+          xcodebuild archive \
+            -project SiriAI/SiriAI.xcodeproj \
+            -scheme SiriAI \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "$RUNNER_TEMP/SiriAI.xcarchive" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Package unsigned IPA
+        run: |
+          set -euo pipefail
+          rm -rf "$RUNNER_TEMP/Payload"
+          mkdir -p "$RUNNER_TEMP/Payload"
+          cp -R "$RUNNER_TEMP/SiriAI.xcarchive/Products/Applications/SiriAI.app" "$RUNNER_TEMP/Payload/"
+          cd "$RUNNER_TEMP"
+          zip -qry "SiriAI-${GITHUB_REF_NAME}-unsigned.ipa" Payload
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          name: SiriAI ${{ github.ref_name }}
+          generate_release_notes: true
+          fail_on_unmatched_files: false
+          files: ${{ runner.temp }}/SiriAI-${{ github.ref_name }}-unsigned.ipa

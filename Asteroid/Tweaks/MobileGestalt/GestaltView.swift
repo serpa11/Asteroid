@@ -66,7 +66,8 @@ struct GestaltView: View {
                             if isHomeButtonHD() {
                                 Text("iPhone X Gestures").tag(2436)
                             }
-                        }                        Spacer()
+                        }
+                    Spacer()
                         Button {
                             Alertinator.shared.alert(title: "Subtype Info", body: MGMsg.subtype)
                         } label: {

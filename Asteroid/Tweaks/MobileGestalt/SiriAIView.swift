@@ -195,7 +195,7 @@ struct SiriAIView: View {
                 if spawnResult == 0 {
                     var status: Int32 = 0
                     waitpid(pid, &status, 0)
-                    if WIFEXITED(status) && WEXITSTATUS(status) == 0 {
+                    if status == 0 {
                         installed = true
                         result += " uicache registered Siri.app."
                     } else {

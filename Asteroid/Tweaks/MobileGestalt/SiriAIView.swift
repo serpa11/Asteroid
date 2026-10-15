@@ -1,6 +1,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 import CoreServices
+import Darwin
 
 @objc protocol LSAppInstalling {
     @objc optional func installApplication(_ application: URL, withOptions: NSDictionary?, error: UnsafeMutablePointer<NSError?>?) -> Bool
@@ -185,21 +186,27 @@ struct SiriAIView: View {
 
             let uicachePath = "/usr/bin/uicache"
             if !installed && FileManager.default.fileExists(atPath: uicachePath) {
-                do {
-                    let process = Process()
-                    process.launchPath = uicachePath
-                    process.arguments = ["-p", siriAppURL.path]
-                    try process.run()
-                    process.waitUntilExit()
-                    if process.terminationStatus == 0 {
+                let first = strdup(uicachePath)
+                let second = strdup("-p")
+                let third = strdup(siriAppURL.path)
+                var argv: [UnsafeMutablePointer<CChar>?] = [first, second, third, nil]
+                var pid: pid_t = 0
+                let spawnResult = posix_spawn(&pid, uicachePath, nil, nil, &argv, nil)
+                if spawnResult == 0 {
+                    var status: Int32 = 0
+                    waitpid(pid, &status, 0)
+                    if WIFEXITED(status) && WEXITSTATUS(status) == 0 {
                         installed = true
                         result += " uicache registered Siri.app."
                     } else {
-                        result += " uicache status: \(process.terminationStatus)."
+                        result += " uicache exited status: \(status)."
                     }
-                } catch {
-                    result += " uicache failed: \(error.localizedDescription)"
+                } else {
+                    result += " uicache spawn failed: \(spawnResult)."
                 }
+                if let first { free(first) }
+                if let second { free(second) }
+                if let third { free(third) }
             }
 
             if let workspace = workspace {

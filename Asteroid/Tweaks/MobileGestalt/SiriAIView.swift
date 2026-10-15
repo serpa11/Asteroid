@@ -21,7 +21,7 @@ struct SiriAIView: View {
             List {
                 Section {
                     Toggle("Classic Apple Intelligence", isOn: $mgClassicIntell)
-                        appAccentColor()
+                        .tint(.orange)
                         .onChange(of: mgClassicIntell) { (_, newValue) in
                             if newValue {
                                 mgSiriAI = false
@@ -32,7 +32,7 @@ struct SiriAIView: View {
                             }
                         }
                     Toggle("Siri AI (Beta)", isOn: $mgSiriAI)
-                        appAccentColor()
+                        .tint(.orange)
                         .onChange(of: mgSiriAI) { (_, newValue) in
                             if newValue {
                                 mgClassicIntell = false
@@ -84,7 +84,7 @@ struct SiriAIView: View {
                             if let progress = siriInstallProgress {
                                 ProgressView(value: progress)
                                     .progressViewStyle(.linear)
-                                    appAccentColor()
+                                    .tint(.orange)
                                     .padding(.top, 4)
                             }
                         }

@@ -53,7 +53,7 @@ struct PlainToggle: View {
                     }
                 }
             }
-            appAccentColor()
+            .tint(.orange)
         }
     }
 }

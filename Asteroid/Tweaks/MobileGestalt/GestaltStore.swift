@@ -454,8 +454,7 @@ final class GestaltStore: ObservableObject {
                 return SiriAIChangeResult(succeeded: false, message: "Could not create a safety backup: \(error.localizedDescription)")
             }
 
-            let writeResult = mgWrite(modifiedData)
-            guard writeResult.0 else {
+            guard mgWrite(modifiedData) else {
                 return SiriAIChangeResult(succeeded: false, message: "Atomic write failed.")
             }
 

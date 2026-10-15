@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 final class AppearanceStore: ObservableObject {
     static let shared = AppearanceStore()

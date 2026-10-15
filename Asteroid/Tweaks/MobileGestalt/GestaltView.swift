@@ -62,11 +62,13 @@ struct GestaltView: View {
                             if doubleSysVrs() >= 26.0 {
                                 Text("iPhone Air").tag(2736)
                                 Text("iPhone 18 Pro").tag(2738)
-                                Text("iPhone Duo").tag(3120)
                             }
                             if isHomeButtonHD() {
                                 Text("iPhone X Gestures").tag(2436)
                             }
+                        }
+                        if mgSubtype == 2436 {
+                            PlainToggle("Enable iPhone 18 Pro Dynamic Island", minVrs: 26.0, isOn: store.mgKeyBinding([MGKey.island]))
                         }
                         Spacer()
                         Button {
@@ -117,7 +119,7 @@ struct GestaltView: View {
                         PlainToggle("Disable Region Restrictions", isOn: store.mgRegionRestrictionsBinding())
                     }
                     if showSiriEligibility && (!isAppleIntellHD() || mgOverrideGates) {
-                        PlainToggle("Enable Apple Intelligence Classic", minVrs: 18.1, isOn: $mgClassicIntell)
+                        PlainToggle("Enable Apple Intelligence Classic", infoType: .warning, infoTitle: "Apple Intelligence Classic", infoMessage: "This is the classic Apple Intelligence toggle. Make sure you do not confuse it with Siri AI (Beta).\n\nIf you don't want classic Apple Intelligence, do not use this toggle.", minVrs: 18.1, isOn: $mgClassicIntell)
                             .onChange(of: mgClassicIntell) { (oldVal, newVal) in
                                 if newVal {
                                     mgSiriAI = false

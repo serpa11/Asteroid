@@ -48,6 +48,8 @@ struct SiriAIView: View {
                         }
                     if mgSiriAI {
                         Picker("Siri AI Spoofing", selection: $mgSiriAISpoof) {
+                            Text("iPhone 15 Pro").tag("iPhone16,1")
+                            Text("iPhone 15 Pro Max").tag("iPhone16,2")
                             Text("iPhone 16 Pro").tag("iPhone17,1")
                             Text("iPhone 16 Pro Max").tag("iPhone17,2")
                             Text("iPhone 17 Pro").tag("iPhone18,1")

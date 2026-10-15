@@ -50,7 +50,7 @@ struct AsteroidApp: App {
                         Label("More Tweaks", systemImage: "wrench.and.screwdriver")
                     }
                     .id(1)
-                DownloadablesView()
+                SiriAIView()
                     .tabItem {
                         Label("Downloadables", systemImage: "arrow.down.circle")
                     }

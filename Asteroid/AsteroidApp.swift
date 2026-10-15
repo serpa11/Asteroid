@@ -109,4 +109,3 @@ extension UIDocumentPickerViewController {
         return fix_init(forOpeningContentTypes: contentTypes, asCopy: true)
     }
 }
-EOF

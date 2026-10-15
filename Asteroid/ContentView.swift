@@ -9,7 +9,7 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            GestaltView(title: "Home", showSiriEligibility: false, showHardwareDynamicIsland: false, showDeviceSpoofing: false, showArtworkSubtype: false)
+            GestaltView(title: "Home", showSiriEligibility: true, showHardwareDynamicIsland: true, showDeviceSpoofing: true, showArtworkSubtype: true)
                 .environmentObject(mgr)
                 .sheet(isPresented: $showSettings) {
                     SettingsView()

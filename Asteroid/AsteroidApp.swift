@@ -20,6 +20,7 @@ struct AsteroidApp: App {
     @StateObject private var mgr = AsteroidManager.shared
     @State private var currentTab = 0
     @AppStorage("preferredColorScheme") private var preferredColorScheme = 0
+    @AppStorage("appAccentMode") private var appAccentMode = 0
     
     private var resolvedColorScheme: ColorScheme? {
         switch preferredColorScheme {

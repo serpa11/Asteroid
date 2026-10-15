@@ -55,8 +55,7 @@ struct AppearanceView: View {
                     }
                     HStack {
                         Button("Cycle Accent") {
-                            appAccentMode = appAccentMode == 2 ? 3 : (appAccentMode + 1)
-                            if appAccentMode == 3 { appAccentMode = 0 }
+                            appAccentMode = appAccentMode >= 2 ? 0 : (appAccentMode + 1)
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(appAccentColor())

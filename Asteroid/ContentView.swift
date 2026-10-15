@@ -5,6 +5,7 @@ struct ContentView: View {
     @AppStorage("ogMachineName") var ogMachineName = ""
     @EnvironmentObject var mgr: AsteroidManager
     @State private var showSettings = false
+    @State private var checkedPersistence = false
 
     var body: some View {
         NavigationStack {
@@ -31,6 +32,12 @@ struct ContentView: View {
                 .onAppear {
                     if ogMachineName.isEmpty {
                         ogMachineName = machineName()
+                    }
+                    if !checkedPersistence {
+                        checkedPersistence = true
+                        if mgRestorePersistedChangesIfNeeded() {
+                            mgr.shouldRespring = true
+                        }
                     }
                 }
         }

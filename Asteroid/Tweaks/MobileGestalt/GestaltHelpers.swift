@@ -129,3 +129,13 @@ func isActionButtonHD() -> Bool {
     return false
 }
 
+
+
+func mgRestorePersistedChangesIfNeeded() -> Bool {
+    let appliedURL = MGURL.appliedGestaltURL
+    guard fm.fileExists(atPath: appliedURL.path) else { return false }
+    guard let appliedData = try? Data(contentsOf: appliedURL) else { return false }
+    guard let currentData = try? Data(contentsOf: MGURL.fsGestaltURL) else { return false }
+    guard appliedData != currentData else { return false }
+    return mgWrite(appliedData)
+}

@@ -12,6 +12,7 @@ import Combine
 enum MGURL {
     static let fsGestaltURL = URL(fileURLWithPath: "/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist")
     static let savedGestaltURL = URL.documentsDirectory.appendingPathComponent("OriginalGestalt.plist")
+    static let appliedGestaltURL = URL.documentsDirectory.appendingPathComponent("AppliedGestalt.plist")
 }
 
 enum MGMsg {

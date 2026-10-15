@@ -441,6 +441,7 @@ struct GestaltView: View {
             let res = mgWrite(data)
             
             if res {
+                try? data.write(to: MGURL.appliedGestaltURL)
                 print("[*] successfully overwrote mobilegestalt!")
                 Haptic.shared.play(.soft)
                 if autoRespring || isFromSheet {
@@ -467,6 +468,7 @@ struct GestaltView: View {
             let res = mgWrite(data)
             
             if res {
+                try? fm.removeItem(at: MGURL.appliedGestaltURL)
                 print("[*] successfully overwrote mobilegestalt!")
                 Haptic.shared.play(.soft)
                 if let dict = NSMutableDictionary(contentsOf: MGURL.savedGestaltURL) {

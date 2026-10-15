@@ -19,9 +19,19 @@ var sema = DispatchSemaphore(value: 0)
 struct AsteroidApp: App {
     @StateObject private var mgr = AsteroidManager.shared
     @State private var currentTab = 0
+    @AppStorage("preferredColorScheme") private var preferredColorScheme = 0
     
+    private var resolvedColorScheme: ColorScheme? {
+        switch preferredColorScheme {
+        case 1: return .light
+        case 2: return .dark
+        default: return nil
+        }
+    }
+
     init() {
         setvbuf(stdout, nil, _IONBF, 0)
+        UserDefaults.standard.register(defaults: ["mgWriteAtomically": true])
         dup2(pipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
         
         // fix file picker
@@ -59,11 +69,16 @@ struct AsteroidApp: App {
                         Label("More Tweaks", systemImage: "wrench.and.screwdriver")
                     }
                     .id(3)
+                AppearanceView()
+                    .tabItem {
+                        Label("Appearance", systemImage: "paintpalette")
+                    }
+                    .id(4)
                 FMRootView()
                     .tabItem {
                         Label("File Browser", systemImage: "folder")
                     }
-                    .id(4)
+                    .id(5)
             }
             .tint(.orange)
             .environmentObject(mgr)

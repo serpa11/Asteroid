@@ -373,7 +373,7 @@ final class GestaltStore: ObservableObject {
         let parsed: NSMutableDictionary
         do {
             let propertyList = try PropertyListSerialization.propertyList(from: originalData,
-                                                                         options: [.mutableContainers, .mutableLeaves],
+                                                                         options: [.mutableContainers],
                                                                          format: nil)
             guard let dictionary = propertyList as? NSMutableDictionary else {
                 return SiriAIChangeResult(succeeded: false, message: "MobileGestalt is not a dictionary. Aborted.")
@@ -456,7 +456,7 @@ final class GestaltStore: ObservableObject {
 
             let writeResult = mgWrite(modifiedData)
             guard writeResult.0 else {
-                return SiriAIChangeResult(succeeded: false, message: "Atomic write failed: \(writeResult.1)")
+                return SiriAIChangeResult(succeeded: false, message: "Atomic write failed.")
             }
 
             try? modifiedData.write(to: MGURL.appliedGestaltURL, options: .atomic)

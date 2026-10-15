@@ -24,7 +24,6 @@ struct AppearanceView: View {
     @AppStorage("appHaptics") private var appHaptics = true
     @AppStorage("compactHome") private var compactHome = false
     @AppStorage("reduceMotion") private var reduceMotion = false
-    @AppStorage("appHaptics") private var appHaptics = true
     @AppStorage("highContrast") private var highContrast = false
     @AppStorage("glassBorders") private var glassBorders = true
     @AppStorage("fastAnimations") private var fastAnimations = false

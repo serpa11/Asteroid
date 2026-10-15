@@ -81,6 +81,9 @@ struct AsteroidApp: App {
                     .id(5)
             }
             .tint(appAccentColor())
+            .preferredColorScheme(resolvedColorScheme)
+            .environment(\.accessibilityReduceMotion, UserDefaults.standard.bool(forKey: "reduceMotion"))
+            .environment(\.colorSchemeContrast, UserDefaults.standard.bool(forKey: "highContrast") ? .increased : .standard)
             .environmentObject(mgr)
             .onAppear {
                 pipe.fileHandleForReading.readabilityHandler = { fh in

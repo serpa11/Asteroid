@@ -23,7 +23,7 @@ struct HeaderLabel: View {
                     .frame(width: 22, alignment: .center)
                 Text(label.uppercased())
                     .font(.caption.weight(.semibold).monospaced())
-                    .foregroundStyle(Color.orange)
+                    .foregroundStyle(appAccentColor())
             }
         } else {
             HStack(spacing: 8) {

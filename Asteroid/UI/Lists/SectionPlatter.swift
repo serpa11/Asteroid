@@ -25,7 +25,7 @@ struct SectionPlatter: ViewModifier {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
             .background(Color(UIColor.systemBackground).opacity(0.75), in: .rect(cornerRadius: cornerRad.platter))
-            .overlay(RoundedRectangle(cornerRadius: cornerRad.platter).stroke(Color.orange.opacity(0.38)))
+            .overlay(RoundedRectangle(cornerRadius: cornerRad.platter).stroke(appAccentColor().opacity(0.38)))
     }
 }
 

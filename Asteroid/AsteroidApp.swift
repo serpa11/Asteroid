@@ -32,7 +32,7 @@ struct AsteroidApp: App {
 
     init() {
         setvbuf(stdout, nil, _IONBF, 0)
-        UserDefaults.standard.register(defaults: ["mgWriteAtomically": true])
+        UserDefaults.standard.register(defaults: ["mgWriteAtomically": true, "preferredColorScheme": 0, "appHaptics": true, "compactHome": false, "reduceMotion": false, "highContrast": false, "glassBorders": true, "fastAnimations": false, "appAccentMode": 0])
         dup2(pipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
         
         // fix file picker
@@ -82,6 +82,13 @@ struct AsteroidApp: App {
                     .id(5)
             }
             .tint(appAccentColor())
+            .transaction { transaction in
+                if UserDefaults.standard.bool(forKey: "reduceMotion") {
+                    transaction.animation = nil
+                } else if UserDefaults.standard.bool(forKey: "fastAnimations") {
+                    transaction.animation = transaction.animation?.speed(2.5)
+                }
+            }
             .preferredColorScheme(resolvedColorScheme)
             .environmentObject(mgr)
             .onAppear {
@@ -103,7 +110,7 @@ struct AsteroidApp: App {
                     }
                 }
                 print("")
-                print("[*] Asteroid v\(AppInfo.appVersion) (\(build))")
+                print("[*] Asteroid v\(AppInfo.appVersion) (\(AppInfo.appBuild))")
                 print("[*] Running on \(UIDevice.current.systemName) \(UIDevice.current.systemVersion), \(machineName())")
                 if !isSupported() && !weOnADebugBuild {
                     Alertinator.shared.alert(title: "Your \(device.systemName) version is not supported!", body: AppMsg.unsupported, showCancel: false, actionLabel: "Exit", action: { exitinator() })

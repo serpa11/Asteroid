@@ -28,7 +28,7 @@ struct ConfirmButtonStyle: ButtonStyle {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .contentShape(.capsule)
-                .background(isEnabled ? appAccentColor() : Color(.systemGray), in: .capsule)
+                .background(isEnabled ? Color.accentColor : Color(.systemGray), in: .capsule)
         }
     }
 }
@@ -52,7 +52,7 @@ struct ActionButtonStyle: ButtonStyle {
                 .fontWeight(.medium)
                 .padding()
                 .contentShape(.capsule)
-                .background(isEnabled ? appAccentColor() : Color(.systemGray), in: .capsule)
+                .background(isEnabled ? Color.accentColor : Color(.systemGray), in: .capsule)
         }
     }
 }

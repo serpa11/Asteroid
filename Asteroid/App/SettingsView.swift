@@ -16,7 +16,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    AppInfoCell(build: build)
+                    AppInfoCell(build: AppInfo.appBuild)
                 } header: {
                     HeaderLabel("About", symbol: "info.circle")
                 } footer: {

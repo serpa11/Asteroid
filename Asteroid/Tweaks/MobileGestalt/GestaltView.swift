@@ -20,6 +20,7 @@ struct GestaltView: View {
     @AppStorage("mgOverrideGates") private var mgOverrideGates = false
     @AppStorage("mgWriteAtomically") private var mgWriteAtomically = true
     @AppStorage("autoRespring") var autoRespring = false
+    @AppStorage("compactHome") private var compactHome = false
     @AppStorage("hasShownSheet") private var hasShownSheet = false
     @Environment(\.dismiss) private var dismiss
     
@@ -238,9 +239,8 @@ struct GestaltView: View {
                     HeaderLabel("iPadOS", symbol: "ipad")
                 }
             }
+            .listRowSpacing(compactHome ? 4 : 10)
             .scrollContentBackground(.hidden)
-            .background(Color(UIColor.systemBackground))
-            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

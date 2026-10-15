@@ -17,6 +17,10 @@ struct TerminalPlatter: ViewModifier {
             .frame(height: 250)
             .padding(.horizontal)
             .background(LinearGradient(colors: [Color(red: 0.06, green: 0.08, blue: 0.10), Color(UIColor.systemBackground)], startPoint: .topLeading, endPoint: .bottomTrailing), in: .rect(cornerRadius: terminalRad))
-            .overlay(RoundedRectangle(cornerRadius: terminalRad).stroke(appAccentColor().opacity(0.45)))
+            .overlay {
+                if UserDefaults.standard.bool(forKey: "glassBorders") {
+                    RoundedRectangle(cornerRadius: terminalRad).stroke(Color.accentColor.opacity(0.45))
+                }
+            }
     }
 }

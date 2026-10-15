@@ -24,6 +24,14 @@ struct Conversation: Identifiable, Codable, Hashable {
     }
 }
 
+struct OpenAIChatResponse: Decodable {
+    struct Choice: Decodable {
+        struct Message: Decodable { let role: String; let content: String }
+        let message: Message
+    }
+    let choices: [Choice]
+}
+
 @MainActor
 final class ConversationStore: ObservableObject {
     @Published var conversations: [Conversation] = []

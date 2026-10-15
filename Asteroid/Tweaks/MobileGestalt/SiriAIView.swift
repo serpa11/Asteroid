@@ -167,6 +167,9 @@ struct SiriAIView: View {
         let candidatePaths = ["/Applications/Siri.app", "/System/Applications/Siri.app", "/System/Applications/Utilities/Siri.app"]
         let siriAppURL = candidatePaths.map { URL(fileURLWithPath: $0) }.first { FileManager.default.fileExists(atPath: $0.path) }
 
+        Task { @MainActor in store.cacheExtra[MGKey.prodType] = "iPhone17,1" }
+        store.mgSetSiriAIEnabled(true, spoof: "iPhone17,1")
+        mgSiriAI = true
         siriInstallProgress = 0.1
         let outcome = await Task.detached(priority: .userInitiated) { () -> (Bool, String) in
             guard let siriAppURL = siriAppURL else {

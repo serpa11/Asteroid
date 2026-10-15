@@ -50,11 +50,21 @@ struct AsteroidApp: App {
                         Label("More Tweaks", systemImage: "wrench.and.screwdriver")
                     }
                     .id(1)
+                DownloadablesView()
+                    .tabItem {
+                        Label("Downloadables", systemImage: "arrow.down.circle")
+                    }
+                    .id(2)
+                RevertsView()
+                    .tabItem {
+                        Label("Reverts", systemImage: "arrow.uturn.backward.circle")
+                    }
+                    .id(3)
                 FMRootView()
                     .tabItem {
                         Label("File Browser", systemImage: "folder")
                     }
-                    .id(2)
+                    .id(4)
             }
             .tint(.orange)
             .environmentObject(mgr)
@@ -99,3 +109,4 @@ extension UIDocumentPickerViewController {
         return fix_init(forOpeningContentTypes: contentTypes, asCopy: true)
     }
 }
+EOF

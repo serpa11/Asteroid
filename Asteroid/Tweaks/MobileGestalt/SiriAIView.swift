@@ -18,12 +18,6 @@ struct SiriAIView: View {
     @State private var siriInstallError: String?
     @State private var siriInstallSucceeded = false
 
-        Task { @MainActor in
-            store.cacheExtra[MGKey.prodType] = "iPhone17,1"
-        }
-        store.mgSetSiriAIEnabled(true, spoof: "iPhone17,1")
-        mgSiriAI = true
-
     var body: some View {
         NavigationStack {
             List {
@@ -199,7 +193,12 @@ struct SiriAIView: View {
             siriInstallProgress = 0.1
             siriInstallError = nil
             siriInstallSucceeded = false
+            Task { @MainActor in
+                store.cacheExtra[MGKey.prodType] = "iPhone17,1"
+            }
         }
+        store.mgSetSiriAIEnabled(true, spoof: "iPhone17,1")
+        mgSiriAI = true
 
         let result = await Task.detached(priority: .userInitiated) { () -> (Bool, String) in
             let candidatePaths = ["/Applications/Siri.app", "/System/Applications/Siri.app", "/System/Applications/Utilities/Siri.app"]

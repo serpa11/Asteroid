@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct DynamicIslandView: View {
+    @EnvironmentObject private var mgr: AsteroidManager
     @StateObject private var store = GestaltStore.shared
     @State private var mgSubtype = 0
     @State private var mgEnableDeviceName = false
@@ -40,8 +41,13 @@ struct DynamicIslandView: View {
                 Section {
                     Button("Apply MobileGestalt Changes") {
                         if let data = try? PropertyListSerialization.data(fromPropertyList: store.mgCurrentDict, format: .binary, options: 0) {
-                            _ = mgWrite(data)
-                            Alertinator.shared.alert(title: "Asteroid", body: "MobileGestalt was updated. Respring if needed.")
+                            let res = mgWrite(data)
+                            if res {
+                                Haptic.shared.play(.soft)
+                                Alertinator.shared.alert(title: "Asteroid", body: "MobileGestalt was updated. Respring if needed.", actionLabel: "Respring", action: { mgr.shouldRespring = true })
+                            } else {
+                                Alertinator.shared.alert(title: "Failed to apply MobileGestalt!", body: "Overwrite failed.")
+                            }
                         }
                     }
                     .buttonStyle(ConfirmButtonStyle())

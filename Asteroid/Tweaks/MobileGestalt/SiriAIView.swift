@@ -7,6 +7,7 @@ import CoreServices
 }
 
 struct SiriAIView: View {
+    @EnvironmentObject private var mgr: AsteroidManager
     @StateObject private var store = GestaltStore.shared
     @AppStorage("mgSiriAI") private var mgSiriAI = false
     @AppStorage("mgSiriAISpoof") private var mgSiriAISpoof = "iPhone17,1"
@@ -118,8 +119,13 @@ struct SiriAIView: View {
                 Section {
                     Button("Apply MobileGestalt Changes") {
                         if let data = try? PropertyListSerialization.data(fromPropertyList: store.mgCurrentDict, format: .binary, options: 0) {
-                            _ = mgWrite(data)
-                            Alertinator.shared.alert(title: "Asteroid", body: "MobileGestalt was updated. Respring if needed.")
+                            let res = mgWrite(data)
+                            if res {
+                                Haptic.shared.play(.soft)
+                                Alertinator.shared.alert(title: "Asteroid", body: "MobileGestalt was updated. Respring if needed.", actionLabel: "Respring", action: { mgr.shouldRespring = true })
+                            } else {
+                                Alertinator.shared.alert(title: "Failed to apply MobileGestalt!", body: "Overwrite failed.")
+                            }
                         }
                     }
                     .buttonStyle(ConfirmButtonStyle())
@@ -151,7 +157,7 @@ struct SiriAIView: View {
             if let data = try? PropertyListSerialization.data(fromPropertyList: store.mgCurrentDict, format: .binary, options: 0) {
                 _ = mgWrite(data)
                 Haptic.shared.play(.soft)
-                Alertinator.shared.alert(title: "Asteroid", body: "Apple Intelligence and Siri AI were removed. Respring if needed.")
+                Alertinator.shared.alert(title: "Asteroid", body: "Apple Intelligence and Siri AI were removed. Respring if needed.", actionLabel: "Respring", action: { mgr.shouldRespring = true })
             }
         }
     }

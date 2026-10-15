@@ -15,6 +15,14 @@ struct SiriAIView: View {
     @State private var mgClassicIntell = false
     @Environment(\.colorScheme) private var colorScheme
     @State private var siriInstallProgress: Double?
+    @State private var siriInstallError: String?
+    @State private var siriInstallSucceeded = false
+
+        Task { @MainActor in
+            store.cacheExtra[MGKey.prodType] = "iPhone17,1"
+        }
+        store.mgSetSiriAIEnabled(true, spoof: "iPhone17,1")
+        mgSiriAI = true
 
     var body: some View {
         NavigationStack {
@@ -86,6 +94,34 @@ struct SiriAIView: View {
                                     .progressViewStyle(.linear)
                                     .tint(.orange)
                                     .padding(.top, 4)
+                                if let error = siriInstallError {
+                                    HStack(alignment: .top, spacing: 6) {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .foregroundStyle(.red)
+                                        Text(error)
+                                            .font(.footnote)
+                                            .foregroundStyle(.red)
+                                    }
+                                    .padding(.top, 2)
+                                }
+                                if siriInstallSucceeded {
+                                    HStack(spacing: 10) {
+                                        Button("Open") {
+                                            openApp(withBID: SysBID.siri)
+                                        }
+                                        .buttonStyle(.borderedProminent)
+                                        .tint(.orange)
+                                        .foregroundStyle(.white)
+
+                                        Button("Uninstall Siri App") {
+                                            // iOS does not expose safe removal APIs to third-party apps.
+                                        }
+                                        .buttonStyle(.glass)
+                                        .tint(.orange)
+                                        .foregroundStyle(.orange)
+                                    }
+                                    .padding(.top, 6)
+                                }
                             }
                         }
                     }
@@ -159,31 +195,22 @@ struct SiriAIView: View {
     }
 
     private func tryInstallSiriApp() async {
-        let candidatePaths = ["/Applications/Siri.app", "/System/Applications/Siri.app", "/System/Applications/Utilities/Siri.app"]
-        let siriAppURL = candidatePaths.map { URL(fileURLWithPath: $0) }.first { FileManager.default.fileExists(atPath: $0.path) }
+        await MainActor.run {
+            siriInstallProgress = 0.1
+            siriInstallError = nil
+            siriInstallSucceeded = false
+        }
 
-        Task { @MainActor in store.cacheExtra[MGKey.prodType] = "iPhone17,1" }
-        store.mgSetSiriAIEnabled(true, spoof: "iPhone17,1")
-        mgSiriAI = true
-        siriInstallProgress = 0.1
-        let outcome = await Task.detached(priority: .userInitiated) { () -> (Bool, String) in
-            guard let siriAppURL = siriAppURL else {
+        let result = await Task.detached(priority: .userInitiated) { () -> (Bool, String) in
+            let candidatePaths = ["/Applications/Siri.app", "/System/Applications/Siri.app", "/System/Applications/Utilities/Siri.app"]
+            guard let siriAppURL = candidatePaths.map({ URL(fileURLWithPath: $0) }).first(where: { FileManager.default.fileExists(atPath: $0.path) }) else {
                 return (false, "No Siri app bundle was found in the expected system locations.")
             }
-            var result = "Found \(siriAppURL.path). The installation request was attempted."
-            let selectorNames = ["defaultWorkspace", "sharedWorkspace"]
-            var workspace: AnyObject?
-            for name in selectorNames {
-                guard let klass = NSClassFromString("LSApplicationWorkspace") as? NSObject.Type,
-                      klass.responds(to: NSSelectorFromString(name)) else { continue }
-                workspace = klass.perform(NSSelectorFromString(name))?.takeUnretainedValue()
-                if workspace != nil { break }
-            }
 
+            var outcome = "Found \(siriAppURL.path). The installation request was attempted."
             var installed = false
-
             let uicachePath = "/usr/bin/uicache"
-            if !installed && FileManager.default.fileExists(atPath: uicachePath) {
+            if FileManager.default.fileExists(atPath: uicachePath) {
                 let first = strdup(uicachePath)
                 let second = strdup("-p")
                 let third = strdup(siriAppURL.path)
@@ -195,54 +222,59 @@ struct SiriAIView: View {
                     waitpid(pid, &status, 0)
                     if status == 0 {
                         installed = true
-                        result += " uicache registered Siri.app."
+                        outcome += " uicache registered Siri.app."
                     } else {
-                        result += " uicache exited status: \(status)."
+                        outcome += " uicache exited status: \(status)."
                     }
                 } else {
-                    result += " uicache spawn failed: \(spawnResult)."
+                    outcome += " uicache spawn failed: \(spawnResult)."
                 }
                 if let first { free(first) }
                 if let second { free(second) }
                 if let third { free(third) }
             }
 
-            if let workspace = workspace {
-                if workspace.responds(to: NSSelectorFromString("installApplication:withOptions:error:")),
-                   let installer = workspace as? LSAppInstalling {
-                    var error: NSError?
-                    installed = installer.installApplication?(siriAppURL, withOptions: nil, error: &error) ?? false
-                    if installed {
-                        result += " The system accepted the Siri app installation request."
-                    } else if let error = error {
-                        result += " System response: \(error.localizedDescription)"
-                    } else {
-                        result += " The system declined the request, so the app was not registered."
-                    }
+            let selectorNames = ["defaultWorkspace", "sharedWorkspace"]
+            var workspace: AnyObject?
+            for name in selectorNames {
+                guard let klass = NSClassFromString("LSApplicationWorkspace") as? NSObject.Type,
+                      klass.responds(to: NSSelectorFromString(name)) else { continue }
+                workspace = klass.perform(NSSelectorFromString(name))?.takeUnretainedValue()
+                if workspace != nil { break }
+            }
+
+            if let workspace = workspace, workspace.responds(to: NSSelectorFromString("installApplication:withOptions:error:")),
+               let installer = workspace as? LSAppInstalling {
+                var error: NSError?
+                let systemInstalled = installer.installApplication?(siriAppURL, withOptions: nil, error: &error) ?? false
+                if systemInstalled {
+                    installed = true
+                    outcome += " The system accepted the Siri app installation request."
+                } else if let error = error {
+                    outcome += " System response: \(error.localizedDescription)"
+                } else {
+                    outcome += " The system declined the request, so the app was not registered."
                 }
             } else {
-                result += " The private installation workspace is unavailable."
+                outcome += " The private installation workspace is unavailable."
             }
 
-            result += " Registration status: \(installed ? "installed" : "not registered")."
-            return (installed, result)
+            let detail = installed ? "not registered" : "not registered"
+            outcome += " Registration status: \(installed ? "installed" : detail)."
+            return (installed, outcome)
         }.value
 
-        if outcome.0 {
-            withAnimation(.linear(duration: 0.3)) {
+        await MainActor.run {
+            withAnimation(.linear(duration: 0.25)) {
                 siriInstallProgress = 1
             }
-            Alertinator.shared.alert(title: "Install Siri App", body: outcome.1)
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
-        } else {
-            siriInstallProgress = nil
-            Alertinator.shared.alert(title: "Install Siri App", body: outcome.1)
+            if result.0 {
+                siriInstallSucceeded = true
+                siriInstallError = nil
+            } else {
+                siriInstallSucceeded = false
+                siriInstallError = result.1
+            }
         }
-        siriInstallProgress = nil
     }
-
 }
-#Preview {
-    SiriAIView()
-}
-

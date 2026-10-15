@@ -427,14 +427,15 @@ final class GestaltStore: ObservableObject {
         if enabled {
             for key in desiredBoolKeys() { workingCacheExtra[key] = 1 }
             for (key, value) in enabledSiriValues() { workingCacheExtra[key] = value }
+
+            // The internal build/install keys can interfere with the Siri AI cache
+            // during activation; removing them only on activation matches old code.
+            workingCacheExtra.removeObject(forKey: MGKey.intBuild)
+            workingCacheExtra.removeObject(forKey: MGKey.intInstall)
         } else {
             for key in desiredBoolKeys() { workingCacheExtra.removeObject(forKey: key) }
             for key in enabledSiriValues().keys { workingCacheExtra.removeObject(forKey: key) }
         }
-
-        // Compatibility parser/generator artifacts should not remain encoded.
-        workingCacheExtra.removeObject(forKey: MGKey.intBuild)
-        workingCacheExtra.removeObject(forKey: MGKey.intInstall)
 
         do {
             let modifiedData = try PropertyListSerialization.data(fromPropertyList: workingCopy, format: .binary, options: 0)

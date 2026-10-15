@@ -13,8 +13,7 @@ struct TweaksView: View {
         NavigationStack {
             List {
                 Section {
-                    NavigationLink("Custom Wallpapers", destination: PosterBoardView())
-                    NavigationLink("Dialer Themer", destination: KeypadView())
+                    NavigationLink("Tendies", destination: PosterBoardView())
                 } header: {
                     HeaderLabel("Theming", symbol: "paintbrush")
                 }

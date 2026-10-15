@@ -121,7 +121,7 @@ struct PosterBoardView: View {
         }
         .scrollContentBackground(.hidden)
             .background(Color(UIColor.systemBackground))
-            .navigationTitle("Wallpapers")
+            .navigationTitle("Tendies")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             doSetupStuff()

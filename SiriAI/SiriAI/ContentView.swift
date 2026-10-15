@@ -75,13 +75,9 @@ struct ContentView: View {
                 .padding(.vertical, 12)
                 .foregroundStyle(.white)
                 .background(
-                    Group {
-                        if message.role == .user {
-                            LinearGradient(colors: [.blue, .indigo], startPoint: .topLeading, endPoint: .bottomTrailing)
-                        } else {
-                            Color.white.opacity(0.08)
-                        }
-                    },
+                    message.role == .user
+                        ? AnyShapeStyle(LinearGradient(colors: [.blue, .indigo], startPoint: .topLeading, endPoint: .bottomTrailing))
+                        : AnyShapeStyle(Color.white.opacity(0.08)),
                     in: RoundedRectangle(cornerRadius: 22, style: .continuous)
                 )
                 .overlay(

@@ -80,7 +80,7 @@ struct AsteroidApp: App {
                     }
                     .id(5)
             }
-            .tint(.orange)
+            .tint(appAccentColor())
             .environmentObject(mgr)
             .onAppear {
                 pipe.fileHandleForReading.readabilityHandler = { fh in

@@ -18,19 +18,11 @@ var sema = DispatchSemaphore(value: 0)
 @main
 struct AsteroidApp: App {
     @StateObject private var mgr = AsteroidManager.shared
-    @StateObject private var appearance = AppearanceStore.shared
     @State private var currentTab = 0
-    private var preferredColorScheme: ColorScheme? {
-        switch appearance.preferredColorScheme {
-        case 1: return .light
-        case 2: return .dark
-        default: return nil
-        }
-    }
 
     init() {
         setvbuf(stdout, nil, _IONBF, 0)
-        UserDefaults.standard.register(defaults: ["mgWriteAtomically": true, "preferredColorScheme": 0, "appHaptics": true, "compactHome": false, "reduceMotion": false, "highContrast": false, "glassBorders": true, "fastAnimations": false, "appAccentMode": 0])
+        UserDefaults.standard.register(defaults: ["mgWriteAtomically": true, "appHaptics": true])
         dup2(pipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
         
         // fix file picker
@@ -68,21 +60,14 @@ struct AsteroidApp: App {
                         Label("More Tweaks", systemImage: "wrench.and.screwdriver")
                     }
                     .id(3)
-                AppearanceView()
-                    .tabItem {
-                        Label("Appearance", systemImage: "paintpalette")
-                    }
-                    .id(4)
                 FMRootView()
                     .tabItem {
                         Label("File Browser", systemImage: "folder")
                     }
-                    .id(5)
+                    .id(4)
             }
-            .tint(appearance.appAccentColor)
-            .preferredColorScheme(preferredColorScheme)
+            .tint(.orange)
             .environmentObject(mgr)
-            .environmentObject(appearance)
             .onAppear {
                 pipe.fileHandleForReading.readabilityHandler = { fh in
                     let data = fh.availableData
@@ -124,4 +109,3 @@ extension UIDocumentPickerViewController {
         return fix_init(forOpeningContentTypes: contentTypes, asCopy: true)
     }
 }
-

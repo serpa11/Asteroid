@@ -100,17 +100,6 @@ struct AppearanceView: View {
                 } footer: {
                     Text("Custom colors cannot be ultra white or ultra black.")
                 }
-
-                Section {
-                    Toggle("Haptics", isOn: $appearance.appHaptics)
-                    Toggle("Reduce Motion", isOn: $appearance.reduceMotion)
-                    Toggle("Compact Home Layout", isOn: $appearance.compactHome)
-                    Toggle("Glass Borders", isOn: $appearance.glassBorders)
-                    Toggle("High Contrast Text", isOn: $appearance.highContrast)
-                    Toggle("Fast Animations", isOn: $appearance.fastAnimations)
-                } header: {
-                    HeaderLabel("Behavior", symbol: "slider.horizontal.3")
-                }
             }
             .scrollContentBackground(.hidden)
             .background(Color(UIColor.systemBackground))

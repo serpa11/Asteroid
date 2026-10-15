@@ -80,13 +80,6 @@ struct AsteroidApp: App {
                     .id(5)
             }
             .tint(appearance.appAccentColor)
-            .transaction { transaction in
-                if appearance.reduceMotion {
-                    transaction.animation = nil
-                } else if appearance.fastAnimations {
-                    transaction.animation = transaction.animation?.speed(2.5)
-                }
-            }
             .preferredColorScheme(preferredColorScheme)
             .environmentObject(mgr)
             .environmentObject(appearance)

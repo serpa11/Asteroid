@@ -10,7 +10,6 @@ import SwiftUI
 struct HeaderLabel: View {
     var label: String
     var symbol: String
-    @EnvironmentObject private var appearance: AppearanceStore
 
     init(_ label: String, symbol: String) {
         self.label = label
@@ -23,7 +22,7 @@ struct HeaderLabel: View {
                 Image(systemName: symbol)
                     .frame(width: 22, alignment: .center)
                 Text(label.uppercased())
-                    .font(.caption.weight(appearance.highContrast ? .bold : .semibold).monospaced())
+                    .font(.caption.weight(.semibold).monospaced())
                     .foregroundStyle(Color.accentColor)
             }
         } else {
@@ -32,7 +31,6 @@ struct HeaderLabel: View {
                     .frame(width: 18, alignment: .center)
                 Text(label)
             }
-            .fontWeight(appearance.highContrast ? .bold : .regular)
         }
     }
 }

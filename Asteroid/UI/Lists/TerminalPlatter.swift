@@ -12,16 +12,13 @@ var terminalRad: CGFloat {
 }
 
 struct TerminalPlatter: ViewModifier {
-    @EnvironmentObject private var appearance: AppearanceStore
     func body(content: Content) -> some View {
         content
             .frame(height: 250)
             .padding(.horizontal)
             .background(LinearGradient(colors: [Color(red: 0.06, green: 0.08, blue: 0.10), Color(UIColor.systemBackground)], startPoint: .topLeading, endPoint: .bottomTrailing), in: .rect(cornerRadius: terminalRad))
             .overlay {
-                if appearance.glassBorders {
-                    RoundedRectangle(cornerRadius: terminalRad).stroke(Color.accentColor.opacity(0.45))
-                }
+                RoundedRectangle(cornerRadius: terminalRad).stroke(Color.accentColor.opacity(0.45))
             }
     }
 }

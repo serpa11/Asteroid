@@ -35,9 +35,7 @@ struct ContentView: View {
                     }
                     if !checkedPersistence {
                         checkedPersistence = true
-                        if mgRestorePersistedChangesIfNeeded() {
-                            mgr.shouldRespring = true
-                        }
+                        _ = mgRestorePersistedChangesIfNeeded()
                     }
                 }
         }

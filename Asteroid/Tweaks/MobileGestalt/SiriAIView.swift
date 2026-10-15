@@ -119,14 +119,12 @@ struct SiriAIView: View {
 
                 Section {
                     Button("Apply MobileGestalt Changes") {
-                        if let data = try? PropertyListSerialization.data(fromPropertyList: store.mgCurrentDict, format: .binary, options: 0) {
-                            let res = mgWrite(data)
-                            if res {
-                                Haptic.shared.play(.soft)
-                                Alertinator.shared.alert(title: "Asteroid", body: "MobileGestalt was updated. Respring if needed.", actionLabel: "Respring", action: { mgr.shouldRespring = true })
-                            } else {
-                                Alertinator.shared.alert(title: "Failed to apply MobileGestalt!", body: "Overwrite failed.")
-                            }
+                        let result = store.mgSafelyApplySiriAIChange(enabled: mgSiriAI, spoof: mgSiriAISpoof)
+                        if result.succeeded {
+                            Haptic.shared.play(.soft)
+                            Alertinator.shared.alert(title: "Asteroid", body: result.message + " Respring if needed.", actionLabel: "Respring", action: { mgr.shouldRespring = true })
+                        } else {
+                            Alertinator.shared.alert(title: "Failed to apply MobileGestalt!", body: result.message)
                         }
                     }
                     .buttonStyle(ConfirmButtonStyle())
@@ -148,17 +146,14 @@ struct SiriAIView: View {
 
     private func revertToOldSiri() {
         Task { @MainActor in
-            store.mgSetSiriAIEnabled(false, spoof: mgSiriAISpoof)
             mgSiriAI = false
             mgClassicIntell = false
-            store.cacheExtra.removeObject(forKey: "A62OafQ85EJAiiqKn4agtg")
-            for key in ["xOJfWykLmQCc8lKlzMlrLA", "K/R1GfGfCkXvEhaPS2Vrng", "waGD2UTpntjbDXD1r3oALQ", "WXi7NQbOKnEX4vPQFeZAdQ", "PTQ+ABwag03BwO/CKvIK/A", "0AJUv/uYPsRiZNGpWJ7zfg", "h9jDsbgj7xIVeIQ8S3/X3Q", "oYicEKzVTz4/CxxE05pEgQ", "5pYKlGnYYBzGvAlIU8RjEQ", "h63QSdBCiT/z0WU6rdQv6Q", "yK+xavymRGZ3xWc1tb8XDg", "97JDvERpVwO+GHtthIh7hA"] {
-                store.cacheExtra.removeObject(forKey: key)
-            }
-            if let data = try? PropertyListSerialization.data(fromPropertyList: store.mgCurrentDict, format: .binary, options: 0) {
-                _ = mgWrite(data)
+            let result = store.mgSafelyApplySiriAIChange(enabled: false, spoof: mgSiriAISpoof)
+            if result.succeeded {
                 Haptic.shared.play(.soft)
-                Alertinator.shared.alert(title: "Asteroid", body: "Apple Intelligence and Siri AI were removed. Respring if needed.", actionLabel: "Respring", action: { mgr.shouldRespring = true })
+                Alertinator.shared.alert(title: "Asteroid", body: result.message + " Respring if needed.", actionLabel: "Respring", action: { mgr.shouldRespring = true })
+            } else {
+                Alertinator.shared.alert(title: "Failed to remove Siri AI!", body: result.message)
             }
         }
     }

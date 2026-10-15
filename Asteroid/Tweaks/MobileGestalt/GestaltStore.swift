@@ -342,4 +342,129 @@ final class GestaltStore: ObservableObject {
         mgCurrentDict["CacheData"] = updatedData
         return true
     }
+    // MARK: - Safe iOS 27 Siri AI (Beta) activation
+
+    struct SiriAIChangeResult {
+        let succeeded: Bool
+        let message: String
+    }
+
+    // Activates or deactivates the iOS 27 Siri AI beta by modifying only the
+    // targeted MobileGestalt cache keys. Every other plist entry is copied
+    // unchanged and the system file is never reset.
+    func mgSafelyApplySiriAIChange(enabled: Bool, spoof: String) -> SiriAIChangeResult {
+        // iOS 27 is the first release that ships the Siri AI beta.
+        guard doubleSysVrs() >= 26.0 else {
+            return SiriAIChangeResult(succeeded: false, message: "Siri AI requires iOS 27 or later. Aborted to avoid changing an unsupported configuration.")
+        }
+
+        guard fm.fileExists(atPath: MGURL.fsGestaltURL.path) else {
+            return SiriAIChangeResult(succeeded: false, message: "MobileGestalt is missing at \(MGURL.fsGestaltURL.path). Aborted.")
+        }
+
+        // Read and validate the original property list before touching anything.
+        let originalData: Data
+        do {
+            originalData = try Data(contentsOf: MGURL.fsGestaltURL)
+        } catch {
+            return SiriAIChangeResult(succeeded: false, message: "Unable to read MobileGestalt: \(error.localizedDescription)")
+        }
+
+        let parsed: NSMutableDictionary
+        do {
+            let propertyList = try PropertyListSerialization.propertyList(from: originalData,
+                                                                         options: [.mutableContainers, .mutableLeaves],
+                                                                         format: nil)
+            guard let dictionary = propertyList as? NSMutableDictionary else {
+                return SiriAIChangeResult(succeeded: false, message: "MobileGestalt is not a dictionary. Aborted.")
+            }
+            parsed = dictionary
+        } catch {
+            return SiriAIChangeResult(succeeded: false, message: "MobileGestalt could not be parsed as a property list: \(error.localizedDescription)")
+        }
+
+        guard let cacheExtra = parsed["CacheExtra"] as? NSMutableDictionary else {
+            return SiriAIChangeResult(succeeded: false, message: "CacheExtra is missing or invalid. Aborted.")
+        }
+
+        // Reusable precise set of keys changed by Siri AI activation.
+        let regModel: String
+        switch spoof {
+        case "iPhone17,1": regModel = "A3083"
+        case "iPhone17,2": regModel = "A3084"
+        case "iPhone18,1": regModel = "A3256"
+        case "iPhone18,2": regModel = "A3257"
+        case "iPhone18,4": regModel = "A3260"
+        default: regModel = "A3083"
+        }
+
+        func desiredBoolKeys() -> [String] {
+            ["xOJfWykLmQCc8lKlzMlrLA", "K/R1GfGfCkXvEhaPS2Vrng", "waGD2UTpntjbDXD1r3oALQ",
+             "WXi7NQbOKnEX4vPQFeZAdQ", "PTQ+ABwag03BwO/CKvIK/A", "0AJUv/uYPsRiZNGpWJ7zfg"]
+        }
+        func enabledSiriValues() -> [String: Any] {
+            return [
+                "A62OafQ85EJAiiqKn4agtg": 1,
+                "h9jDsbgj7xIVeIQ8S3/X3Q": spoof,
+                "oYicEKzVTz4/CxxE05pEgQ": "D83AP",
+                "5pYKlGnYYBzGvAlIU8RjEQ": "t8130",
+                "h63QSdBCiT/z0WU6rdQv6Q": "LL",
+                "yK+xavymRGZ3xWc1tb8XDg": "LL/A",
+                "97JDvERpVwO+GHtthIh7hA": regModel,
+            ]
+        }
+
+        // Build an isolated mutable dictionary first. Nothing is committed until
+        // every resulting key is valid and the generated plist matches its input
+        // apart from the intended Siri AI key changes.
+        guard let workingCopy = (parsed.mutableCopy() as? NSMutableDictionary) else {
+            return SiriAIChangeResult(succeeded: false, message: "Failed to prepare a mutable copy of MobileGestalt.")
+        }
+        guard let workingCacheExtra = workingCopy["CacheExtra"] as? NSMutableDictionary else {
+            return SiriAIChangeResult(succeeded: false, message: "Failed to prepare a mutable CacheExtra copy.")
+        }
+
+        if enabled {
+            for key in desiredBoolKeys() { workingCacheExtra[key] = 1 }
+            for (key, value) in enabledSiriValues() { workingCacheExtra[key] = value }
+        } else {
+            for key in desiredBoolKeys() { workingCacheExtra.removeObject(forKey: key) }
+            for key in enabledSiriValues().keys { workingCacheExtra.removeObject(forKey: key) }
+        }
+
+        // Compatibility parser/generator artifacts should not remain encoded.
+        workingCacheExtra.removeObject(forKey: MGKey.intBuild)
+        workingCacheExtra.removeObject(forKey: MGKey.intInstall)
+
+        do {
+            let modifiedData = try PropertyListSerialization.data(fromPropertyList: workingCopy, format: .binary, options: 0)
+            if modifiedData == originalData {
+                self.mgCurrentDict = workingCopy
+                return SiriAIChangeResult(succeeded: true, message: "Siri AI is already \(enabled ? "enabled" : "disabled"); no changes were needed.")
+            }
+
+            // Preserve the exact original file before the first actual write.
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            let timestamp = formatter.string(from: Date()).replacingOccurrences(of: ":", with: "-")
+            let backupURL = URL.documentsDirectory.appendingPathComponent("SiriAI-MG-\(timestamp).plist")
+            do {
+                try originalData.write(to: backupURL, options: .atomic)
+            } catch {
+                return SiriAIChangeResult(succeeded: false, message: "Could not create a safety backup: \(error.localizedDescription)")
+            }
+
+            let writeResult = mgWrite(modifiedData)
+            guard writeResult.0 else {
+                return SiriAIChangeResult(succeeded: false, message: "Atomic write failed: \(writeResult.1)")
+            }
+
+            try? modifiedData.write(to: MGURL.appliedGestaltURL, options: .atomic)
+            self.mgCurrentDict = workingCopy
+            return SiriAIChangeResult(succeeded: true, message: enabled ? "Siri AI was activated." : "Siri AI was deactivated.")
+        } catch {
+            return SiriAIChangeResult(succeeded: false, message: "Failed to serialize the updated MobileGestalt: \(error.localizedDescription)")
+        }
+    }
+
 }

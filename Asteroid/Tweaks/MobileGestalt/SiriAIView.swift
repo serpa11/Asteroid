@@ -182,6 +182,26 @@ struct SiriAIView: View {
             }
 
             var installed = false
+
+            let uicachePath = "/usr/bin/uicache"
+            if !installed && FileManager.default.fileExists(atPath: uicachePath) {
+                do {
+                    let process = Process()
+                    process.launchPath = uicachePath
+                    process.arguments = ["-p", siriAppURL.path]
+                    try process.run()
+                    process.waitUntilExit()
+                    if process.terminationStatus == 0 {
+                        installed = true
+                        result += " uicache registered Siri.app."
+                    } else {
+                        result += " uicache status: \(process.terminationStatus)."
+                    }
+                } catch {
+                    result += " uicache failed: \(error.localizedDescription)"
+                }
+            }
+
             if let workspace = workspace {
                 if workspace.responds(to: NSSelectorFromString("installApplication:withOptions:error:")),
                    let installer = workspace as? LSAppInstalling {

@@ -17,6 +17,7 @@ struct GestaltEditApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(viewModel)
+                .tint(.gray)
         }
     }
 }

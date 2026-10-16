@@ -84,12 +84,6 @@ final class GestaltViewModel: ObservableObject {
 
     func setAIRegion(enabled: Bool) {
         stagesAIRegion = enabled
-        if enabled, requiresForcedAIEnable {
-            notice = GestaltNotice(
-                kind: .riskWarning,
-                message: String(localized: "This device does not officially support Siri AI. Force enabling spoofs the product, hardware, and CPU model. It may temporarily break Face ID, cause system instability or boot loops, and could require restoring the device. A backup will be created before writing.")
-            )
-        }
     }
 
     func applySelectedTweaks() {

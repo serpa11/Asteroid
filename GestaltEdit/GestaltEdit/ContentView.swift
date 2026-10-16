@@ -5,18 +5,21 @@ import UniformTypeIdentifiers
 struct ContentView: View {
     @EnvironmentObject private var viewModel: GestaltViewModel
 
+    @State private var showSettings = false
+
     var body: some View {
         Group {
             if GestaltAccess.isRunningSupportedOS() {
                 TabView {
-                    TweakWorkbench()
-                        .tabItem { Label("Tools", systemImage: "switch.2") }
+                    TweakWorkbench(showSettings: $showSettings)
+                        .tabItem { Label("Siri AI", systemImage: "apple.intelligence") }
 
                     NavigationStack { AdvancedGestaltEditor() }
                         .tabItem { Label("Fields", systemImage: "list.bullet.rectangle") }
-
-                    BackupLibrary()
-                        .tabItem { Label("Restore", systemImage: "archivebox") }
+                }
+                .sheet(isPresented: $showSettings) {
+                    SettingsView()
+                        .environmentObject(viewModel)
                 }
                 .task { viewModel.load() }
             } else {
@@ -56,19 +59,24 @@ private struct UnsupportedOSView: View {
 
 private struct TweakWorkbench: View {
     @EnvironmentObject private var viewModel: GestaltViewModel
+    @Binding var showSettings: Bool
 
     var body: some View {
         NavigationStack {
             List {
-                Section { deviceStatus }
-
                 if viewModel.plist != nil {
                     tweakSection(.region)
                 }
-
             }
-            .navigationTitle("MobileGestalt")
+            .navigationTitle("whoisbaklavakings")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showSettings = true } label: {
+                        Image(systemName: "gearshape.fill")
+                    }
+                }
+            }
             .refreshable { viewModel.load() }
             .safeAreaInset(edge: .bottom) {
                 if viewModel.hasStagedTweaks {
@@ -97,23 +105,7 @@ private struct TweakWorkbench: View {
                         set: { viewModel.setAIRegion(enabled: $0) }
                     )
                 ) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        HStack(spacing: 6) {
-                            Text("Enable Siri AI (US Region)")
-                            if viewModel.requiresForcedAIEnable {
-                                Image(systemName: "exclamationmark.triangle.fill")
-                                    .font(.caption)
-                                    .foregroundStyle(.orange)
-                                    .accessibilityLabel("High Risk")
-                            }
-                        }
-                        if viewModel.requiresForcedAIEnable {
-                            Text("Unsupported device: force enable with device identity spoofing. Face ID or system stability may be affected.")
-                                .font(.caption)
-                                .foregroundStyle(.orange)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                    }
+                    Text("Enable Siri AI (Beta)")
                 }
             }
         }
@@ -321,7 +313,7 @@ private struct TweakToggle: View {
     }
 }
 
-private struct BackupLibrary: View {
+private struct SettingsView: View {
     @EnvironmentObject private var viewModel: GestaltViewModel
     @State private var backupToRestore: GestaltBackup?
     @State private var showsBackupImporter = false
@@ -362,8 +354,12 @@ private struct BackupLibrary: View {
                         }
                     }
                 }
+
+                Section("Credits") {
+                    Text("serpa11")
+                }
             }
-            .navigationTitle("Restore")
+            .navigationTitle("Settings")
             .refreshable { viewModel.refreshBackups() }
             .onAppear { viewModel.refreshBackups() }
             .fileImporter(

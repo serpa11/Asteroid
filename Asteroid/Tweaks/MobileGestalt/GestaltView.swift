@@ -423,7 +423,7 @@ struct GestaltView: View {
             mgClassicIntell = false
             store.mgSetSiriAIEnabled(false, spoof: mgSiriAISpoof)
             let result = store.mgSafelyApplySiriAIChange(enabled: false, spoof: mgSiriAISpoof)
-            _ = mgWrite(PropertyListSerialization.data(fromPropertyList: store.mgCurrentDict, format: .binary, options: 0))
+            _ = mgWrite(try! PropertyListSerialization.data(fromPropertyList: store.mgCurrentDict, format: .binary, options: 0))
             Haptic.shared.play(.soft)
             Alertinator.shared.alert(title: result.succeeded ? "Successfully reverted MobileGestalt tweaks!" : "Failed to revert MobileGestalt!", body: result.message)
         }

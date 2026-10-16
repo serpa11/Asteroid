@@ -64,40 +64,8 @@ private struct TweakWorkbench: View {
 
                 if viewModel.plist != nil {
                     tweakSection(.region)
-                    dynamicIslandSection
-                    modelNameSection
-
-                    ForEach(GestaltTweakCategory.allCases.filter { $0 != .region }) { category in
-                        tweakSection(category)
-                    }
-
                 }
 
-                Section(String(localized: "Developer")) {
-                    DeveloperFooter()
-
-                    PlacardPromotionLink()
-
-                    NavigationLink {
-                        RewardCodeView()
-                    } label: {
-                        HStack(spacing: 12) {
-                            Image(systemName: "heart.fill")
-                                .foregroundStyle(.pink)
-                                .frame(width: 40, height: 40)
-
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text("打赏开发者")
-                                Text("扫描赞赏码支持 SUSS")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-
-                            Spacer()
-                        }
-                        .frame(minHeight: 40)
-                    }
-                }
             }
             .navigationTitle("MobileGestalt")
             .navigationBarTitleDisplayMode(.large)

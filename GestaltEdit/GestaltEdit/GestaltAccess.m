@@ -267,4 +267,51 @@ static BOOL GestaltWriteAll(int fd, NSData *data)
     return YES;
 }
 
+- (BOOL)writeData:(NSData *)data toAbsolutePath:(NSString *)targetPath error:(NSError **)error
+{
+    if (!targetPath.length || !data) {
+        if (error) *error = GestaltError(20, NSLocalizedString(@"Invalid write target or data.", nil));
+        return NO;
+    }
+
+    NSString *detail = nil;
+    BadQueryLease *lease = [BadQueryLease leaseForPath:targetPath error:&detail];
+    if (!lease) {
+        if (error) *error = GestaltError(21, detail ?: NSLocalizedString(@"bad_query failed.", nil));
+        return NO;
+    }
+
+    int fd = open(targetPath.fileSystemRepresentation,
+                  O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC,
+                  0644);
+    if (fd < 0) {
+        [lease invalidate];
+        if (error) *error = GestaltError(22,
+            [NSString stringWithFormat:NSLocalizedString(@"Failed to open target path (errno=%d).", nil), errno]);
+        return NO;
+    }
+
+    BOOL wrote = GestaltWriteAll(fd, data) && fsync(fd) == 0;
+    int writeErrno = errno;
+    close(fd);
+
+    if (!wrote) {
+        [lease invalidate];
+        if (error) *error = GestaltError(23,
+            [NSString stringWithFormat:NSLocalizedString(@"Failed to write target path (errno=%d).", nil), writeErrno]);
+        return NO;
+    }
+
+    NSData *verification = [NSData dataWithContentsOfFile:targetPath];
+    if (![verification isEqualToData:data]) {
+        [lease invalidate];
+        if (error) *error = GestaltError(24, NSLocalizedString(@"Post-write verification failed.", nil));
+        return NO;
+    }
+
+    [lease invalidate];
+    if (error) *error = nil;
+    return YES;
+}
+
 @end

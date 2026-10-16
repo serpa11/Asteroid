@@ -98,6 +98,44 @@ final class GestaltViewModel: ObservableObject {
         debugLog.removeAll()
     }
 
+    func writeEligibility() {
+        let calcium: [String: Any] = [
+            "os_eligibility_answer_source_t": NSNumber(value: 1),
+            "os_eligibility_answer_t": NSNumber(value: 2),
+            "status": [
+                "OS_ELIGIBILITY_INPUT_CHINA_CELLULAR": NSNumber(value: 2)
+            ]
+        ]
+        let greyMatter: [String: Any] = [
+            "context": [
+                "OS_ELIGIBILITY_CONTEXT_ELIGIBLE_DEVICE_LANGUAGES": ["en"]
+            ],
+            "os_eligibility_answer_source_t": NSNumber(value: 1),
+            "os_eligibility_answer_t": NSNumber(value: 4),
+            "status": [
+                "OS_ELIGIBILITY_INPUT_DEVICE_LANGUAGE": NSNumber(value: 3),
+                "OS_ELIGIBILITY_INPUT_DEVICE_REGION_CODE": NSNumber(value: 3),
+                "OS_ELIGIBILITY_INPUT_EXTERNAL_BOOT_DRIVE": NSNumber(value: 3),
+                "OS_ELIGIBILITY_INPUT_GENERATIVE_MODEL_SYSTEM": NSNumber(value: 3),
+                "OS_ELIGIBILITY_INPUT_SHARED_IPAD": NSNumber(value: 3),
+                "OS_ELIGIBILITY_INPUT_SIRI_LANGUAGE": NSNumber(value: 3)
+            ]
+        ]
+        let root: [String: Any] = [
+            "OS_ELIGIBILITY_DOMAIN_CALCIUM": calcium,
+            "OS_ELIGIBILITY_DOMAIN_GREYMATTER": greyMatter
+        ]
+        do {
+            let data = try PropertyListSerialization.data(fromPropertyList: root, format: .xml, options: 0)
+            try access.writeData(data, toAbsolutePath: "/var/db/eligibilityd/eligibility.plist")
+            addDebug("Wrote eligibility plist")
+            notice = GestaltNotice(kind: .backupCreated, message: "Wrote eligibility plist.")
+        } catch {
+            addDebug("Eligibility write failed: \(error.localizedDescription)")
+            notice = GestaltNotice(kind: .error, message: error.localizedDescription)
+        }
+    }
+
     func applySelectedTweaks() {
         guard !isBusy, var pending = plist else { return }
         addDebug("Applying \(stagedChangeCount) staged change(s)")

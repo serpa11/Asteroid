@@ -14,7 +14,7 @@ enum GestaltTweakCategory: String, CaseIterable, Identifiable {
         case .display: String(localized: "Display & Appearance")
         case .hardware: String(localized: "Hardware Capabilities")
         case .ipad: String(localized: "iPad Capabilities")
-        case .region: String(localized: "Region")
+        case .region: String(localized: "Eligibility")
         case .internalFeatures: String(localized: "Internal & Research")
         }
     }

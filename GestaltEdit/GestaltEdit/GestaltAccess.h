@@ -34,6 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// extended attributes.
 - (BOOL)saveGestalt:(NSDictionary *)plist error:(NSError **)error;
 
+/// Writes arbitrary plist/data to an absolute system path via bad_query. Used
+/// for eligibility data.
+- (BOOL)writeData:(NSData *)data toAbsolutePath:(NSString *)targetPath error:(NSError **)error;
+
 @end
 
 NS_ASSUME_NONNULL_END

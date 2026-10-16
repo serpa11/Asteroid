@@ -12,7 +12,7 @@ struct ContentView: View {
             if GestaltAccess.isRunningSupportedOS() {
                 TabView {
                     TweakWorkbench(showSettings: $showSettings)
-                        .tabItem { Label("Siri AI", systemImage: "apple.intelligence") }
+                        .tabItem { Label("Siri AI", image: "SiriAI") }
 
                     NavigationStack { AdvancedGestaltEditor() }
                         .tabItem { Label("Fields", systemImage: "list.bullet.rectangle") }
@@ -350,7 +350,7 @@ private struct SettingsView: View {
                     Text("Importing only adds a file to the backup library. It does not write immediately. The original plist is also backed up before every write.")
                 }
 
-                Section("Language & Region") {
+                Section("Language & Eligibility") {
                     LabeledContent("Language", value: Locale.current.languageCode?.uppercased() ?? "?")
                     LabeledContent("Region", value: Locale.current.region?.identifier ?? "?")
                     Button("Enforce English (US) and United States") {
@@ -362,6 +362,11 @@ private struct SettingsView: View {
                     Text("Set iOS language to English (US), Siri language to English (US), and region to United States in Settings, required for CacheExtra activation.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+
+                    Button("Write Eligibility Plist") {
+                        viewModel.writeEligibility()
+                    }
+                    .buttonStyle(.bordered)
                 }
 
                 Section("Unstick Routines") {
@@ -400,7 +405,24 @@ private struct SettingsView: View {
                 }
 
                 Section("Credits") {
-                    Text("serpa11")
+                    HStack(spacing: 12) {
+                        Image("serpa11-pfp")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 44, height: 44)
+                            .clipShape(Circle())
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("serpa11")
+                                .font(.headline)
+                            Text("Developer")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Link(destination: URL(string: "https://github.com/serpa11")!) {
+                            Image(systemName: "arrow.up.right.square")
+                        }
+                    }
                 }
             }
             .navigationTitle("Settings")

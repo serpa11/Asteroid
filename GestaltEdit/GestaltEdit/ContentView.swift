@@ -6,18 +6,20 @@ struct ContentView: View {
     @EnvironmentObject private var viewModel: GestaltViewModel
 
     @State private var showSettings = false
-    @State private var showAnimation = false
 
     var body: some View {
         Group {
             if GestaltAccess.isRunningSupportedOS() {
                 TabView {
                     TweakWorkbench(showSettings: $showSettings, showAnimation: $showAnimation)
-                        .tabItem { Label("Siri AI", image: "SiriAI") }
-
-                .sheet(isPresented: $showAnimation) {
-                    SiriAIAnimationTestView()
-                }
+                        .tabItem {
+                            Label {
+                                Text("Siri AI")
+                            } icon: {
+                                Image(uiImage: UIImage(contentsOfFile: Bundle.main.path(forResource: "SiriAI", ofType: "png") ?? "") ?? UIImage(systemName: "sparkles")!)
+                                    .renderingMode(.original)
+                            }
+                        }
 
                     NavigationStack { AdvancedGestaltEditor() }
                         .tabItem { Label("Fields", systemImage: "list.bullet.rectangle") }
@@ -65,7 +67,6 @@ private struct UnsupportedOSView: View {
 private struct TweakWorkbench: View {
     @EnvironmentObject private var viewModel: GestaltViewModel
     @Binding var showSettings: Bool
-    @Binding var showAnimation: Bool
     @AppStorage("preferredAISpoof") private var preferredAISpoof = "iPhone16,1"
 
     var body: some View {
@@ -79,11 +80,6 @@ private struct TweakWorkbench: View {
                     }
                 } header: {
                     Text("Spoof Target")
-                }
-
-                Section("Animation Test") {
-                    Button("Test Siri AI (Beta) Animation") { showAnimation = true }
-                        .buttonStyle(.borderedProminent)
                 }
 
                 if viewModel.plist != nil {
@@ -417,7 +413,7 @@ private struct SettingsView: View {
 
                 Section("Credits") {
                     HStack(spacing: 12) {
-                        Image("serpa11-pfp")
+                        Image(uiImage: UIImage(contentsOfFile: Bundle.main.path(forResource: "serpa11-pfp", ofType: "jpg") ?? "") ?? UIImage(systemName: "person.circle")!)
                             .resizable()
                             .scaledToFill()
                             .frame(width: 44, height: 44)
@@ -894,55 +890,4 @@ private struct AddCacheExtraFieldEditor: View {
 #Preview {
     ContentView()
         .environmentObject(GestaltViewModel())
-}
-private struct SiriAIAnimationTestView: View {
-    @State private var orbMode = true
-
-    var body: some View {
-        NavigationStack {
-            ZStack {
-                Color.black.ignoresSafeArea()
-                TimelineView(.animation) { timeline in
-                    let t = timeline.date.timeIntervalSinceReferenceDate
-                    Canvas { context, size in
-                        let center = CGPoint(x: size.width / 2, y: size.height / 2)
-                        for i in 0..<18 {
-                            let angle = Double(i) / 18 * .pi * 2 + t * (orbMode ? 0.7 : 0.3)
-                            let radius = (orbMode ? 120.0 : 80.0) + sin(t * 1.6 + Double(i)) * (orbMode ? 60.0 : 30.0)
-                            let x = center.x + CGFloat(cos(angle) * radius)
-                            let y = center.y + CGFloat(sin(angle) * radius)
-                            let r = orbMode ? 18.0 + CGFloat(sin(t * 2 + Double(i))) * 8.0 : 10.0
-                            var path = Path()
-                            path.addEllipse(in: CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2))
-                            context.fill(path, with: .radialGradient(
-                                Gradient(colors: orbMode ? [.cyan, .blue, .purple, .clear] : [.white, .gray, .clear]),
-                                center: CGPoint(x: x, y: y),
-                                startRadius: 0,
-                                endRadius: r * 3
-                            ))
-                        }
-                        var core = Path()
-                        core.addEllipse(in: CGRect(x: center.x - 46, y: center.y - 46, width: 92, height: 92))
-                        context.fill(core, with: .radialGradient(
-                            Gradient(colors: orbMode ? [.white, .cyan.opacity(0.8), .blue.opacity(0.6)] : [.white, .gray]),
-                            center: center,
-                            startRadius: 0,
-                            endRadius: 56
-                        ))
-                    }
-                }
-                VStack {
-                    Picker("Animation", selection: $orbMode) {
-                        Text("Orb").tag(true)
-                        Text("Normal").tag(false)
-                    }
-                    .pickerStyle(.segmented)
-                    .padding()
-                    Spacer()
-                }
-            }
-            .navigationTitle("Siri AI (Beta) Animation")
-            .navigationBarTitleDisplayMode(.inline)
-        }
-    }
 }

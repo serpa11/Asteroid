@@ -161,6 +161,9 @@ struct GestaltView: View {
                                     store.mgSetSiriAIProfile(newValue)
                                 }
                             }
+
+                            Button("Revert to Old Siri") { mgRevertSiriAI() }
+                            .buttonStyle(ConfirmButtonStyle())
                         }
                     }
                     if showDeviceSpoofing {
@@ -414,6 +417,18 @@ struct GestaltView: View {
         return [:]
     }
     
+    private func mgRevertSiriAI() {
+        Task { @MainActor in
+            mgSiriAI = false
+            mgClassicIntell = false
+            store.mgSetSiriAIEnabled(false, spoof: mgSiriAISpoof)
+            let result = store.mgSafelyApplySiriAIChange(enabled: false, spoof: mgSiriAISpoof)
+            _ = mgWrite(PropertyListSerialization.data(fromPropertyList: store.mgCurrentDict, format: .binary, options: 0))
+            Haptic.shared.play(.soft)
+            Alertinator.shared.alert(title: result.succeeded ? "Successfully reverted MobileGestalt tweaks!" : "Failed to revert MobileGestalt!", body: result.message)
+        }
+    }
+
     private func mgApply(isFromSheet: Bool = false) {
         do {
             let mgDictToApply = store.mgCurrentDict

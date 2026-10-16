@@ -216,6 +216,7 @@ struct GestaltView: View {
                     }
                     if ogMachineName.contains("iPhone") || mgOverrideGates {
                         PlainToggle("Apple Pencil", isOn: store.mgKeyBinding([MGKey.appPencil]))
+                            PlainToggle("Touch ID Settings", isOn: store.mgKeyBinding(["q7m9bX4R3uY2p1L0TouchID"]))
                     }
                     if !isCamControlHD() || mgOverrideGates {
                         PlainToggle("Camera Control", minVrs: 18.0, isOn: store.mgKeyBinding([MGKey.camButton, MGKey.grapPefr]))
@@ -299,7 +300,6 @@ struct GestaltView: View {
                                 
                                 Section {
                                     Toggle("Show Custom Keys", isOn: $showCustomKeys)
-                                    Toggle("Safe Reboot", isOn: $mgWriteAtomically)
                                 } footer: {
                                     Text("When atomic writes are enabled, MobileGestalt will not revert after a reboot.")
                                 }

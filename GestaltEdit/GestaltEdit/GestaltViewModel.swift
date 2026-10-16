@@ -159,7 +159,7 @@ final class GestaltViewModel: ObservableObject {
                 if let productType = configuration.spoofedProductType,
                    let hardwareModel = configuration.spoofedHardwareModel,
                    let cpuModel = configuration.spoofedCPUModel {
-                    pending.setCacheExtra(1, forKey: "A62OafQ85EJAiiqKn4agtg")
+                    pending.setCacheExtra(2, forKey: "A62OafQ85EJAiiqKn4agtg")
                     pending.setCacheExtra(productType, forKey: "h9jDsbgj7xIVeIQ8S3/X3Q")
                     pending.setCacheExtra(hardwareModel, forKey: "oYicEKzVTz4/CxxE05pEgQ")
                     pending.setCacheExtra(cpuModel, forKey: "5pYKlGnYYBzGvAlIU8RjEQ")

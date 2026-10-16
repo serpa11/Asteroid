@@ -18,12 +18,17 @@ func mgWrite(_ data: Data) -> Bool {
         return false
     }
 
-    var accessError: NSError?
-    let saved = GestaltAccess.shared().saveGestalt(plist, error: &accessError)
-    if !saved {
-        print("(mg) GestaltEdit backend failed to write MobileGestalt: \(accessError?.localizedDescription ?? "unknown error")")
+    do {
+        let swiftPlist = plist as! [AnyHashable: Any]
+        let saved = try GestaltAccess.shared().saveGestalt(swiftPlist)
+        if !saved {
+            print("(mg) GestaltEdit backend failed to write MobileGestalt")
+        }
+        return saved
+    } catch {
+        print("(mg) GestaltEdit backend failed to write MobileGestalt: \(error.localizedDescription)")
+        return false
     }
-    return saved
 }
 
 // device info getters

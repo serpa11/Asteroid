@@ -12,14 +12,7 @@ struct ContentView: View {
             if GestaltAccess.isRunningSupportedOS() {
                 TabView {
                     TweakWorkbench(showSettings: $showSettings)
-                        .tabItem {
-                            Label {
-                                Text("Siri AI")
-                            } icon: {
-                                Image(uiImage: UIImage(contentsOfFile: Bundle.main.path(forResource: "SiriAI", ofType: "png") ?? "") ?? UIImage(systemName: "sparkles")!)
-                                    .renderingMode(.original)
-                            }
-                        }
+                        .tabItem { Label("Siri AI", systemImage: "apple.intelligence") }
 
                     NavigationStack { AdvancedGestaltEditor() }
                         .tabItem { Label("Fields", systemImage: "list.bullet.rectangle") }

@@ -1,0 +1,54 @@
+name: Release GestaltEdit unsigned IPA
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gestaltedit-unsigned-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: xcode-27
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Build unsigned archive
+        run: |
+          set -euo pipefail
+          xcodebuild archive \
+            -project GestaltEdit/GestaltEdit.xcodeproj \
+            -scheme GestaltEdit \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "$RUNNER_TEMP/GestaltEdit.xcarchive" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Package unsigned IPA
+        run: |
+          set -euo pipefail
+          rm -rf "$RUNNER_TEMP/Payload"
+          mkdir -p "$RUNNER_TEMP/Payload"
+          cp -R "$RUNNER_TEMP/GestaltEdit.xcarchive/Products/Applications/GestaltEdit.app" "$RUNNER_TEMP/Payload/"
+          cd "$RUNNER_TEMP"
+          zip -qry "GestaltEdit-${GITHUB_REF_NAME}-unsigned.ipa" Payload
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: gestaltedit-${{ github.run_number }}
+          name: GestaltEdit ${{ github.run_number }}
+          generate_release_notes: true
+          fail_on_unmatched_files: false
+          files: ${{ runner.temp }}/GestaltEdit-${{ github.ref_name }}-unsigned.ipa

@@ -156,21 +156,21 @@ struct AIRegionConfiguration: Equatable {
 
         let preferred = UserDefaults.standard.string(forKey: "preferredAISpoof") ?? "iPhone16,1"
         let profile: AIRegionProfile
-        let productType: String
+        let spoofedProductType: String
         switch preferred {
         case "iPhone17,1":
             profile = AIRegionProfile(marketingName: "iPhone 16 Pro", regulatoryModel: "A3083")
-            productType = "iPhone17,1"
+            spoofedProductType = "iPhone17,1"
         case "iPhone17,5":
             profile = AIRegionProfile(marketingName: "iPhone 16e", regulatoryModel: "A3212")
-            productType = "iPhone17,5"
+            spoofedProductType = "iPhone17,5"
         default:
             profile = AIRegionProfile(marketingName: "iPhone 15 Pro", regulatoryModel: "A2848")
-            productType = "iPhone16,1"
+            spoofedProductType = "iPhone16,1"
         }
         return AIRegionConfiguration(
             profile: profile,
-            spoofedProductType: productType,
+            spoofedProductType: spoofedProductType,
             spoofedHardwareModel: "D83AP",
             spoofedCPUModel: "t8130"
         )

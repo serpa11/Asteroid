@@ -351,7 +351,7 @@ private struct SettingsView: View {
                 }
 
                 Section("Language & Region") {
-                    LabeledContent("Language", value: Locale.current.language.languageCode?.uppercased() ?? "?")
+                    LabeledContent("Language", value: Locale.current.languageCode?.uppercased() ?? "?")
                     LabeledContent("Region", value: Locale.current.region?.identifier ?? "?")
                     Button("Enforce English (US) and United States") {
                         if let url = URL(string: UIApplication.openSettingsURLString) {

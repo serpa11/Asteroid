@@ -15,6 +15,7 @@ final class GestaltViewModel: ObservableObject {
     @Published var modelName = ""
     @Published var stagesAIRegion = false
     @Published private(set) var isRespringing = false
+    @Published private(set) var debugLog: [String] = []
 
     private let access = GestaltAccess.shared()
 
@@ -63,6 +64,7 @@ final class GestaltViewModel: ObservableObject {
             plist = GestaltPlist(dict: dictionary)
             isDirty = false
             refreshBackups()
+            addDebug("Loaded MobileGestalt")
         } catch {
             plist = nil
             report(error)
@@ -84,10 +86,21 @@ final class GestaltViewModel: ObservableObject {
 
     func setAIRegion(enabled: Bool) {
         stagesAIRegion = enabled
+        addDebug("Siri AI stage \(enabled ? "enabled" : "disabled")")
+    }
+
+    func addDebug(_ message: String) {
+        debugLog.append(message)
+        if debugLog.count > 240 { debugLog.removeFirst(debugLog.count - 240) }
+    }
+
+    func clearDebugLog() {
+        debugLog.removeAll()
     }
 
     func applySelectedTweaks() {
         guard !isBusy, var pending = plist else { return }
+        addDebug("Applying \(stagedChangeCount) staged change(s)")
         do {
             for id in selectedTweaks {
                 guard let definition = GestaltTweakCatalog.definition(for: id) else { continue }

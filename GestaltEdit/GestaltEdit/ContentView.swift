@@ -60,10 +60,21 @@ private struct UnsupportedOSView: View {
 private struct TweakWorkbench: View {
     @EnvironmentObject private var viewModel: GestaltViewModel
     @Binding var showSettings: Bool
+    @AppStorage("preferredAISpoof") private var preferredAISpoof = "iPhone16,1"
 
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    Picker("Siri AI Spoof", selection: $preferredAISpoof) {
+                        Text("iPhone 15 Pro").tag("iPhone16,1")
+                        Text("iPhone 16 Pro").tag("iPhone17,1")
+                        Text("iPhone 16e").tag("iPhone17,5")
+                    }
+                } header: {
+                    Text("Spoof Target")
+                }
+
                 if viewModel.plist != nil {
                     tweakSection(.region)
                 }
@@ -337,6 +348,39 @@ private struct SettingsView: View {
                     .disabled(viewModel.isBusy)
                 } footer: {
                     Text("Importing only adds a file to the backup library. It does not write immediately. The original plist is also backed up before every write.")
+                }
+
+                Section("Language & Region") {
+                    LabeledContent("Language", value: Locale.current.language.languageCode?.uppercased() ?? "?")
+                    LabeledContent("Region", value: Locale.current.region?.identifier ?? "?")
+                    Button("Enforce English (US) and United States") {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    Text("Set iOS language to English (US), Siri language to English (US), and region to United States in Settings, required for CacheExtra activation.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Section("Unstick Routines") {
+                    Button("Language-Swap Trick Instructions") {
+                        viewModel.addDebug("Language-swap: switch iOS language away from English (US), wait 10 seconds, then switch back to English (US).")
+                    }
+                    Button("Soft Reboot Reminder") {
+                        viewModel.addDebug("Soft reboot reminder: apply changes, then reboot if downloads stall.")
+                    }
+                }
+
+                Section("Debug Console") {
+                    ScrollView {
+                        Text(viewModel.debugLog.joined(separator: "\n"))
+                            .font(.system(.caption, design: .monospaced))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .frame(height: 120)
+                    Button("Clear Console") { viewModel.clearDebugLog() }
                 }
 
                 Section("Local Backups") {

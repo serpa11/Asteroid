@@ -397,7 +397,7 @@ struct GestaltView: View {
             let result = store.mgSafelyApplySiriAIChange(enabled: false, spoof: mgSiriAISpoof)
             _ = mgWrite(try! PropertyListSerialization.data(fromPropertyList: store.mgCurrentDict, format: .binary, options: 0))
             Haptic.shared.play(.soft)
-            Alertinator.shared.alert(title: result.succeeded ? "Successfully reverted MobileGestalt tweaks!" : "Failed to revert MobileGestalt!", body: result.message)
+            Alertinator.shared.alert(title: result.succeeded ? "Successfully reverted MobileGestalt tweaks!" : "Failed to revert MobileGestalt!", body: result.message, actionLabel: "Respring", action: { mgr.shouldRespring = true })
         }
     }
 
@@ -433,7 +433,7 @@ struct GestaltView: View {
                 if autoRespring || isFromSheet {
                     mgr.shouldRespring = true
                 } else {
-                    Alertinator.shared.alert(title: "Successfully appiled MobileGestalt tweaks!", body: AppMsg.applied + (store.isEnabled([MGKey.appIntell]) ? "You'll have to reboot your device if you want to use Apple Intelligence." : ""), actionLabel: "Respring", action: { mgr.shouldRespring = true })
+                    Alertinator.shared.alert(title: "Successfully appiled MobileGestalt tweaks!", body: AppMsg.applied, actionLabel: "Respring", action: { mgr.shouldRespring = true })
                 }
             } else {
                 throw "overwrite failed!"

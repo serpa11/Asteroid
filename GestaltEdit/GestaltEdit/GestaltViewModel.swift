@@ -127,7 +127,7 @@ final class GestaltViewModel: ObservableObject {
         ]
         do {
             let data = try PropertyListSerialization.data(fromPropertyList: root, format: .xml, options: 0)
-            try access.writeData(data, toAbsolutePath: "/var/db/eligibilityd/eligibility.plist")
+            try access.write(data, toAbsolutePath: "/var/db/eligibilityd/eligibility.plist")
             addDebug("Wrote eligibility plist")
             notice = GestaltNotice(kind: .backupCreated, message: "Wrote eligibility plist.")
         } catch {

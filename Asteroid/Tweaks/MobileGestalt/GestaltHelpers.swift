@@ -20,11 +20,8 @@ func mgWrite(_ data: Data) -> Bool {
 
     do {
         let swiftPlist = plist as! [AnyHashable: Any]
-        let saved = try GestaltAccess.shared().saveGestalt(swiftPlist)
-        if !saved {
-            print("(mg) GestaltEdit backend failed to write MobileGestalt")
-        }
-        return saved
+        try GestaltAccess.shared().saveGestalt(swiftPlist)
+        return true
     } catch {
         print("(mg) GestaltEdit backend failed to write MobileGestalt: \(error.localizedDescription)")
         return false

@@ -12,18 +12,18 @@ import UIKit
 
 
 func mgWrite(_ data: Data) -> Bool {
-    var res: (Bool, String)
-    if UserDefaults.standard.bool(forKey: "mgWriteAtomically") {
-        res = writeFileAtomically(data, to: MGURL.fsGestaltURL)
-    } else {
-        res = writeFileTemp(data, to: MGURL.fsGestaltURL)
-    }
-    
-    if !res.0 {
-        print("(mg) failed to apply gestalt: \(res.1)")
+    guard let propertyList = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil),
+          let plist = propertyList as? NSDictionary else {
+        print("(mg) failed to serialize the updated MobileGestalt: invalid property list")
         return false
     }
-    return true
+
+    var accessError: NSError?
+    let saved = GestaltAccess.shared().saveGestalt(plist, error: &accessError)
+    if !saved {
+        print("(mg) GestaltEdit backend failed to write MobileGestalt: \(accessError?.localizedDescription ?? "unknown error")")
+    }
+    return saved
 }
 
 // device info getters

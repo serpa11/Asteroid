@@ -127,45 +127,6 @@ struct GestaltView: View {
                                 }
                             }
                     }
-                    if showSiriEligibility && (!isAppleIntellHD() || mgOverrideGates) {
-                        PlainToggle("Enable Siri AI (Beta)", infoType: .info, infoTitle: "Siri AI (Beta)", infoMessage: "Enables the all new Siri AI beta from iOS 27 release in WWDC26 by Apple, if it does not work it means you may need to report the bug in our github so we can try fixing it as soon as possible.", minVrs: 26.0, isOn: $mgSiriAI)
-                            .onChange(of: mgSiriAI) { (oldVal, newVal) in
-                                if newVal {
-                                    mgClassicIntell = false
-                                    store.mgSetSiriAIEnabled(true, spoof: mgSiriAISpoof)
-                                    store.mgPullKeys([MGKey.intBuild, MGKey.intInstall])
-                                } else {
-                                    store.mgSetSiriAIEnabled(false, spoof: mgSiriAISpoof)
-                                }
-                            }
-                        if mgSiriAI {
-                            HStack(spacing: 10) {
-                                Picker("Siri AI Spoofing", selection: $mgSiriAISpoof) {
-                                    Text("iPhone 16 Pro").tag("iPhone17,1")
-                                    Text("iPhone 16 Pro Max").tag("iPhone17,2")
-                                    Text("iPhone 17 Pro").tag("iPhone18,1")
-                                    Text("iPhone 17 Pro Max").tag("iPhone18,2")
-                                    Text("iPhone Air").tag("iPhone18,4")
-                                }
-                                Spacer()
-                                Button {
-                                    Alertinator.shared.alert(title: "Siri AI Spoofing", body: "Chooses the iPhone model used for the Siri AI cache profile. Only modern supported models are offered.")
-                                } label: {
-                                    Image(systemName: "info.circle")
-                                        .frame(width: 24, height: 22)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                            .onChange(of: mgSiriAISpoof) { (_, newValue) in
-                                if mgSiriAI {
-                                    store.mgSetSiriAIProfile(newValue)
-                                }
-                            }
-
-                            Button("Revert to Old Siri") { mgRevertSiriAI() }
-                            .buttonStyle(ConfirmButtonStyle())
-                        }
-                    }
                     if showDeviceSpoofing {
                     HStack(spacing: 10) {
                         Picker("Spoofing", selection: $mgProductType) {
@@ -216,7 +177,7 @@ struct GestaltView: View {
                     }
                     if ogMachineName.contains("iPhone") || mgOverrideGates {
                         PlainToggle("Apple Pencil", isOn: store.mgKeyBinding([MGKey.appPencil]))
-                            PlainToggle("Touch ID Settings", isOn: store.mgKeyBinding(["q7m9bX4R3uY2p1L0TouchID"]))
+                            PlainToggle("Touch ID Settings", isOn: store.mgKeyBinding(["8Shl+AdVKo09f1Sldkb0kA"]))
                     }
                     if !isCamControlHD() || mgOverrideGates {
                         PlainToggle("Camera Control", minVrs: 18.0, isOn: store.mgKeyBinding([MGKey.camButton, MGKey.grapPefr]))
@@ -240,6 +201,17 @@ struct GestaltView: View {
                     }
                 } header: {
                     HeaderLabel("iPadOS", symbol: "ipad")
+                }
+
+                Section {
+                    Button("Revert to Old Siri") {
+                        mgRevertSiriAI()
+                    }
+                    .buttonStyle(ConfirmButtonStyle())
+                } header: {
+                    HeaderLabel("Revert to Old Siri", symbol: "arrow.uturn.backward.circle")
+                } footer: {
+                    Text("Disables Apple Intelligence and Siri AI without resetting the rest of MobileGestalt.")
                 }
             }
             .listRowSpacing(compactHome ? 4 : 10)

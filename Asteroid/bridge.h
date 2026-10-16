@@ -9,6 +9,7 @@
 #define bridge_h
 
 #import "Exploits/bad_query.h"
+#import "Exploits/GestaltEdit/GestaltAccess.h"
 #import <Foundation/Foundation.h>
 
 @interface LSApplicationWorkspace : NSObject

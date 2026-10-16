@@ -11,7 +11,7 @@ struct ContentView: View {
         Group {
             if GestaltAccess.isRunningSupportedOS() {
                 TabView {
-                    TweakWorkbench(showSettings: $showSettings, showAnimation: $showAnimation)
+                    TweakWorkbench(showSettings: $showSettings)
                         .tabItem {
                             Label {
                                 Text("Siri AI")

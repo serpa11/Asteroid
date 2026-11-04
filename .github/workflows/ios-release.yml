@@ -45,7 +45,31 @@ jobs:
           ditto -c -k --keepParent Payload Asteroid.ipa
           rm -rf Payload
 
+      - name: build Setup replica
+        working-directory: ios/Setup
+        run: |
+          set -euo pipefail
+          rm -rf build Payload Setup.ipa
+          xcodebuild \
+            -project Setup.xcodeproj \
+            -target Setup \
+            -sdk iphoneos \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=NO \
+            build
+
+          APP_PATH="$(find build/Release-iphoneos -maxdepth 1 -type d -name 'Setup.app' -print -quit)"
+          test -n "$APP_PATH"
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/
+          ditto -c -k --keepParent Payload Setup.ipa
+          rm -rf Payload
+
       - name: build ShineMobile web wrapper
+        continue-on-error: true
         working-directory: ios/ShineMobile
         run: |
           set -euo pipefail
@@ -69,6 +93,7 @@ jobs:
           rm -rf Payload
 
       - name: build SiriAI replica
+        continue-on-error: true
         working-directory: ios/SiriAI/SiriAI
         run: |
           set -euo pipefail
@@ -103,7 +128,21 @@ jobs:
 
           NOTES="$(git log -5 --pretty=format:'- %h %s')"
 
-          gh release create development Asteroid.ipa ios/ShineMobile/Shine.ipa ios/SiriAI/SiriAI/SiriAI.ipa \
+          ASSETS=()
+          for f in Asteroid.ipa ios/ShineMobile/Shine.ipa ios/SiriAI/SiriAI/SiriAI.ipa ios/Setup/Setup.ipa; do
+            if [ -f "$f" ]; then
+              ASSETS+=("$f")
+            else
+              echo "::warning::missing artifact: $f"
+            fi
+          done
+
+          if [ "${#ASSETS[@]}" -eq 0 ]; then
+            echo "::error::no IPAs were produced"
+            exit 1
+          fi
+
+          gh release create development "${ASSETS[@]}" \
             --target "${GITHUB_SHA}" \
             --title "Development" \
             --prerelease \

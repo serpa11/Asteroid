@@ -25,8 +25,8 @@ struct GlassMessageModifier: ViewModifier {
     }
 }
 
-struct GlassSurfaceModifier: ViewModifier {
-    let shape: AnyShape
+struct GlassSurfaceModifier<S: Shape>: ViewModifier {
+    let shape: S
 
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *) {
@@ -38,7 +38,7 @@ struct GlassSurfaceModifier: ViewModifier {
 }
 
 extension View {
-    func glassSurface(_ shape: AnyShape) -> some View {
+    func glassSurface<S: Shape>(_ shape: S) -> some View {
         modifier(GlassSurfaceModifier(shape: shape))
     }
 }

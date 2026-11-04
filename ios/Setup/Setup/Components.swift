@@ -104,20 +104,10 @@ struct PrimaryButton: View {
                 .frame(height: 52)
                 .background(
                     Capsule()
-                        .fill(isEnabled ? Color.blue : Color.gray.opacity(0.45))
+                        .fill(Color.blue.opacity(isEnabled ? 0.90 : 0.45))
                 )
-                .overlay(
-                    Capsule()
-                        .fill(
-                            LinearGradient(
-                                colors: [.white.opacity(0.22), .white.opacity(0.0)],
-                                startPoint: .top,
-                                endPoint: .center
-                            )
-                        )
-                )
-                .modifier(GlassSurfaceModifier(shape: Capsule()))
-                .opacity(isEnabled ? 1 : 0.55)
+                .glassSurface(Capsule())
+                .opacity(isEnabled ? 1 : 0.72)
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)
@@ -188,11 +178,7 @@ struct SetupSearchField: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(Color(.secondarySystemBackground))
         )
-        .modifier(
-            GlassSurfaceModifier(
-                shape: AnyShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            )
-        )
+        .glassSurface(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .padding(.horizontal, 24)
     }
 }
@@ -238,8 +224,8 @@ struct OptionCard: View {
     let isSelected: Bool
     let action: () -> Void
 
-    private var shape: AnyShape {
-        AnyShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    private var shape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: 18, style: .continuous)
     }
 
     var body: some View {
@@ -306,10 +292,6 @@ struct SummaryRow: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .fill(Color(.secondarySystemBackground))
         )
-        .modifier(
-            GlassSurfaceModifier(
-                shape: AnyShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-            )
-        )
+        .glassSurface(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }

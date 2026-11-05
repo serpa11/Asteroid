@@ -3,9 +3,10 @@ import UIKit
 
 /// The setup opening: the wallpaper fades up, a liquid-glass Apple mark gathers
 /// out of the blur, and it dissolves straight into the greeting — which then
-/// cycles through languages until Start is tapped.
+/// cycles through languages until the screen is touched.
 ///
-/// Deliberately no "swipe up to continue" hint.
+/// No start button: the whole screen is the control, with a fading reminder
+/// at the bottom telling you when it is ready.
 struct HelloScreen: View {
     let onStart: () -> Void
 
@@ -13,7 +14,8 @@ struct HelloScreen: View {
     @State private var markVisible = false
     @State private var markGone = false
     @State private var greetingShown = false
-    @State private var startVisible = false
+    @State private var canAdvance = false
+    @State private var hintVisible = false
     @State private var wordIndex = 0
 
     private let words = [
@@ -41,7 +43,7 @@ struct HelloScreen: View {
             .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                Spacer(minLength: 36)
+                Spacer(minLength: 40)
 
                 ZStack {
                     AppleGlassMark()
@@ -57,55 +59,64 @@ struct HelloScreen: View {
                 }
                 .frame(height: 168)
 
-                Spacer(minLength: 36)
+                Spacer(minLength: 40)
 
-                Button(action: onStart) {
-                    Text("Start")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 54)
-                        .background(Capsule().fill(.white.opacity(0.20)))
-                        .glassSurface(Capsule())
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 64)
-                .padding(.bottom, 48)
-                .opacity(startVisible ? 1 : 0)
-                .offset(y: startVisible ? 0 : 16)
+                Text("Touch the screen to continue")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.96))
+                    .shadow(color: .black.opacity(0.5), radius: 10, y: 4)
+                    .opacity(hintVisible ? 1 : 0)
+                    .padding(.bottom, 54)
             }
         }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            guard canAdvance else { return }
+            onStart()
+        }
         .task { await runOpening() }
+        .task { await pulseHint() }
+        .task { await cycleGreetings() }
     }
 
+    // MARK: - Timeline
+
     private func runOpening() async {
-        // 1. The wallpaper fades up out of black.
         withAnimation(.easeOut(duration: 1.25)) {
             wallpaperVisible = true
         }
         await pause(0.55)
 
-        // 2. The Apple mark gathers out of the blur.
         withAnimation(.spring(response: 0.75, dampingFraction: 0.72)) {
             markVisible = true
         }
         await pause(1.55)
 
-        // 3. It dissolves into the greeting — the two cross-dissolve in place,
-        //    so the mark reads as turning into the word.
         greetingShown = true
         withAnimation(.easeIn(duration: 0.75)) {
             markGone = true
         }
         await pause(0.95)
 
-        // 4. Start rises in.
-        withAnimation(.easeOut(duration: 0.6)) {
-            startVisible = true
-        }
-        await pause(1.7)
+        canAdvance = true
+    }
 
-        // 5. Keep cycling greetings.
+    private func pulseHint() async {
+        await pause(3.1)
+        while !Task.isCancelled {
+            withAnimation(.easeInOut(duration: 0.8)) {
+                hintVisible = true
+            }
+            await pause(2.1)
+            withAnimation(.easeInOut(duration: 0.8)) {
+                hintVisible = false
+            }
+            await pause(1.4)
+        }
+    }
+
+    private func cycleGreetings() async {
+        await pause(4.6)
         while !Task.isCancelled {
             await pause(3.3)
             guard !Task.isCancelled else { break }

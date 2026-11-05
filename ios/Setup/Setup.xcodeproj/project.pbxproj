@@ -16,13 +16,12 @@
 		A10000000000000000000007 /* LanguageScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* LanguageScreen.swift */; };
 		A10000000000000000000008 /* RegionScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* RegionScreen.swift */; };
 		A10000000000000000000009 /* DataPrivacyScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* DataPrivacyScreen.swift */; };
-		A10000000000000000000010 /* SiriVoiceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* SiriVoiceScreen.swift */; };
 		A10000000000000000000011 /* VoicePickerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* VoicePickerScreen.swift */; };
 		A10000000000000000000012 /* CameraControlScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* CameraControlScreen.swift */; };
 		A10000000000000000000013 /* AppearanceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* AppearanceScreen.swift */; };
-		A10000000000000000000014 /* AllSetScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* AllSetScreen.swift */; };
 		A10000000000000000000015 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* Assets.xcassets */; };
 		A10000000000000000000016 /* setupimage.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* setupimage.jpeg */; };
+		A10000000000000000000017 /* SetupScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000019 /* SetupScreens.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,15 +34,14 @@
 		B10000000000000000000007 /* LanguageScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageScreen.swift; sourceTree = "<group>"; };
 		B10000000000000000000008 /* RegionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionScreen.swift; sourceTree = "<group>"; };
 		B10000000000000000000009 /* DataPrivacyScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPrivacyScreen.swift; sourceTree = "<group>"; };
-		B10000000000000000000010 /* SiriVoiceScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriVoiceScreen.swift; sourceTree = "<group>"; };
 		B10000000000000000000011 /* VoicePickerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoicePickerScreen.swift; sourceTree = "<group>"; };
 		B10000000000000000000012 /* CameraControlScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraControlScreen.swift; sourceTree = "<group>"; };
 		B10000000000000000000013 /* AppearanceScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceScreen.swift; sourceTree = "<group>"; };
-		B10000000000000000000014 /* AllSetScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSetScreen.swift; sourceTree = "<group>"; };
 		B10000000000000000000015 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B10000000000000000000016 /* setupimage.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = setupimage.jpeg; sourceTree = "<group>"; };
 		B10000000000000000000017 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B10000000000000000000018 /* Setup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Setup.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000019 /* SetupScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupScreens.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,11 +75,10 @@
 				B10000000000000000000007 /* LanguageScreen.swift */,
 				B10000000000000000000008 /* RegionScreen.swift */,
 				B10000000000000000000009 /* DataPrivacyScreen.swift */,
-				B10000000000000000000010 /* SiriVoiceScreen.swift */,
 				B10000000000000000000011 /* VoicePickerScreen.swift */,
 				B10000000000000000000012 /* CameraControlScreen.swift */,
 				B10000000000000000000013 /* AppearanceScreen.swift */,
-				B10000000000000000000014 /* AllSetScreen.swift */,
+				B10000000000000000000019 /* SetupScreens.swift */,
 				B10000000000000000000015 /* Assets.xcassets */,
 				B10000000000000000000016 /* setupimage.jpeg */,
 				B10000000000000000000017 /* Info.plist */,
@@ -175,11 +172,10 @@
 				A10000000000000000000007 /* LanguageScreen.swift in Sources */,
 				A10000000000000000000008 /* RegionScreen.swift in Sources */,
 				A10000000000000000000009 /* DataPrivacyScreen.swift in Sources */,
-				A10000000000000000000010 /* SiriVoiceScreen.swift in Sources */,
 				A10000000000000000000011 /* VoicePickerScreen.swift in Sources */,
 				A10000000000000000000012 /* CameraControlScreen.swift in Sources */,
 				A10000000000000000000013 /* AppearanceScreen.swift in Sources */,
-				A10000000000000000000014 /* AllSetScreen.swift in Sources */,
+				A10000000000000000000017 /* SetupScreens.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

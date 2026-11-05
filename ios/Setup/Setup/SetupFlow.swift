@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // MARK: - Flow
 
@@ -8,48 +9,28 @@ enum SetupStep: Int, CaseIterable, Equatable {
     case language
     case region
     case dataPrivacy
-    case siriVoice
-    case voicePicker
     case cameraControl
-    case appearance
-    case allSet
+    case locationServices
+    case faceID
+    case analytics
+    case softwareUpdate
+    case displayZoom
+    case displayAppearance
+    case siri
+    case voicePicker
+    case welcomeToIPhone
 }
 
-enum SiriMode: String, CaseIterable, Identifiable, Equatable {
-    case classic
-    case siriAI
+enum AppearanceChoice: String, CaseIterable, Identifiable {
+    case light
+    case dark
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
-        case .classic: return "Apple Intelligence Classic"
-        case .siriAI: return "Siri AI"
-        }
-    }
-
-    var symbol: String {
-        switch self {
-        case .classic: return "sparkles"
-        case .siriAI: return "waveform"
-        }
-    }
-
-    var subtitle: String {
-        switch self {
-        case .classic:
-            return "Writing tools, image playground and the original Siri personality."
-        case .siriAI:
-            return "Conversational context, on-screen awareness and actions across your apps."
-        }
-    }
-
-    var detail: String {
-        switch self {
-        case .classic:
-            return "Apple Intelligence Classic keeps the original Siri experience. Everything runs on device where possible, and features ask for permission the first time you use them."
-        case .siriAI:
-            return "Siri AI remembers what you were just doing, understands what is on your screen and can take steps for you. A supported device is required for the full experience."
+        case .light: return "Light"
+        case .dark: return "Dark"
         }
     }
 }
@@ -72,22 +53,6 @@ enum SiriVariety: String, CaseIterable, Identifiable {
         case .indian: return "en-IN"
         case .irish: return "en-IE"
         case .southAfrican: return "en-ZA"
-        }
-    }
-}
-
-enum AppearanceChoice: String, CaseIterable, Identifiable {
-    case auto
-    case light
-    case dark
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .auto: return "Automatic"
-        case .light: return "Light"
-        case .dark: return "Dark"
         }
     }
 }
@@ -200,10 +165,10 @@ struct SetupRootView: View {
 
     @State private var language = "English (United States)"
     @State private var region = "United States"
-    @State private var siriMode: SiriMode = .classic
     @State private var variety: SiriVariety = .american
     @State private var voiceIndex = 0
-    @State private var appearance: AppearanceChoice = .auto
+    @State private var displayZoom: DisplayZoomChoice = .zoomed
+    @State private var appearance: AppearanceChoice = .light
 
     var body: some View {
         ZStack {
@@ -214,7 +179,6 @@ struct SetupRootView: View {
 
     private var colorScheme: ColorScheme? {
         switch appearance {
-        case .auto: return nil
         case .light: return .light
         case .dark: return .dark
         }
@@ -233,8 +197,34 @@ struct SetupRootView: View {
                 RegionScreen(selection: $region, onBack: goBack, onContinue: advance)
             case .dataPrivacy:
                 DataPrivacyScreen(onBack: goBack, onContinue: advance)
-            case .siriVoice:
-                SiriVoiceScreen(mode: $siriMode, onBack: goBack, onContinue: advance)
+            case .cameraControl:
+                CameraControlScreen(onBack: goBack, onContinue: advance)
+            case .locationServices:
+                LocationServicesScreen(onBack: goBack, onContinue: advance)
+            case .faceID:
+                FaceIDScreen(onBack: goBack, onContinue: advance)
+            case .analytics:
+                AnalyticsScreen(onBack: goBack, onContinue: advance)
+            case .softwareUpdate:
+                SoftwareUpdateScreen(onBack: goBack, onContinue: advance)
+            case .displayZoom:
+                DisplayZoomScreen(
+                    selection: $displayZoom,
+                    onBack: goBack,
+                    onContinue: advance
+                )
+            case .displayAppearance:
+                AppearanceScreen(
+                    selection: $appearance,
+                    onBack: goBack,
+                    onContinue: advance
+                )
+            case .siri:
+                SiriScreen(
+                    onBack: goBack,
+                    onContinue: { advance(to: .welcomeToIPhone) },
+                    onSetUp: { advance(to: .voicePicker) }
+                )
             case .voicePicker:
                 VoicePickerScreen(
                     variety: $variety,
@@ -242,20 +232,8 @@ struct SetupRootView: View {
                     onBack: goBack,
                     onContinue: advance
                 )
-            case .cameraControl:
-                CameraControlScreen(onBack: goBack, onContinue: advance)
-            case .appearance:
-                AppearanceScreen(selection: $appearance, onBack: goBack, onContinue: advance)
-            case .allSet:
-                AllSetScreen(
-                    language: language,
-                    region: region,
-                    mode: siriMode,
-                    variety: variety,
-                    voiceIndex: voiceIndex,
-                    appearance: appearance,
-                    onGetStarted: restart
-                )
+            case .welcomeToIPhone:
+                WelcomeToIPhoneScreen(onFinish: closeSetup)
             }
         }
         .transition(
@@ -266,35 +244,28 @@ struct SetupRootView: View {
     }
 
     private func advance() {
-        if step == .allSet {
-            restart()
-            return
-        }
         guard let next = SetupStep(rawValue: step.rawValue + 1) else { return }
+        move(to: next)
+    }
+
+    private func advance(to target: SetupStep) {
+        move(to: target)
+    }
+
+    private func move(to target: SetupStep) {
         withAnimation(.easeInOut(duration: 0.34)) {
-            isForward = true
-            step = next
+            isForward = target.rawValue > step.rawValue
+            step = target
         }
     }
 
     private func goBack() {
         guard let previous = SetupStep(rawValue: step.rawValue - 1) else { return }
-        withAnimation(.easeInOut(duration: 0.34)) {
-            isForward = false
-            step = previous
-        }
+        move(to: previous)
     }
 
-    private func restart() {
-        withAnimation(.easeInOut(duration: 0.34)) {
-            isForward = true
-            language = "English (United States)"
-            region = "United States"
-            siriMode = .classic
-            variety = .american
-            voiceIndex = 0
-            appearance = .auto
-            step = .hello
-        }
+    /// Setup is over — close the app so you land on the real home screen.
+    private func closeSetup() {
+        exit(0)
     }
 }

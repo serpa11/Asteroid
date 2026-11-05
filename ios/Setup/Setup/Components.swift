@@ -80,11 +80,10 @@ struct BackButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "chevron.left")
-                .font(.system(size: 17, weight: .semibold))
+                .font(.system(size: 20, weight: .semibold))
                 .foregroundStyle(Color.primary)
                 .frame(width: 40, height: 40)
-                .background(Color(.secondarySystemBackground), in: Circle())
-                .modifier(GlassSurfaceModifier(shape: Circle()))
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -179,7 +178,7 @@ struct SetupSearchField: View {
                 .fill(Color(.secondarySystemBackground))
         )
         .glassSurface(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 16)
     }
 }
 

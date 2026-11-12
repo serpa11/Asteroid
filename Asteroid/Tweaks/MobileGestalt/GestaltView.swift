@@ -378,7 +378,7 @@ struct GestaltView: View {
                 if !isWritable {
                     let res = BadQuery().grantAccess(atPath: MGURL.fsGestaltURL.deletingLastPathComponent().path, toFileName: "com.apple.MobileGestalt.plist")
                     if !res.0 {
-                        Alertinator.shared.alert(title: "Failed to get write access to MobileGestalt!", body: "Tweaks will NOT apply. Maybe try restarting the app?")
+                        Alertinator.shared.alert(title: "Failed to get write access to MobileGestalt!", body: "Tweaks will NOT apply. \(res.2) Maybe try restarting the app?")
                     }
                 }
             }

@@ -190,6 +190,16 @@ func mgRestorePersistedChanges() -> MGRestoreOutcome {
     guard let appliedData = try? Data(contentsOf: appliedURL) else {
         return .failed("Your saved tweaks could not be read from \(appliedURL.lastPathComponent).")
     }
+    // This runs from App.init(), before any screen has had the chance to ask
+    // for sandbox access, so grant it here or the comparison below always
+    // fails on a fresh launch and the tweaks look like they vanished.
+    if !fm.isReadableFile(atPath: MGURL.fsGestaltURL.path) {
+        let res = bq.grantAccess(atPath: MGURL.fsGestaltURL.deletingLastPathComponent().path,
+                                 toFileName: "com.apple.MobileGestalt.plist")
+        if !res.0 {
+            return .failed("MobileGestalt could not be read at \(MGURL.fsGestaltURL.path). \(res.2)")
+        }
+    }
     guard let currentData = try? Data(contentsOf: MGURL.fsGestaltURL) else {
         return .failed("MobileGestalt could not be read at \(MGURL.fsGestaltURL.path).")
     }

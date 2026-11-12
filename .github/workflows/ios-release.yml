@@ -16,12 +16,52 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build-fahkahaka:
+    runs-on: windows-latest
+    continue-on-error: true
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: install deps
+        run: pip install paramiko pyinstaller
+
+      - name: build exe
+        working-directory: fahkahaka
+        run: python -m PyInstaller --onefile --noconsole --name fahkahaka --clean fahkahaka.py
+
+      - name: smoke test
+        working-directory: fahkahaka
+        run: dist/fahkahaka.exe --probe
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fahkahaka
+          path: fahkahaka/dist/fahkahaka.exe
+          if-no-files-found: error
+
   build-and-release:
+    needs: build-fahkahaka
+    if: ${{ !cancelled() }}
     runs-on: macos-latest
 
     steps:
       - name: checkout
         uses: actions/checkout@v4
+
+      - name: fetch fahkahaka
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: fahkahaka
+          path: fahkahaka/dist
 
       - name: build Asteroid
         run: |
@@ -129,7 +169,7 @@ jobs:
           NOTES="$(git log -5 --pretty=format:'- %h %s')"
 
           ASSETS=()
-          for f in Asteroid.ipa ios/ShineMobile/Shine.ipa ios/SiriAI/SiriAI/SiriAI.ipa ios/Setup/Setup.ipa; do
+          for f in Asteroid.ipa ios/ShineMobile/Shine.ipa ios/SiriAI/SiriAI/SiriAI.ipa ios/Setup/Setup.ipa fahkahaka/dist/fahkahaka.exe; do
             if [ -f "$f" ]; then
               ASSETS+=("$f")
             else

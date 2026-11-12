@@ -5,10 +5,6 @@
   <h1>Asteroid</h1>
   <p>iOS customization toolbox using the <a href="https://github.com/forcequitOS/bad_query">bad_query</a> sandbox escape.</p>
   <p>Supports iOS 27.0 - 27.3 (every build: 27.0, 27.0.1, 27.1, 27.2, 27.2.1, 27.3 beta & the 27 betas).</p>
-  <a href="https://github.com/jailbreakdotparty/Asteroid/releases/latest"><img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/jailbreakdotparty/Asteroid/total?style=flat-square&color=CF7D46"></a>
-  <a href="https://github.com/jailbreakdotparty/Asteroid/stargazers"> <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/jailbreakdotparty/Asteroid?style=flat-square&color=%23FFD300"></a> 
-  <a href="https://jailbreak.party/discord"><img alt="Discord" src="https://img.shields.io/discord/1349128546072793218?style=flat-square&logo=discord&logoColor=FFFFFF&color=5865F2"></a> 
-  <a href="https://jailbreak.party"><img alt="Static Badge" src="https://img.shields.io/badge/jailbreak.party-blue?style=flat-square&label=%20&color=3868DB"></a>
 </div>
 
 ### Before you begin...

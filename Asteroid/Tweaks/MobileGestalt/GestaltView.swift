@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import Combine
+
 import UniformTypeIdentifiers
 
 struct GestaltView: View {

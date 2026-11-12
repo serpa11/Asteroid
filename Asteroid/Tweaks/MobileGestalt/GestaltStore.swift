@@ -395,7 +395,7 @@ final class GestaltStore: ObservableObject {
             return SiriAIChangeResult(succeeded: false, message: "MobileGestalt could not be parsed as a property list: \(error.localizedDescription)")
         }
 
-        guard let cacheExtra = parsed["CacheExtra"] as? NSMutableDictionary else {
+        guard parsed["CacheExtra"] is NSMutableDictionary else {
             return SiriAIChangeResult(succeeded: false, message: "CacheExtra is missing or invalid. Aborted.")
         }
 

@@ -79,6 +79,7 @@ enum MGKey {
     static let stageMgr = "qeaj75wk3HF4DwQ8qbIi7g" // DeviceSupportsEnhancedMultitasking
     
     // lookup
+    static let cacheExtra = "CacheExtra"
     static let deviceClass = "+3Uf0Pm5F8Xy7Onyvko0vA" // DeviceClass
     static let artwork = "oPeik/9e8lQWMszEjbPzng" // ArtworkTraits
     static let prodType = "h9jDsbgj7xIVeIQ8S3/X3Q" // ProductType
@@ -88,93 +89,67 @@ final class GestaltStore: ObservableObject {
     static let shared = GestaltStore()
     
     @Published var mgCurrentDict = NSMutableDictionary()
+
+    // Always returns the REAL CacheExtra container that lives inside
+    // mgCurrentDict. The old implementation fell back to a brand new
+    // NSMutableDictionary whenever the cast failed, so every toggle silently
+    // wrote into a throwaway dictionary and nothing ever reached the file.
     var cacheExtra: NSMutableDictionary {
-        return mgCurrentDict["CacheExtra"] as? NSMutableDictionary ?? NSMutableDictionary()
+        if let existing = mgCurrentDict[MGKey.cacheExtra] as? NSMutableDictionary {
+            return existing
+        }
+        if let existing = mgCurrentDict[MGKey.cacheExtra],
+           let data = try? PropertyListSerialization.data(fromPropertyList: existing, format: .binary, options: 0),
+           let reparsed = try? PropertyListSerialization.propertyList(from: data, options: [.mutableContainers], format: nil),
+           let promoted = reparsed as? NSMutableDictionary {
+            // Immutable copy: re-parse it so every nested container
+            // (ArtworkTraits included) is writable too, then keep it.
+            mgCurrentDict[MGKey.cacheExtra] = promoted
+            return promoted
+        }
+        let fresh = NSMutableDictionary()
+        mgCurrentDict[MGKey.cacheExtra] = fresh
+        return fresh
     }
     
     init() {}
+
+    // Parses a MobileGestalt property list into a deeply mutable dictionary.
+    static func mutablePlist(from data: Data) throws -> NSMutableDictionary {
+        let plist = try PropertyListSerialization.propertyList(from: data, options: [.mutableContainers], format: nil)
+        guard let dict = plist as? NSMutableDictionary else {
+            throw "MobileGestalt is not a dictionary."
+        }
+        return dict
+    }
     
     // MARK: actions
-    func mgSetSiriAIEnabled(_ enabled: Bool, spoof: String) {
-        self.objectWillChange.send()
-        if enabled {
-            cacheExtra["A62OafQ85EJAiiqKn4agtg"] = 1
-            cacheExtra["h9jDsbgj7xIVeIQ8S3/X3Q"] = spoof
-            cacheExtra["oYicEKzVTz4/CxxE05pEgQ"] = "D83AP"
-            cacheExtra["5pYKlGnYYBzGvAlIU8RjEQ"] = "t8130"
-            cacheExtra["h63QSdBCiT/z0WU6rdQv6Q"] = "LL"
-            cacheExtra["yK+xavymRGZ3xWc1tb8XDg"] = "LL/A"
-            cacheExtra["xOJfWykLmQCc8lKlzMlrLA"] = 1
-            cacheExtra["K/R1GfGfCkXvEhaPS2Vrng"] = 1
-            cacheExtra["waGD2UTpntjbDXD1r3oALQ"] = 1
-            cacheExtra["WXi7NQbOKnEX4vPQFeZAdQ"] = 1
-            cacheExtra["PTQ+ABwag03BwO/CKvIK/A"] = 1
-            cacheExtra["0AJUv/uYPsRiZNGpWJ7zfg"] = 1
-            let regModel: String
-            switch spoof {
-            case "iPhone17,1": regModel = "A3083"
-            case "iPhone17,2": regModel = "A3084"
-            case "iPhone18,1": regModel = "A3256"
-            case "iPhone18,2": regModel = "A3257"
-            case "iPhone18,4": regModel = "A3260"
-            default: regModel = "A3083"
-            }
-            cacheExtra["97JDvERpVwO+GHtthIh7hA"] = regModel
-
-        } else {
-            cacheExtra.removeObject(forKey: "h9jDsbgj7xIVeIQ8S3/X3Q")
-            cacheExtra.removeObject(forKey: "oYicEKzVTz4/CxxE05pEgQ")
-            cacheExtra.removeObject(forKey: "5pYKlGnYYBzGvAlIU8RjEQ")
-            cacheExtra.removeObject(forKey: "h63QSdBCiT/z0WU6rdQv6Q")
-            cacheExtra.removeObject(forKey: "yK+xavymRGZ3xWc1tb8XDg")
-            cacheExtra.removeObject(forKey: "97JDvERpVwO+GHtthIh7hA")
-            cacheExtra.removeObject(forKey: "xOJfWykLmQCc8lKlzMlrLA")
-            cacheExtra.removeObject(forKey: "K/R1GfGfCkXvEhaPS2Vrng")
-            cacheExtra.removeObject(forKey: "waGD2UTpntjbDXD1r3oALQ")
-            cacheExtra.removeObject(forKey: "WXi7NQbOKnEX4vPQFeZAdQ")
-            cacheExtra.removeObject(forKey: "PTQ+ABwag03BwO/CKvIK/A")
-            cacheExtra.removeObject(forKey: "0AJUv/uYPsRiZNGpWJ7zfg")
-        }
-    }
-
-    func mgSetSiriAIProfile(_ spoof: String) {
-        self.objectWillChange.send()
-        cacheExtra["A62OafQ85EJAiiqKn4agtg"] = 1
-        cacheExtra["h9jDsbgj7xIVeIQ8S3/X3Q"] = spoof
-        cacheExtra["oYicEKzVTz4/CxxE05pEgQ"] = "D83AP"
-        cacheExtra["5pYKlGnYYBzGvAlIU8RjEQ"] = "t8130"
-        cacheExtra["h63QSdBCiT/z0WU6rdQv6Q"] = "LL"
-        cacheExtra["yK+xavymRGZ3xWc1tb8XDg"] = "LL/A"
-            cacheExtra["xOJfWykLmQCc8lKlzMlrLA"] = 1
-                        cacheExtra["K/R1GfGfCkXvEhaPS2Vrng"] = 1
-                        cacheExtra["waGD2UTpntjbDXD1r3oALQ"] = 1
-                        cacheExtra["WXi7NQbOKnEX4vPQFeZAdQ"] = 1
-                        cacheExtra["PTQ+ABwag03BwO/CKvIK/A"] = 1
-                        cacheExtra["0AJUv/uYPsRiZNGpWJ7zfg"] = 1
-        let regModel: String
-        switch spoof {
-        case "iPhone17,1": regModel = "A3083"
-        case "iPhone17,2": regModel = "A3084"
-        case "iPhone18,1": regModel = "A3256"
-        case "iPhone18,2": regModel = "A3257"
-        case "iPhone18,4": regModel = "A3260"
-        default: regModel = "A3083"
-        }
-        cacheExtra["97JDvERpVwO+GHtthIh7hA"] = regModel
-    }
-    func mgPullKeys(_ keys: [String]) {
-        for key in keys {
-            cacheExtra.removeObject(forKey: key)
-        }
-    }
+    // The old Siri AI activation helpers (mgSetSiriAIEnabled and
+    // mgSetSiriAIProfile) were removed together with the Siri AI toggle.
+    // They rewrote ProductType, region and board keys behind the user's
+    // back, so toggling Apple Intelligence silently wiped the device spoof
+    // and the region tweak at the same time.
     
+    // Reads a capability back out of CacheExtra. The old implementation
+    // passed the whole key ARRAY as the dictionary key (so the lookup always
+    // missed) and force-unwrapped the first key; it only appeared to work
+    // because an empty array satisfies allSatisfy.
     func isEnabled(_ keys: [String], enableValue: Int = 1) -> Bool {
-        let values = self.cacheExtra[keys] as? [Int] ?? []
-        let testVal = self.cacheExtra[keys.first!] as? Int
-        if values.allSatisfy({ $0 == testVal }) {
-            return testVal == enableValue
+        guard let first = keys.first else { return false }
+        guard let value = boolValue(forKey: first) else { return false }
+        return value == (enableValue == 1)
+    }
+
+    // Accepts Int (1/0), Bool (true/false) and "1"/"0" strings so toggles
+    // written by different code paths still report their real state.
+    func boolValue(forKey key: String) -> Bool? {
+        guard let value = cacheExtra[key] else { return nil }
+        if let intValue = value as? Int { return intValue != 0 }
+        if let flag = value as? Bool { return flag }
+        if let string = value as? String {
+            return string == "1" || string.lowercased() == "true"
         }
-        return false
+        return nil
     }
     
     func strVal(forKey key: String) -> String {
@@ -183,38 +158,12 @@ final class GestaltStore: ObservableObject {
     }
     
     // MARK: bindings
-    func mgSiriAIBinding() -> Binding<Bool> {
-        return Binding(get: {
-            return self.cacheExtra["A62OafQ85EJAiiqKn4agtg"] as? Int == 1
-                && self.cacheExtra["h63QSdBCiT/z0WU6rdQv6Q"] as? String == "LL"
-                && self.cacheExtra["yK+xavymRGZ3xWc1tb8XDg"] as? String == "LL/A"
-        }, set: { enabled in
-            self.objectWillChange.send()
-            if enabled {
-                self.cacheExtra["A62OafQ85EJAiiqKn4agtg"] = 1
-                self.cacheExtra["h9jDsbgj7xIVeIQ8S3/X3Q"] = "iPhone16,1"
-                self.cacheExtra["oYicEKzVTz4/CxxE05pEgQ"] = "D83AP"
-                self.cacheExtra["5pYKlGnYYBzGvAlIU8RjEQ"] = "t8130"
-                self.cacheExtra["h63QSdBCiT/z0WU6rdQv6Q"] = "LL"
-                self.cacheExtra["yK+xavymRGZ3xWc1tb8XDg"] = "LL/A"
-                self.cacheExtra["97JDvERpVwO+GHtthIh7hA"] = "A3083"
-            } else {
-                self.cacheExtra.removeObject(forKey: "A62OafQ85EJAiiqKn4agtg")
-                self.cacheExtra.removeObject(forKey: "h9jDsbgj7xIVeIQ8S3/X3Q")
-                self.cacheExtra.removeObject(forKey: "oYicEKzVTz4/CxxE05pEgQ")
-                self.cacheExtra.removeObject(forKey: "5pYKlGnYYBzGvAlIU8RjEQ")
-                self.cacheExtra.removeObject(forKey: "h63QSdBCiT/z0WU6rdQv6Q")
-                self.cacheExtra.removeObject(forKey: "yK+xavymRGZ3xWc1tb8XDg")
-                self.cacheExtra.removeObject(forKey: "97JDvERpVwO+GHtthIh7hA")
-            }
-        })
-    }
     func mgKeyBinding(_ keys: [String], defaultValue: Int = 0, enableValue: Int = 1) -> Binding<Bool> {
         return Binding(get: {
-            if let value = self.cacheExtra[keys.first!] as? Int {
-                return value == enableValue
+            guard let first = keys.first, let value = self.boolValue(forKey: first) else {
+                return false
             }
-            return false
+            return value == (enableValue == 1)
         }, set: { enabled in
             self.objectWillChange.send()
             for key in keys {
@@ -229,19 +178,25 @@ final class GestaltStore: ObservableObject {
     
     func mgTrollPadBinding() -> Binding<Bool> {
         return Binding(get: {
-            if let value = self.cacheExtra[MGKey.ipadosCacheEx.first!] as? Int? {
-                return value == 1
-            }
-            return false
+            guard let first = MGKey.ipadosCacheEx.first else { return false }
+            return self.boolValue(forKey: first) == true
         }, set: { enabled in
             self.objectWillChange.send()
-            if self.mgSetiPadOS(enable: enabled) {
+            if enabled {
+                // The byte patch has to succeed before the keys are written,
+                // otherwise the toggle would claim success with nothing changed.
+                guard self.mgSetiPadOS(enable: true) else { return }
                 for key in MGKey.ipadosCacheEx {
-                    if enabled {
-                        self.cacheExtra[key] = 1
-                    } else {
-                        self.cacheExtra.removeObject(forKey: key)
-                    }
+                    self.cacheExtra[key] = 1
+                }
+            } else {
+                // Turning it back off must always work, otherwise the toggle
+                // gets permanently stuck on when the patch can't be undone.
+                if !self.mgSetiPadOS(enable: false) {
+                    print("(mg) could not undo the iPadOS cache patch; clearing the keys anyway")
+                }
+                for key in MGKey.ipadosCacheEx {
+                    self.cacheExtra.removeObject(forKey: key)
                 }
             }
         })
@@ -266,6 +221,63 @@ final class GestaltStore: ObservableObject {
         )
     }
     
+    // MARK: revert to old Siri
+    // Removes only the Apple Intelligence / Siri AI capability keys from the
+    // file on disk, leaving every other tweak (spoofing, region, island, …)
+    // untouched. The file is re-read first so unapplied in-memory edits are
+    // not flushed as a side effect.
+    static let appleIntelligenceKeys: [String] = [
+        "A62OafQ85EJAiiqKn4agtg", // DeviceSupportsGenerativeModelSystems
+        "xOJfWykLmQCc8lKlzMlrLA",
+        "K/R1GfGfCkXvEhaPS2Vrng",
+        "waGD2UTpntjbDXD1r3oALQ",
+        "WXi7NQbOKnEX4vPQFeZAdQ",
+        "PTQ+ABwag03BwO/CKvIK/A",
+        "0AJUv/uYPsRiZNGpWJ7zfg",
+    ]
+
+    func mgRevertToOldSiri() -> (succeeded: Bool, message: String) {
+        guard fm.fileExists(atPath: MGURL.fsGestaltURL.path) else {
+            return (false, "MobileGestalt is missing at \(MGURL.fsGestaltURL.path).")
+        }
+        guard let data = try? Data(contentsOf: MGURL.fsGestaltURL) else {
+            return (false, "MobileGestalt could not be read.")
+        }
+        guard let parsed = try? GestaltStore.mutablePlist(from: data),
+              let extra = parsed[MGKey.cacheExtra] as? NSMutableDictionary else {
+            return (false, "MobileGestalt could not be parsed.")
+        }
+
+        var removed = 0
+        for key in GestaltStore.appleIntelligenceKeys {
+            if extra[key] != nil {
+                extra.removeObject(forKey: key)
+                removed += 1
+            }
+        }
+
+        guard let updated = try? PropertyListSerialization.data(fromPropertyList: parsed, format: .binary, options: 0) else {
+            return (false, "The updated MobileGestalt could not be serialized.")
+        }
+        if updated == data {
+            return (true, "Apple Intelligence and Siri AI were already disabled.")
+        }
+        guard mgWrite(updated) else {
+            return (false, "The system refused to write MobileGestalt. Your other tweaks were not changed.")
+        }
+        try? updated.write(to: MGURL.appliedGestaltURL, options: .atomic)
+
+        // Keep the in-memory copy in sync without throwing away any other
+        // edits the user has made but not applied yet.
+        self.objectWillChange.send()
+        for key in GestaltStore.appleIntelligenceKeys {
+            self.cacheExtra.removeObject(forKey: key)
+        }
+        return (true, removed > 0
+            ? "Removed \(removed) Apple Intelligence / Siri AI key(s). Every other tweak was left alone."
+            : "Apple Intelligence and Siri AI were already disabled.")
+    }
+
     // MARK: particular non-binded modifications
     // this function was, surprisingly, made by Siri AI. it works as it should, at least on my test devices, so this'll have to do until someone figures out a better way.
     func mgSetiPadOS(enable: Bool) -> Bool {

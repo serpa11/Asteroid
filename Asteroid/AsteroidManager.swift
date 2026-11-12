@@ -31,7 +31,11 @@ final class AsteroidManager: ObservableObject {
     @Published var logOutput = ""
     @Published var shouldRespring = false
     @Published var refreshFiles = false
-    
+
+    // Set at launch when the saved tweaks could not be written back to
+    // MobileGestalt; shown once as an alert so a silent failure is impossible.
+    @Published var pendingRestoreWarning: String? = nil
+
     @Published var storedFiles = [FileItem]()
     @Published var storedURL: URL = URL(fileURLWithPath: "/")
     

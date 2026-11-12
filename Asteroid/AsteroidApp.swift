@@ -35,6 +35,28 @@ struct AsteroidApp: App {
         #else
         weOnADebugBuild = false
         #endif
+
+        // Capture the real device model once, before any view reads it to
+        // compute its hardware gates (views render before ContentView.onAppear).
+        let defaults = UserDefaults.standard
+        if defaults.string(forKey: "ogMachineName")?.isEmpty ?? true {
+            defaults.set(machineName(), forKey: "ogMachineName")
+        }
+
+        // Restore saved tweaks BEFORE the first view reads MobileGestalt.
+        // Restoring afterwards left the Home screen showing the pre-restore
+        // (freshly regenerated) state: every toggle looked off after a reboot
+        // and the next Apply overwrote the tweaks that had just been restored.
+        if defaults.bool(forKey: "mgWriteAtomically") {
+            switch mgRestorePersistedChanges() {
+            case .restored:
+                print("[*] restored saved MobileGestalt tweaks")
+            case .failed(let reason):
+                AsteroidManager.shared.pendingRestoreWarning = reason
+            case .none:
+                break
+            }
+        }
     }
     
     var body: some Scene {

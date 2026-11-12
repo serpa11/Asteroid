@@ -34,12 +34,28 @@ struct GestaltView: View {
     @AppStorage("showCustomKeys") private var showCustomKeys = false
     @AppStorage("mgCustKeyArray") var customKeys: [MGCustomKey] = []
     @State private var mgProductType = ""
-    @AppStorage("mgSiriAI") private var mgSiriAI = false
-    @AppStorage("mgSiriAISpoof") private var mgSiriAISpoof = "iPhone17,1"
     @State private var mgClassicIntell = false
+    // iPhone Duo Mode is reported straight from MobileGestalt in onAppear so
+    // it always reflects what is really saved on disk.
+    @State private var mgDuoMode = false
     
     @State private var showInfoSheet = false
     @State private var idiotButtonTimerComplete = false
+
+    // Artwork subtypes that belong to an island-equipped iPhone. Picking one
+    // of these always switches the Dynamic Island on when Apply is pressed,
+    // while keeping the subtype you actually picked (the iPhone 16 Pro
+    // subtype enables the island, but never turns into the 18 Pro subtype).
+    private let islandSubtypes: Set<Int> = [2796, 2976, 2622, 2868, 2736, 2738, 2034]
+
+    // iPhone Duo (iPhone19,4 / A3447 / V68AP / t8160) — Apple's foldable.
+    private enum Duo {
+        static let productType = "iPhone19,4"
+        static let subtype = 2034
+        static let hwModel = "V68AP"     // oYicEKzVTz4/CxxE05pEgQ
+        static let platform = "t8160"    // 5pYKlGnYYBzGvAlIU8RjEQ
+        static let modelNumber = "A3447" // 97JDvERpVwO+GHtthIh7hA
+    }
     
     var body: some View {
         NavigationStack {
@@ -99,10 +115,10 @@ struct GestaltView: View {
                                 PlainToggle("Enable AOD Vibrancy", minVrs: 18.0, isOn: store.mgKeyBinding([MGKey.AODVibrancy]))
                             }
                         }
-                        if !isBootChimeHD() || mgOverrideGates {
+                        if !isChargeLimitHD() || mgOverrideGates {
                             PlainToggle("Enable Charge Limit", minVrs: 17.0, isOn: store.mgKeyBinding([MGKey.chargeLim]))
                         }
-                        if !isChargeLimitHD() || mgOverrideGates {
+                        if !isBootChimeHD() || mgOverrideGates {
                             PlainToggle("Enable Boot Chime", isOn: store.mgKeyBinding([MGKey.bootChime]))
                         }
                     } header: {
@@ -116,15 +132,19 @@ struct GestaltView: View {
                         PlainToggle("Disable Region Restrictions", isOn: store.mgRegionRestrictionsBinding())
                     }
                     if showSiriEligibility && (!isAppleIntellHD() || mgOverrideGates) {
-                        PlainToggle("Enable Apple Intelligence Classic", infoType: .warning, infoTitle: "Apple Intelligence Classic", infoMessage: "This is the classic Apple Intelligence toggle. Make sure you do not confuse it with Siri AI (Beta).\n\nIf you don't want classic Apple Intelligence, do not use this toggle.", minVrs: 18.1, isOn: $mgClassicIntell)
-                            .onChange(of: mgClassicIntell) { (oldVal, newVal) in
+                        PlainToggle("Enable Apple Intelligence Classic", infoType: .warning, infoTitle: "Apple Intelligence Classic", infoMessage: "This is the classic Apple Intelligence toggle. Turning it on only sets the Apple Intelligence capability key - it no longer rewrites your ProductType, region or board keys behind your back. Press Apply to save.\n\nIf you don't want classic Apple Intelligence, leave this off or use \"Revert to Old Siri\" further down this page.", minVrs: 18.1, isOn: $mgClassicIntell)
+                            .onChange(of: mgClassicIntell) { (_, newVal) in
+                                // Only touch the Apple Intelligence key. The old
+                                // code also called mgSetSiriAIEnabled(false),
+                                // which deleted ProductType, region and board
+                                // keys and destroyed the device spoof at the
+                                // same time.
                                 if newVal {
-                                    mgSiriAI = false
-                                    store.mgSetSiriAIEnabled(false, spoof: mgSiriAISpoof)
-                                    store.cacheExtra["A62OafQ85EJAiiqKn4agtg"] = 1
-                                } else if !mgSiriAI {
-                                    store.cacheExtra.removeObject(forKey: "A62OafQ85EJAiiqKn4agtg")
+                                    store.cacheExtra[MGKey.appIntell] = 1
+                                } else {
+                                    store.cacheExtra.removeObject(forKey: MGKey.appIntell)
                                 }
+                                store.objectWillChange.send()
                             }
                     }
                     if showDeviceSpoofing {
@@ -168,6 +188,19 @@ struct GestaltView: View {
                     HeaderLabel("Eligibility", symbol: "flag")
                 }
                 
+                if showDeviceSpoofing {
+                Section {
+                    PlainToggle("iPhone Duo Mode", infoType: .warning, infoTitle: "iPhone Duo Mode", infoMessage: "Turns a normal iPhone into an iPhone Duo: ProductType is spoofed to iPhone19,4, the artwork subtype switches to the Duo's 2034, the Duo board keys (V68AP / t8160 / A3447) are written, and the Dynamic Island is switched on. Duo-only features that are gated behind the Duo subtype, such as Edge Light, unlock with it too.\n\nPress Apply, then respring. Spoofing your device model may break Face ID as well as other features.", isOn: $mgDuoMode)
+                        .onChange(of: mgDuoMode) { (_, enabled) in
+                            setDuoMode(enabled)
+                        }
+                } header: {
+                    HeaderLabel("iPhone Duo", symbol: "rectangle.split.2x1")
+                } footer: {
+                    Text("Turn this off and press Apply to go back to your original device identity.")
+                }
+                }
+                
                 Section {
                     if !isCrashDectHD() || mgOverrideGates {
                         PlainToggle("Crash Detection", isOn: store.mgKeyBinding([MGKey.crashDet]))
@@ -204,14 +237,11 @@ struct GestaltView: View {
                 }
 
                 Section {
-                    Button("Revert to Old Siri") {
-                        mgRevertSiriAI()
-                    }
-                    .buttonStyle(ConfirmButtonStyle())
+                    PlainToggle("Revert to Old Siri", infoType: .info, infoTitle: "Revert to Old Siri", infoMessage: "Switches back to the original Siri by removing the Apple Intelligence and Siri AI capability keys. It is written to MobileGestalt immediately and only touches those keys - every other tweak is left exactly as it is.", isOn: revertToOldSiriBinding)
                 } header: {
                     HeaderLabel("Revert to Old Siri", symbol: "arrow.uturn.backward.circle")
                 } footer: {
-                    Text("Disables Apple Intelligence and Siri AI without resetting the rest of MobileGestalt.")
+                    Text("Turning this on applies immediately and offers a respring. Turning it off puts Apple Intelligence back; press Apply to save that.")
                 }
             }
             .listRowSpacing(compactHome ? 4 : 10)
@@ -231,6 +261,10 @@ struct GestaltView: View {
                                 do {
                                     try fm.removeItem(at: MGURL.savedGestaltURL)
                                     try fm.removeItem(at: MGURL.fsGestaltURL)
+                                    // The saved tweaks must go too, otherwise the
+                                    // next launch restores them straight over the
+                                    // freshly regenerated MobileGestalt.
+                                    try? fm.removeItem(at: MGURL.appliedGestaltURL)
                                     store.mgCurrentDict = NSMutableDictionary()
                                     Alertinator.shared.alert(title: "Successfully reset MobileGestalt!", body: MGMsg.mgResetComp, showCancel: false, actionLabel: "Exit App", action: { exitinator() })
                                 } catch {
@@ -263,7 +297,11 @@ struct GestaltView: View {
                                     Button("Reset Saved Gestalt", role: .destructive) {
                                         Alertinator.shared.alert(title: "Notice", body: MGMsg.mgResetSavWarn, action: {
                                             try? fm.removeItem(at: MGURL.savedGestaltURL)
-                                            let _ = mgLoadData()
+                                            // The result used to be thrown away, so
+                                            // the store and the toggles kept pointing
+                                            // at the deleted snapshot.
+                                            store.mgCurrentDict = mgLoadData()
+                                            refreshStateFromStore()
                                         })
                                     }
                                 } header: {
@@ -271,9 +309,10 @@ struct GestaltView: View {
                                 }
                                 
                                 Section {
+                                    Toggle("Restore Tweaks on Launch", isOn: $mgWriteAtomically)
                                     Toggle("Show Custom Keys", isOn: $showCustomKeys)
                                 } footer: {
-                                    Text("When atomic writes are enabled, MobileGestalt will not revert after a reboot.")
+                                    Text("Restore Tweaks on Launch re-applies your saved MobileGestalt the moment the app opens, before anything else reads it. That is what keeps your tweaks alive across a reboot or a respring.")
                                 }
                             }
                             .scrollContentBackground(.hidden)
@@ -332,9 +371,7 @@ struct GestaltView: View {
             }
             .onAppear {
                 store.mgCurrentDict = mgLoadData()
-                mgSiriAI = store.strVal(forKey: "h63QSdBCiT/z0WU6rdQv6Q") == "LL"
-                    && store.cacheExtra["A62OafQ85EJAiiqKn4agtg"] as? Int == 1
-                mgClassicIntell = !mgSiriAI && (store.cacheExtra["A62OafQ85EJAiiqKn4agtg"] as? Int == 1)
+                refreshStateFromStore()
                 let isWritable = fm.isWritableFile(atPath: MGURL.fsGestaltURL.path)
                 if !isWritable {
                     let res = BadQuery().grantAccess(atPath: MGURL.fsGestaltURL.deletingLastPathComponent().path, toFileName: "com.apple.MobileGestalt.plist")
@@ -346,6 +383,66 @@ struct GestaltView: View {
         }
     }
     
+    // Re-syncs every toggle from the dictionary that is actually loaded, so the
+    // screen can never show stale state after a restore, a revert or a respring.
+    private func refreshStateFromStore() {
+        mgClassicIntell = store.boolValue(forKey: MGKey.appIntell) == true
+        mgDuoMode = mgProductType == Duo.productType
+    }
+
+    // "Revert to Old Siri" is the exact inverse of Apple Intelligence: it reads
+    // as on whenever the Apple Intelligence capability key is missing.
+    private var revertToOldSiriBinding: Binding<Bool> {
+        Binding(get: { !mgClassicIntell }, set: { revert in
+            if revert {
+                mgRevertToOldSiriNow()
+            } else {
+                // Turning the revert off puts Apple Intelligence back in memory;
+                // Apply is what writes it to MobileGestalt.
+                mgClassicIntell = true
+            }
+        })
+    }
+
+    private func mgRevertToOldSiriNow() {
+        let result = store.mgRevertToOldSiri()
+        Haptic.shared.play(result.succeeded ? .soft : .heavy)
+        // Always notify, so a failed attempt snaps the toggle back instead of
+        // leaving it visually on while MobileGestalt is untouched.
+        store.objectWillChange.send()
+        if result.succeeded {
+            mgClassicIntell = false
+            Alertinator.shared.alert(title: "Reverted to the original Siri", body: result.message, actionLabel: "Respring", action: { mgr.shouldRespring = true })
+        } else {
+            Alertinator.shared.alert(title: "Failed to revert Siri!", body: result.message)
+        }
+    }
+
+    // iPhone Duo mode: identity keys plus the Dynamic Island. Everything here
+    // stays in memory until Apply is pressed, exactly like every other toggle.
+    private func setDuoMode(_ enable: Bool) {
+        if enable {
+            mgProductType = Duo.productType
+            mgSubtype = Duo.subtype
+            store.cacheExtra[MGKey.island] = 1
+            store.cacheExtra["oYicEKzVTz4/CxxE05pEgQ"] = Duo.hwModel
+            store.cacheExtra["5pYKlGnYYBzGvAlIU8RjEQ"] = Duo.platform
+            store.cacheExtra["97JDvERpVwO+GHtthIh7hA"] = Duo.modelNumber
+        } else {
+            if mgProductType == Duo.productType {
+                mgProductType = ogMachineName.isEmpty ? machineName() : ogMachineName
+            }
+            if mgSubtype == Duo.subtype {
+                mgSubtype = mgOgSubtype
+            }
+            store.cacheExtra.removeObject(forKey: "oYicEKzVTz4/CxxE05pEgQ")
+            store.cacheExtra.removeObject(forKey: "5pYKlGnYYBzGvAlIU8RjEQ")
+            store.cacheExtra.removeObject(forKey: "97JDvERpVwO+GHtthIh7hA")
+            store.cacheExtra.removeObject(forKey: MGKey.island)
+        }
+        store.objectWillChange.send()
+    }
+
     private func mgLoadData() -> NSMutableDictionary {
         do {
             let mgData = try Data(contentsOf: MGURL.fsGestaltURL)
@@ -365,18 +462,20 @@ struct GestaltView: View {
                 throw "failed to get information from mobilegestalt"
             }
             
-            guard let currentDict = NSMutableDictionary(contentsOf: MGURL.fsGestaltURL) else {
-                throw "failed to get nsmutabledictionary from mobilegestalt"
-            }
+            // Deeply mutable parse: every nested container (CacheExtra,
+            // ArtworkTraits, …) has to be writable, otherwise Apply throws
+            // "failed to write keys" and no tweak ever lands.
+            let currentDict = try GestaltStore.mutablePlist(from: mgData)
             
-            if let cacheExtra = currentDict["CacheExtra"] as? NSDictionary,
+            if let cacheExtra = currentDict[MGKey.cacheExtra] as? NSDictionary,
                let artwork = cacheExtra[MGKey.artwork] as? NSDictionary {
                 mgSubtype = artwork["ArtworkDeviceSubType"] as? Int ?? 0
                 mgDeviceName = artwork["ArtworkDeviceProductDescription"] as? String ?? ""
                 if mgDeviceName != mgOgDeviceName {
                     mgEnableDeviceName = true
                 }
-                mgProductType = cacheExtra[MGKey.prodType] as? String ?? machineName()
+                mgProductType = cacheExtra[MGKey.prodType] as? String
+                    ?? (ogMachineName.isEmpty ? machineName() : ogMachineName)
             }
             
             return currentDict
@@ -388,39 +487,65 @@ struct GestaltView: View {
         
         return [:]
     }
-    
-    private func mgRevertSiriAI() {
-        Task { @MainActor in
-            mgSiriAI = false
-            mgClassicIntell = false
-            store.mgSetSiriAIEnabled(false, spoof: mgSiriAISpoof)
-            let result = store.mgSafelyApplySiriAIChange(enabled: false, spoof: mgSiriAISpoof)
-            _ = mgWrite(try! PropertyListSerialization.data(fromPropertyList: store.mgCurrentDict, format: .binary, options: 0))
-            Haptic.shared.play(.soft)
-            Alertinator.shared.alert(title: result.succeeded ? "Successfully reverted MobileGestalt tweaks!" : "Failed to revert MobileGestalt!", body: result.message, actionLabel: "Respring", action: { mgr.shouldRespring = true })
-        }
-    }
 
     private func mgApply(isFromSheet: Bool = false) {
         do {
             let mgDictToApply = store.mgCurrentDict
-            
-            if let cacheExtra = mgDictToApply["CacheExtra"] as? NSMutableDictionary,
-               let artwork = cacheExtra[MGKey.artwork] as? NSMutableDictionary {
+
+            // Refuse to write anything if MobileGestalt never loaded. The old
+            // code carried on regardless and could write artwork subtype 0 and
+            // an empty ProductType, which breaks the device instead of
+            // tweaking it.
+            guard mgDictToApply[MGKey.cacheExtra] != nil else {
+                throw "MobileGestalt was not loaded, so nothing was written."
+            }
+            let cacheExtra = store.cacheExtra
+
+            // ArtworkTraits has to be a writable container too, otherwise the
+            // subtype can never be changed and Apply just throws.
+            let artwork: NSMutableDictionary
+            if let existing = cacheExtra[MGKey.artwork] as? NSMutableDictionary {
+                artwork = existing
+            } else if let existing = cacheExtra[MGKey.artwork],
+                      let data = try? PropertyListSerialization.data(fromPropertyList: existing, format: .binary, options: 0),
+                      let reparsed = try? PropertyListSerialization.propertyList(from: data, options: [.mutableContainers], format: nil),
+                      let promoted = reparsed as? NSMutableDictionary {
+                cacheExtra[MGKey.artwork] = promoted
+                artwork = promoted
+            } else {
+                throw "ArtworkTraits is missing or not writable in MobileGestalt."
+            }
+
+            if mgSubtype > 0 {
                 artwork["ArtworkDeviceSubType"] = mgSubtype
-                if mgEnableDeviceName {
-                    artwork["ArtworkDeviceProductDescription"] = mgDeviceName
-                }
-                cacheExtra[MGKey.prodType] = mgProductType
-                for item in customKeys {
-                    if item.isOn {
-                        cacheExtra[item.key] = true
-                    } else {
-                        cacheExtra.removeObject(forKey: item.key)
-                    }
+                // An island-equipped artwork subtype (iPhone 16 Pro, 18 Pro,
+                // Air, Duo, …) always switches the Dynamic Island on. The
+                // subtype itself is never swapped for another device's value.
+                if islandSubtypes.contains(mgSubtype) {
+                    cacheExtra[MGKey.island] = 1
                 }
             } else {
-                throw "failed to write keys to mobilegestalt!"
+                print("(mg) refusing to write artwork subtype 0 - MobileGestalt did not load")
+            }
+
+            if mgEnableDeviceName && !mgDeviceName.isEmpty {
+                artwork["ArtworkDeviceProductDescription"] = mgDeviceName
+            }
+
+            if mgProductType.isEmpty {
+                print("(mg) refusing to write an empty ProductType")
+            } else {
+                cacheExtra[MGKey.prodType] = mgProductType
+            }
+
+            for item in customKeys {
+                if item.isOn {
+                    // Written as 1 instead of true so isEnabled() and the
+                    // toggle bindings can read the value back.
+                    cacheExtra[item.key] = 1
+                } else {
+                    cacheExtra.removeObject(forKey: item.key)
+                }
             }
             
             let data = try PropertyListSerialization.data(fromPropertyList: mgDictToApply, format: .binary, options: 0)
@@ -446,20 +571,27 @@ struct GestaltView: View {
     
     private func mgRevert() {
         do {
-            guard let mgDictToApply = NSMutableDictionary(contentsOf: MGURL.savedGestaltURL) else {
-                throw "failed to get mobilegestalt dict!"
+            guard let savedData = try? Data(contentsOf: MGURL.savedGestaltURL) else {
+                throw "failed to read the original mobilegestalt!"
             }
+            let originalDict = try GestaltStore.mutablePlist(from: savedData)
             
-            let data = try PropertyListSerialization.data(fromPropertyList: mgDictToApply, format: .binary, options: 0)
+            let data = try PropertyListSerialization.data(fromPropertyList: originalDict, format: .binary, options: 0)
             let res = mgWrite(data)
             
             if res {
                 try? fm.removeItem(at: MGURL.appliedGestaltURL)
                 print("[*] successfully overwrote mobilegestalt!")
                 Haptic.shared.play(.soft)
-                if let dict = NSMutableDictionary(contentsOf: MGURL.savedGestaltURL) {
-                    store.mgCurrentDict = dict
-                }
+                store.mgCurrentDict = originalDict
+                // Push the reverted values into the toggles as well. Previously
+                // they kept showing the tweaked values until the page was
+                // re-entered, which looked like the revert had failed.
+                mgSubtype = mgOgSubtype
+                mgProductType = ogMachineName.isEmpty ? machineName() : ogMachineName
+                mgEnableDeviceName = false
+                mgDeviceName = mgOgDeviceName
+                refreshStateFromStore()
                 Alertinator.shared.alert(title: "Successfully reverted MobileGestalt tweaks!", body: MGMsg.revertComp)
             } else {
                 throw "overwrite failed!"

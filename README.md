@@ -4,7 +4,7 @@
   <br>
   <h1>Asteroid</h1>
   <p>iOS customization toolbox using the <a href="https://github.com/forcequitOS/bad_query">bad_query</a> sandbox escape.</p>
-  <p>Supports iOS 26.0 - 26.6.2 & iOS 27.0db1-db4.</p>
+  <p>Supports iOS 26.0 - 26.6.2 & iOS 27.0 - 27.3 (every build: 27.0, 27.0.1, 27.1, 27.2, 27.2.1, 27.3 beta & the 27 betas).</p>
   <a href="https://github.com/jailbreakdotparty/Asteroid/releases/latest"><img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/jailbreakdotparty/Asteroid/total?style=flat-square&color=CF7D46"></a>
   <a href="https://github.com/jailbreakdotparty/Asteroid/stargazers"> <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/jailbreakdotparty/Asteroid?style=flat-square&color=%23FFD300"></a> 
   <a href="https://jailbreak.party/discord"><img alt="Discord" src="https://img.shields.io/discord/1349128546072793218?style=flat-square&logo=discord&logoColor=FFFFFF&color=5865F2"></a> 
@@ -19,11 +19,14 @@
 >[!NOTE]
 >If your version doesn't show up on this list, your device is not supported. **Do not ask us for any support regarding extending version support!** Exploits that apps like these rely on are very rare to come by, so there's nothing we can do if your device isn't supported.
 - iOS/iPadOS 26.0 - 26.6.2 **(limited functionality, e.g. no gestalt tweaks)**
-- iOS/iPadOS 27.0 (24A5355q) -> Developer Beta 1
-- iOS/iPadOS 27.0 (24A5370h) -> Developer Beta 2
-- iOS/iPadOS 27.0 (24A5380h) -> Developer Beta 3/Public Beta 1
-- iPadOS 27.0 (24A5380l) -> Revised DB3
-- iOS/iPadOS 27.0 (24A5390f) -> Developer Beta 4/Public Beta 2
+- iOS/iPadOS 27.0 (24A427 / 24A437 / 24A8428) -> Release
+- iOS/iPadOS 27.0.1 (24A446) -> Release
+- iOS/iPadOS 27.1 (24A94425) -> iPhone Duo launch build
+- iOS/iPadOS 27.2 (24B119 / 24B91020) and 27.2.1 (24B91034) -> Release
+- iOS/iPadOS 27.3 beta 1 (24C5037i) -> Beta
+- iOS/iPadOS 27.0 betas (24A5355q, 24A5370h, 24A5380h, 24A5380i, 24A5380l, 24A5390f) -> Beta 1-4
+
+Every iOS 27 build is accepted, so a new point release or beta does not need an Asteroid update to keep working.
 
 All iOS 26 versions cannot use some of the tweaks that this toolbox contains. The section below tells you what tweaks work on what versions.
 

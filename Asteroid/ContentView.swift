@@ -5,7 +5,6 @@ struct ContentView: View {
     @AppStorage("ogMachineName") var ogMachineName = ""
     @EnvironmentObject var mgr: AsteroidManager
     @State private var showSettings = false
-    @State private var checkedPersistence = false
 
     var body: some View {
         NavigationStack {
@@ -33,9 +32,11 @@ struct ContentView: View {
                     if ogMachineName.isEmpty {
                         ogMachineName = machineName()
                     }
-                    if !checkedPersistence {
-                        checkedPersistence = true
-                        _ = mgRestorePersistedChangesIfNeeded()
+                    // The restore itself runs in AsteroidApp.init(), before any
+                    // view reads MobileGestalt; here we only surface failures.
+                    if let warning = mgr.pendingRestoreWarning {
+                        mgr.pendingRestoreWarning = nil
+                        Alertinator.shared.alert(title: "Couldn't restore your tweaks", body: warning)
                     }
                 }
         }

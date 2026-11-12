@@ -4,7 +4,7 @@
   <br>
   <h1>Asteroid</h1>
   <p>iOS customization toolbox using the <a href="https://github.com/forcequitOS/bad_query">bad_query</a> sandbox escape.</p>
-  <p>Supports iOS 26.0 - 26.6.2 & iOS 27.0 - 27.3 (every build: 27.0, 27.0.1, 27.1, 27.2, 27.2.1, 27.3 beta & the 27 betas).</p>
+  <p>Supports iOS 27.0 - 27.3 (every build: 27.0, 27.0.1, 27.1, 27.2, 27.2.1, 27.3 beta & the 27 betas).</p>
   <a href="https://github.com/jailbreakdotparty/Asteroid/releases/latest"><img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/jailbreakdotparty/Asteroid/total?style=flat-square&color=CF7D46"></a>
   <a href="https://github.com/jailbreakdotparty/Asteroid/stargazers"> <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/jailbreakdotparty/Asteroid?style=flat-square&color=%23FFD300"></a> 
   <a href="https://jailbreak.party/discord"><img alt="Discord" src="https://img.shields.io/discord/1349128546072793218?style=flat-square&logo=discord&logoColor=FFFFFF&color=5865F2"></a> 
@@ -28,7 +28,9 @@
 
 Every iOS 27 build is accepted, so a new point release or beta does not need an Asteroid update to keep working.
 
-All iOS 26 versions cannot use some of the tweaks that this toolbox contains. The section below tells you what tweaks work on what versions.
+All iOS 26 versions cannot use some of the tweaks that this toolbox contains. The section below tells you what tweaks work on what versions. iOS 26 cannot be used with this tool for gestalt modification please download nugget or any other gestalt tool for it.
+
+iOS 18 is not supported at all with asteroid. You will need iOS 26 for limited functionality aka no gestalt only few things and iOS 27 for the full experience!
 
 ### FAQ
 1. **Why can't I use MobileGestalt tweaks on iOS 26?** The exploit that Asteroid relies on, `bad_query`, is *not* capable of writing to MobileGestalt, therefore those tweaks do not work.

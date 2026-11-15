@@ -68,6 +68,42 @@ public class Alertinator {
         }
     }
     
+    /// Shows a sequence of warning alerts, one at a time. Each alert's
+    /// "Continue" button dismisses it and presents the next; the last alert's
+    /// confirm button runs `onConfirm`. Used before a respring that could
+    /// leave the device unusable.
+    @MainActor
+    public func warningChain(title: String, messages: [String], confirmLabel: String, onConfirm: @escaping () -> Void) {
+        guard !messages.isEmpty else {
+            onConfirm()
+            return
+        }
+
+        func showStep(_ index: Int) {
+            guard index < messages.count else {
+                onConfirm()
+                return
+            }
+            let isLast = index == messages.count - 1
+            let alert = UIAlertController(title: title, message: messages[index], preferredStyle: .alert)
+            alert.addAction(.init(title: isLast ? confirmLabel : "Continue", style: .destructive) { _ in
+                alert.dismiss(animated: true) {
+                    // Let UIKit finish the dismissal before presenting the next
+                    // one, otherwise the new alert can be dropped.
+                    DispatchQueue.main.async {
+                        showStep(index + 1)
+                    }
+                }
+            })
+            alert.addAction(.init(title: "Cancel", style: .cancel))
+            alert.view.tintColor = UIColor(named: "AccentColor")
+            self.alertController = alert
+            present(alert)
+        }
+
+        showStep(0)
+    }
+
     @MainActor
     private func present(_ alert: UIAlertController) {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,

@@ -152,9 +152,9 @@ struct ConfigView: View {
             print("(cn) successfully applied config tweaks!")
             Haptic.shared.play(.soft)
             if autoRespring {
-                mgr.shouldRespring = true
+                mgr.requestRespring()
             } else {
-                Alertinator.shared.alert(title: "Successfully appiled config tweaks!", body: AppMsg.applied, actionLabel: "Respring", action: { mgr.shouldRespring = true })
+                Alertinator.shared.alert(title: "Successfully appiled config tweaks!", body: AppMsg.applied, actionLabel: "Respring", action: { mgr.requestRespring() })
             }
         } catch {
             print("(cn) failed to write config files: \(error.localizedDescription)")
@@ -173,7 +173,7 @@ struct ConfigView: View {
             Haptic.shared.play(.soft)
             loadData()
             footnoteText = ""
-            Alertinator.shared.alert(title: "Successfully reset config tweaks!", body: AppMsg.applied, actionLabel: "Respring", action: { mgr.shouldRespring = true })
+            Alertinator.shared.alert(title: "Successfully reset config tweaks!", body: AppMsg.applied, actionLabel: "Respring", action: { mgr.requestRespring() })
         } catch {
             print("(cn) failed to reset config files: \(error.localizedDescription)")
             Alertinator.shared.alert(title: "Failed to reset tweaks!", body: AppMsg.opFailed)

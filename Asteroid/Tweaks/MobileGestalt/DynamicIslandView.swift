@@ -44,7 +44,7 @@ struct DynamicIslandView: View {
                             let res = mgWrite(data)
                             if res {
                                 Haptic.shared.play(.soft)
-                                Alertinator.shared.alert(title: "Asteroid", body: "MobileGestalt was updated. Respring if needed.", actionLabel: "Respring", action: { mgr.shouldRespring = true })
+                                Alertinator.shared.alert(title: "Asteroid", body: "MobileGestalt was updated. Respring if needed.", actionLabel: "Respring", action: { mgr.requestRespring() })
                             } else {
                                 Alertinator.shared.alert(title: "Failed to apply MobileGestalt!", body: "Overwrite failed.")
                             }

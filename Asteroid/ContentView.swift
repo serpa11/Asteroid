@@ -16,7 +16,7 @@ struct ContentView: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button("Respring") {
-                            mgr.shouldRespring = true
+                            mgr.requestRespring()
                         }
                     }
                     ToolbarItem(placement: .topBarTrailing) {

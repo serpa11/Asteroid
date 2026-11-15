@@ -40,6 +40,11 @@ struct GestaltView: View {
     // iPhone Duo Mode is reported straight from MobileGestalt in onAppear so
     // it always reflects what is really saved on disk.
     @State private var mgDuoMode = false
+    // Experimental Duo display geometry (1398x2034). Deliberately a separate
+    // option from mgDuoMode: it is the only MobileGestalt lever that could make
+    // iOS draw the Duo's wide-aspect layout, but it can also stop SpringBoard
+    // from rendering at all - hence the four warnings before every respring.
+    @State private var mgDuoGeometry = false
     
     @State private var showInfoSheet = false
     @State private var idiotButtonTimerComplete = false
@@ -65,6 +70,12 @@ struct GestaltView: View {
         static let largeFormatPhone = 1 // iBLsDETxB4ATmspGucaJyg
         static let thinBezel = 1        // RA3I5nhSK65i1ZxkRxQKfg
         static let cornerRadius = 59    // y5dppxx/LzxoNuW+iIKR3g
+        // Experimental: the Duo's outer panel geometry in pixels. iOS decides
+        // the wide-aspect (side rail) layout from the display's aspect ratio,
+        // so this is the one lever that could produce it - and the one that can
+        // break real layout math on a screen that is not 1398x2034.
+        static let screenWidth = 1398   // g7YQ1Djxh4YiKlEeaoGhzg
+        static let screenHeight = 2034  // OjzOua0LkOegX7pQdgMksw
     }
     
     var body: some View {
@@ -104,6 +115,7 @@ struct GestaltView: View {
                     }
                     }
                     Toggle("Custom Device Name", isOn: $mgEnableDeviceName)
+                        .modifier(SectionPlatter())
                     if mgEnableDeviceName {
                         TextField("Device Name", text: $mgDeviceName)
                     }
@@ -200,9 +212,16 @@ struct GestaltView: View {
                 
                 if showDeviceSpoofing {
                 Section {
-                    PlainToggle("iPhone Duo Mode", infoType: .warning, infoTitle: "iPhone Duo Mode", infoMessage: "Turns a normal iPhone into an iPhone Duo on every MobileGestalt level: ProductType is spoofed to iPhone19,4, the artwork subtype switches to the Duo's 2034, the Duo board keys (V68AP / t8160 / A3447) are written, the marketing name becomes \"iPhone Duo\", and the Duo's large-format, thin-bezel and corner-radius values are applied. The Dynamic Island is switched on, and Duo-only features gated behind the subtype, such as Edge Light, unlock with it too.\n\nThe foldable-only parts of the Duo UI - the side rail with the controls on the right, the vertical Dynamic Island, Split View and the second home screen - are driven by the Duo's hinge and its two physical displays, not by MobileGestalt, so they cannot be enabled on any other iPhone.\n\nPress Apply, then respring. Spoofing your device model may break Face ID as well as other features.", isOn: $mgDuoMode)
+                    PlainToggle("iPhone Duo Mode", infoType: .warning, infoTitle: "iPhone Duo Mode", infoMessage: "Turns a normal iPhone into an iPhone Duo on every MobileGestalt level: ProductType is spoofed to iPhone19,4, the artwork subtype switches to the Duo's 2034, the Duo board keys (V68AP / t8160 / A3447) are written, the marketing name becomes \"iPhone Duo\", and the sub/thinning product types are set. The Dynamic Island is switched on, and Duo-only features gated behind the subtype, such as Edge Light, unlock with it too.\n\nThis only changes the device identity. For the Duo's display geometry - the part that can actually make iOS draw the wide-aspect Duo layout - use the separate \"iPhone Duo Display (Experimental)\" option below.\n\nPress Apply, then respring. Spoofing your device model may break Face ID as well as other features.", isOn: $mgDuoMode)
                         .onChange(of: mgDuoMode) { (_, enabled) in
                             setDuoMode(enabled)
+                        }
+
+                    // Deliberately a separate option from iPhone Duo Mode: this
+                    // is the experimental one that can break the device.
+                    PlainToggle("iPhone Duo Display (Experimental)", infoType: .warning, infoTitle: "iPhone Duo Display (Experimental)", infoMessage: "EXPERIMENTAL. Makes MobileGestalt report a 1398x2034 display - the iPhone Duo's outer panel - instead of your real screen. iOS picks the wide-aspect layout (the side rail with the controls on the right, the vertical Dynamic Island) from the display's aspect ratio, so this is the only MobileGestalt lever that can produce the Duo UI on another iPhone. It is also the only one that can break your device: iOS uses these values for real layout math, so a wrong value can leave SpringBoard unable to render. While this is on, every respring asks four warnings first. If your device does not come back after a respring, force-restart it, reinstall Asteroid, turn this toggle off and press Apply to restore your real display.", isOn: $mgDuoGeometry)
+                        .onChange(of: mgDuoGeometry) { (_, enabled) in
+                            setDuoGeometry(enabled)
                         }
                 } header: {
                     HeaderLabel("iPhone Duo", symbol: "rectangle.split.2x1")
@@ -256,6 +275,7 @@ struct GestaltView: View {
             }
             .listRowSpacing(compactHome ? 4 : 10)
             .scrollContentBackground(.hidden)
+            .background(Color(UIColor.systemBackground))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -320,7 +340,9 @@ struct GestaltView: View {
                                 
                                 Section {
                                     Toggle("Restore Tweaks on Launch", isOn: $mgWriteAtomically)
+                                        .modifier(SectionPlatter())
                                     Toggle("Show Custom Keys", isOn: $showCustomKeys)
+                                        .modifier(SectionPlatter())
                                 } footer: {
                                     Text("Restore Tweaks on Launch re-applies your saved MobileGestalt the moment the app opens, before anything else reads it. That is what keeps your tweaks alive across a reboot or a respring.")
                                 }
@@ -422,7 +444,7 @@ struct GestaltView: View {
         store.objectWillChange.send()
         if result.succeeded {
             mgClassicIntell = false
-            Alertinator.shared.alert(title: "Reverted to the original Siri", body: result.message, actionLabel: "Respring", action: { mgr.shouldRespring = true })
+            Alertinator.shared.alert(title: "Reverted to the original Siri", body: result.message, actionLabel: "Respring", action: { mgr.requestRespring() })
         } else {
             Alertinator.shared.alert(title: "Failed to revert Siri!", body: result.message)
         }
@@ -445,9 +467,6 @@ struct GestaltView: View {
             store.cacheExtra["Z/dqyWS6OZTRy10UcmUAhw"] = Duo.marketingName
             store.cacheExtra["GqAdWRLnC7oYQrNYF48VYA"] = Duo.subProductType
             store.cacheExtra["0+nc/Udy4WNG8S+Q7a/s1A"] = Duo.thinningProductType
-            store.cacheExtra["iBLsDETxB4ATmspGucaJyg"] = Duo.largeFormatPhone
-            store.cacheExtra["RA3I5nhSK65i1ZxkRxQKfg"] = Duo.thinBezel
-            store.cacheExtra["y5dppxx/LzxoNuW+iIKR3g"] = Duo.cornerRadius
         } else {
             if mgProductType == Duo.productType {
                 mgProductType = ogMachineName.isEmpty ? machineName() : ogMachineName
@@ -457,12 +476,40 @@ struct GestaltView: View {
             }
             for key in ["oYicEKzVTz4/CxxE05pEgQ", "5pYKlGnYYBzGvAlIU8RjEQ",
                         "97JDvERpVwO+GHtthIh7hA", "Z/dqyWS6OZTRy10UcmUAhw",
-                        "GqAdWRLnC7oYQrNYF48VYA", "0+nc/Udy4WNG8S+Q7a/s1A",
-                        "iBLsDETxB4ATmspGucaJyg", "RA3I5nhSK65i1ZxkRxQKfg",
-                        "y5dppxx/LzxoNuW+iIKR3g"] {
+                        "GqAdWRLnC7oYQrNYF48VYA", "0+nc/Udy4WNG8S+Q7a/s1A"] {
                 store.cacheExtra.removeObject(forKey: key)
             }
+            // The experimental display keys are owned by the other toggle, so
+            // turning Duo Mode off must not silently drop them.
             store.cacheExtra.removeObject(forKey: MGKey.island)
+        }
+        store.objectWillChange.send()
+    }
+
+    // Experimental: report the iPhone Duo's outer panel (1398x2034) instead of
+    // the real screen. This is the only MobileGestalt lever that could make iOS
+    // draw the Duo's wide-aspect layout, and the only one that can leave
+    // SpringBoard unable to render - so it also arms the four respring warnings.
+    private func setDuoGeometry(_ enable: Bool) {
+        mgr.duoGeometryActive = enable
+        if enable {
+            // Display geometry first: iOS picks the wide-aspect (side rail)
+            // layout from the display's aspect ratio.
+            store.cacheExtra["g7YQ1Djxh4YiKlEeaoGhzg"] = Duo.screenWidth
+            store.cacheExtra["OjzOua0LkOegX7pQdgMksw"] = Duo.screenHeight
+            // Then the display capabilities iOS reads from the same place. These
+            // are layout inputs too, which is why they live behind the
+            // experimental toggle and its four respring warnings rather than in
+            // iPhone Duo Mode.
+            store.cacheExtra["iBLsDETxB4ATmspGucaJyg"] = Duo.largeFormatPhone
+            store.cacheExtra["RA3I5nhSK65i1ZxkRxQKfg"] = Duo.thinBezel
+            store.cacheExtra["y5dppxx/LzxoNuW+iIKR3g"] = Duo.cornerRadius
+        } else {
+            store.cacheExtra.removeObject(forKey: "g7YQ1Djxh4YiKlEeaoGhzg")
+            store.cacheExtra.removeObject(forKey: "OjzOua0LkOegX7pQdgMksw")
+            store.cacheExtra.removeObject(forKey: "iBLsDETxB4ATmspGucaJyg")
+            store.cacheExtra.removeObject(forKey: "RA3I5nhSK65i1ZxkRxQKfg")
+            store.cacheExtra.removeObject(forKey: "y5dppxx/LzxoNuW+iIKR3g")
         }
         store.objectWillChange.send()
     }
@@ -500,6 +547,13 @@ struct GestaltView: View {
                 }
                 mgProductType = cacheExtra[MGKey.prodType] as? String
                     ?? (ogMachineName.isEmpty ? machineName() : ogMachineName)
+                // The experimental display spoof is read back from MobileGestalt
+                // so the four respring warnings still fire after a reboot.
+                if (cacheExtra["g7YQ1Djxh4YiKlEeaoGhzg"] as? Int) == Duo.screenWidth,
+                   (cacheExtra["OjzOua0LkOegX7pQdgMksw"] as? Int) == Duo.screenHeight {
+                    mgDuoGeometry = true
+                    mgr.duoGeometryActive = true
+                }
             }
             
             return currentDict
@@ -580,9 +634,9 @@ struct GestaltView: View {
                 print("[*] successfully overwrote mobilegestalt!")
                 Haptic.shared.play(.soft)
                 if autoRespring || isFromSheet {
-                    mgr.shouldRespring = true
+                    mgr.requestRespring()
                 } else {
-                    Alertinator.shared.alert(title: "Successfully appiled MobileGestalt tweaks!", body: AppMsg.applied, actionLabel: "Respring", action: { mgr.shouldRespring = true })
+                    Alertinator.shared.alert(title: "Successfully appiled MobileGestalt tweaks!", body: AppMsg.applied, actionLabel: "Respring", action: { mgr.requestRespring() })
                 }
             } else {
                 throw "overwrite failed!"
@@ -615,6 +669,10 @@ struct GestaltView: View {
                 mgProductType = ogMachineName.isEmpty ? machineName() : ogMachineName
                 mgEnableDeviceName = false
                 mgDeviceName = mgOgDeviceName
+                // Reverting puts the real display geometry back, so the four
+                // experimental-respring warnings are no longer needed.
+                mgDuoGeometry = false
+                mgr.duoGeometryActive = false
                 refreshStateFromStore()
                 Alertinator.shared.alert(title: "Successfully reverted MobileGestalt tweaks!", body: MGMsg.revertComp)
             } else {

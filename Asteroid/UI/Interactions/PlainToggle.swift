@@ -54,6 +54,10 @@ struct PlainToggle: View {
                 }
             }
             .tint(.orange)
+            // Every option row on every page gets the same bordered platter, so
+            // Home, Config and the other screens line up instead of each having
+            // its own look.
+            .modifier(SectionPlatter())
         }
     }
 }

@@ -9,6 +9,7 @@ struct SettingsView: View {
             List {
                 Section {
                     Toggle("Auto-Respring", isOn: $autoRespring)
+                        .modifier(SectionPlatter())
                 } header: {
                     HeaderLabel("App Settings", symbol: "gearshape")
                 } footer: {

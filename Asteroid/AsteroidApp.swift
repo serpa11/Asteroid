@@ -64,17 +64,20 @@ struct AsteroidApp: App {
             TabView {
                 ContentView()
                     .tabItem {
-                        Label("Home", systemImage: "house")
+                        Image(systemName: "house")
+                            .accessibilityLabel("Home")
                     }
                     .id(0)
                 TweaksView()
                     .tabItem {
-                        Label("More Tweaks", systemImage: "wrench.and.screwdriver")
+                        Image(systemName: "wrench.and.screwdriver")
+                            .accessibilityLabel("More Tweaks")
                     }
                     .id(1)
                 FMRootView()
                     .tabItem {
-                        Label("File Browser", systemImage: "folder")
+                        Image(systemName: "folder")
+                            .accessibilityLabel("File Browser")
                     }
                     .id(2)
             }

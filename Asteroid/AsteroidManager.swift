@@ -38,6 +38,37 @@ final class AsteroidManager: ObservableObject {
 
     @Published var storedFiles = [FileItem]()
     @Published var storedURL: URL = URL(fileURLWithPath: "/")
-    
+
+    // True while the experimental iPhone Duo display-geometry spoof is active.
+    // Respringing with it on can leave SpringBoard unable to render, so every
+    // respring in the app goes through requestRespring() and warns first.
+    @Published var duoGeometryActive = false
+
     init() {}
+
+    /// Single entry point for respringing. When the experimental display spoof
+    /// is on, four warnings are shown first - the spoof can soft-brick the
+    /// device or make it unusable until Asteroid is reinstalled.
+    func requestRespring() {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            if !self.duoGeometryActive {
+                self.shouldRespring = true
+                return
+            }
+
+            Alertinator.shared.warningChain(
+                title: "Experimental display spoof is active",
+                messages: [
+                    "WARNING 1 of 4 - EXPERIMENTAL. This spoof makes MobileGestalt report a 1398x2034 display, the iPhone Duo's outer panel. iOS uses those values for real layout math, and your device does not have that screen.",
+                    "WARNING 2 of 4 - Your device may SOFT-BRICK. SpringBoard can fail to render after the respring, leaving a black screen, a frozen UI, or a device that never finishes respringing.",
+                    "WARNING 3 of 4 - Your device may become UNUSABLE. You could lose your home screen, lose touch input, or get stuck in a respring loop that needs a forced restart or a computer restore.",
+                    "WARNING 4 of 4 - If that happens: force-restart your iPhone, reinstall Asteroid, turn this toggle OFF and press Apply to restore your real display geometry. Tap 'Respring anyway' only if you accept that risk."
+                ],
+                confirmLabel: "Respring anyway",
+                onConfirm: { [weak self] in self?.shouldRespring = true }
+            )
+        }
+    }
 }

@@ -78,30 +78,35 @@ public class Alertinator {
             onConfirm()
             return
         }
+        presentWarningStep(title: title, messages: messages, index: 0,
+                           confirmLabel: confirmLabel, onConfirm: onConfirm)
+    }
 
-        func showStep(_ index: Int) {
-            guard index < messages.count else {
+    @MainActor
+    private func presentWarningStep(title: String, messages: [String], index: Int,
+                                    confirmLabel: String, onConfirm: @escaping () -> Void) {
+        let isLast = index == messages.count - 1
+        let alert = UIAlertController(title: title, message: messages[index], preferredStyle: .alert)
+        alert.addAction(.init(title: isLast ? confirmLabel : "Continue", style: .destructive) { _ in
+            if isLast {
                 onConfirm()
                 return
             }
-            let isLast = index == messages.count - 1
-            let alert = UIAlertController(title: title, message: messages[index], preferredStyle: .alert)
-            alert.addAction(.init(title: isLast ? confirmLabel : "Continue", style: .destructive) { _ in
-                alert.dismiss(animated: true) {
-                    // Let UIKit finish the dismissal before presenting the next
-                    // one, otherwise the new alert can be dropped.
-                    DispatchQueue.main.async {
-                        showStep(index + 1)
-                    }
+            // Dismiss this one first, then put the next warning on screen.
+            // Presenting from the dismissal completion keeps UIKit from
+            // dropping the new alert.
+            alert.dismiss(animated: true) {
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    self.presentWarningStep(title: title, messages: messages, index: index + 1,
+                                            confirmLabel: confirmLabel, onConfirm: onConfirm)
                 }
-            })
-            alert.addAction(.init(title: "Cancel", style: .cancel))
-            alert.view.tintColor = UIColor(named: "AccentColor")
-            self.alertController = alert
-            present(alert)
-        }
-
-        showStep(0)
+            }
+        })
+        alert.addAction(.init(title: "Cancel", style: .cancel))
+        alert.view.tintColor = UIColor(named: "AccentColor")
+        self.alertController = alert
+        present(alert)
     }
 
     @MainActor

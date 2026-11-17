@@ -34,6 +34,35 @@ enum MGMsg {
     // settings
     static let mgResetSavWarn = "Before you save MobileGestalt, remove all tweaks so that they don't get re-applied if you ever want to reset your actual gestalt again."
     static let hidTweakWarn = "By showing tweaks that are intentionally hidden on your specific device configuration, you may be able to enable features that could break your device or lead to data loss!"
+
+    // eligibility extras
+    static let photosCleanup = "Enables the Photos Clean Up object-removal tools. This only advertises the capability: the model itself has to exist on your device, so on older hardware the tools can still stay unavailable."
+    static let translator = "Enables the Personal Translator capability. Requires iOS 26 or later and a device Apple ships the translation models for."
+    static let handwrit = "Enables the Handwriting Synthesis model used by Apple Pencil and Notes. Requires iOS 26.4 or later."
+    static let heySiri = "Enables always-listening \"Hey Siri\". On hardware without the always-on audio path this raises battery use, and Siri can stop answering until you respring."
+    static let audioIntel = "Enables Audio Intelligence (summaries and transcript-style features). Requires iOS 27 or later."
+    static let onDeviceSiri = "Enables the on-device Siri capability flags. This only advertises the capability - the model still has to be downloaded from Settings > Siri."
+    static let audioMix = "Enables Audio Mix, the per-app audio mixing control. Requires iOS 26 or later."
+    static let spatialFT = "Enables spatial audio for FaceTime calls. Requires iOS 15 or later."
+    static let wapi = "Enables the WAPI wireless certification flag used in mainland China. Wrong values can break Wi-Fi provisioning on some networks."
+    static let internalSettings = "Adds the internal Settings bundle. This exposes Apple-internal preference panes that are not meant for production devices; some panes can misbehave or crash Settings."
+    static let hdrPhoto = "Enables the HDR photo display capability. On a panel that cannot show HDR, photos may look washed out."
+    static let photosLocalLight = "Enables the Local Light adjustment in Photos. Capability flag only."
+    static let livePhotoAuto = "Enables automatic Live Photo capture. Capability flag only."
+    static let spatialOverCapture = "Enables Spatial Over Capture for photos and video. Capability flag only - the effect still needs the hardware."
+    static let offlineDictation = "Enables offline dictation. The voice model still has to be present on the device."
+    static let siriBargeIn = "Enables barging in while Siri is speaking. Capability flag only."
+    static let hdrDeferred = "Enables deferred HDR processing. Capability flag only."
+    static let photosStream = "Enables My Photo Stream. Apple has retired it on most accounts, so this may do nothing at all."
+    static let photoSharing = "Enables shared photo streams. Capability flag only, and largely retired by Apple."
+    static let secureMic = "Enables the secure microphone path. This changes which microphones apps may use and can break recording in third-party apps."    static let siriAIMode = "EXPERIMENTAL. Sets SiriMode to 2 and spoofs ProductType to iPhone19,2, which is what the Siri AI eligibility checks look at. Spoofing the product type can break Face ID and other features, and the wrong model can leave Siri unstable or crash-looping. A backup is written before applying."
+    static let siriCachePatch = "Does the Filza line-104 edit here instead of Filza: one byte inside MobileGestalt's CacheData is changed from 0x00 to 0x02. This edits the raw cache blob, so a wrong byte can corrupt MobileGestalt and stop SpringBoard from rendering. It also spoofs ProductType to iPhone18,1 (iPhone 17 Pro) and turns the charge-limit menu on. After respringing, open Settings > Siri and wait about 15 minutes; the Siri AI model may still refuse to download."
+    static let liquidGlass = "CRITICAL. Writes the system preference that disables the Liquid Glass (Solarium) renderer, plus Reduce Transparency, Reduce Motion and Increase Contrast, to get as close to the iOS 18 look as iOS 27 allows. This edits system preference files outside MobileGestalt. It can brick the device completely and leave you without a phone; you may need a computer restore. There is no one-tap undo - turning the toggle off writes the preferences back, but a device that will not boot has to be restored."
+
+    // choosers
+    static let modelNumber = "Sets the ModelNumber and RegulatoryModelNumber shown in Settings > General > About and used by some services. Only cosmetic on its own, but a model that does not match the hardware can confuse diagnostics and warranty tools."
+    static let salesRegion = "Sets the sales region MobileGestalt reports. This is the value region-locked services read, so a wrong region can hide or expose features and can break services that expect your real region."
+    static let regionCode = "Sets the region code. Changing it can enable or disable region-locked behaviour (camera shutter sound, Wi-Fi channels, Siri availability). Use at your own risk."
 }
 
 enum MGKey {
@@ -64,6 +93,40 @@ enum MGKey {
     static let appIntell = "A62OafQ85EJAiiqKn4agtg" // DeviceSupportsGenerativeModelSystems
     static let regionCode = "h63QSdBCiT/z0WU6rdQv6Q" // RegionCode
     static let regionSysconfig = "yK+xavymRGZ3xWc1tb8XDg" // RegionInfoFromSysconfig
+
+    // eligibility extras - the iOS 26 / 27 capability flags. Each of these is a
+    // real MobileGestalt answer that Settings and the system services read to
+    // decide whether a feature is offered on this device.
+    static let photosCleanup = "XNCjqOupLM/S8fNyxRNQTA"      // DeviceSupportsPhotosInpainting
+    static let photosPostFx = "4Jfu4lqX8dzru4Z+ONQ1rQ"       // PhotosPostEffectsCapability
+    static let photosAnalysis = "ik8OQ5JoYhyK8AoTx29MuA"     // DeviceSupportsOnDemandPhotoAnalysis
+    static let translator = "M1n2sAqf33NAOgZRGxQYBA"         // DeviceSupportsPersonalTranslator
+    static let handwrit = "YgYIIViDt1kgzyIsIV61vA"           // DeviceSupportsHandwritingSynthesisModel
+    static let heySiri = "TusANsf9Lfe3P/9fIXXSrQ"            // DeviceSupportsAlwaysListeningHeySiri
+    static let audioIntel = "rb2tKZxlj0Gm2tBmUQSLqQ"         // DeviceSupportsAudioIntelligence
+    static let onDeviceSiri = "O/7gbXWA5X2IRPVtDRU+bw"        // OnDeviceSiriCapability
+    static let siriOnDevice = "K/R1GfGfCkXvEhaPS2Vrng"        // DeviceSupportsSiriUnderstandingOnDevice
+    static let siriOffline = "ZeeiT4Cdn8HNANoqroPEAA"         // SiriOfflineCapability
+    static let siriMode = "a3n5T9sFtlyQ74NEp9ESxg"            // SiriMode
+    static let audioMix = "aVL5GE3tx0LSCI/ErfrJGA"           // DeviceSupportsAudioMix
+    static let spatialFT = "/EVOCjM/Nmb2roP5ebtEFA"           // DeviceSupportsSpatialFaceTimeAudioPlayback
+    static let wapi = "hiHut/WR+B9Lx/vd0WyeNg"                // wapi
+    static let internalSettings = "Oji6HRoPi7rH7HPdWVakuw"    // HasInternalSettingsBundle
+    static let hdrPhoto = "a1r7npIrhXsZ7SmKRKC1eA"            // DeviceSupportsHDRPhotoDisplay
+    static let photosLocalLight = "m9ORTKMgu9A+zF+A61Zz5A"     // DeviceSupportsPhotosLocalLight
+    static let livePhotoAuto = "pQzfsK0Ado+nkNFgPRIA8Q"        // DeviceSupportsLivePhotoAuto
+    static let spatialOverCapture = "SjQQ07G8UacM7E69G7dPbg"   // DeviceSupportsSpatialOverCapture
+    static let offlineDictation = "c5uqoV7Z9ly+f4c5mYXILg"      // OfflineDictationCapability
+    static let siriBargeIn = "WXi7NQbOKnEX4vPQFeZAdQ"          // DeviceSupportsSiriBargeIn
+    static let hdrDeferred = "JkZlE8z9YwHjE1hnbMhcgA"          // DeviceSupportsHDRDeferredProcessing
+    static let photosStream = "RYZZuAFEfSNnEKEzwzRnqw"         // photo-stream
+    static let photoSharing = "UHwjAM1cqBLCR1OuYouf8A"         // PhotoSharingCapability
+    static let secureMic = "7UhDrmrZozgwO+3AgUbHxw"            // DeviceSupportsSecureMicrophone
+    static let modelNumber = "D0cJ8r7U5zve6uA6QbOiLA"         // ModelNumber
+    static let regulatoryModel = "97JDvERpVwO+GHtthIh7hA"    // RegulatoryModelNumber
+    static let regionInfo = "zHeENZu+wbg7PUprwNwBWg"          // RegionInfo
+    static let regionActivation = "mYFYwkOYqb5fOiu1C5W6Aw"    // RegionInfoFromActivation
+
     
     // prefs
     static let crashDet = "HCzWusHQwZDea6nNhaKndw" // DeviceSupportsCollisionSOS
@@ -354,6 +417,124 @@ final class GestaltStore: ObservableObject {
         mgCurrentDict["CacheData"] = updatedData
         return true
     }
+
+    // MARK: Siri AI cache patch
+    // Does in Asteroid what the Filza "line 104" edit does by hand: a single
+    // byte in MobileGestalt's CacheData blob goes from 0x00 to 0x02. CacheData
+    // is a sparse array of two-byte capability slots, so the byte is looked up
+    // inside the capability region rather than at a hardcoded offset, and the
+    // write is refused unless a genuinely cleared slot is found - a wrong byte
+    // here corrupts MobileGestalt and stops SpringBoard from rendering.
+    func mgSetSiriAICachePatch(enable: Bool) -> Bool {
+        guard let cacheData = mgCurrentDict["CacheData"] as? Data else {
+            print("(mg) siri cache patch: CacheData is missing")
+            return false
+        }
+
+        var bytes = [UInt8](cacheData)
+
+        // Same region the iPadOS patch works in (hex offset 1616 = byte 808).
+        let regionStart = 808
+        guard bytes.count > regionStart + 4 else {
+            print("(mg) siri cache patch: CacheData is too short")
+            return false
+        }
+
+        var target: Int?
+        var index = regionStart
+        while index + 1 < bytes.count {
+            if bytes[index] == 0, bytes[index + 1] == 0 {
+                target = index
+                break
+            }
+            index += 2
+        }
+
+        guard let offset = target else {
+            print("(mg) siri cache patch: no cleared capability slot found")
+            return false
+        }
+
+        bytes[offset] = enable ? 0x02 : 0x00
+        bytes[offset + 1] = 0x00
+
+        mgCurrentDict["CacheData"] = Data(bytes)
+        return true
+    }
+
+    // MARK: state probes
+    /// True when the CacheData slot the Siri AI patch writes reads back as the
+    /// patched value, so the toggle survives a respring.
+    func mgSiriCachePatchIsActive() -> Bool {
+        guard let cacheData = mgCurrentDict["CacheData"] as? Data else { return false }
+        let bytes = [UInt8](cacheData)
+        let regionStart = 808
+        var index = regionStart
+        while index + 1 < bytes.count {
+            if bytes[index] == 0x02, bytes[index + 1] == 0x00 { return true }
+            index += 2
+        }
+        return false
+    }
+
+    /// True when the Liquid Glass preferences are currently written.
+    func mgLiquidGlassIsDisabled() -> Bool {
+        let url = URL(fileURLWithPath: GestaltStore.liquidGlassPrefsDirectory)
+            .appendingPathComponent("com.apple.SwiftUI.plist")
+        guard let dict = NSDictionary(contentsOf: url) else { return false }
+        return (dict["com.apple.SwiftUI.DisableSolarium"] as? Bool) == true
+    }
+
+    // MARK: Liquid Glass
+    // There is no MobileGestalt key for Liquid Glass; the renderer is driven by
+    // the com.apple.SwiftUI preferences plus the accessibility flags. Writing
+    // them means editing real system preference files, which is why this lives
+    // behind a critical warning rather than a normal toggle.
+    static let liquidGlassPrefsDirectory = "/var/mobile/Library/Preferences"
+
+    func mgSetLiquidGlassDisabled(_ disable: Bool) -> Bool {
+        let prefs = GestaltStore.liquidGlassPrefsDirectory
+
+        if !fm.isWritableFile(atPath: prefs) {
+            let granted = bq.grantAccess(atPath: prefs)
+            guard granted.0 else {
+                print("(mg) liquid glass: no access to \(prefs): \(granted.2)")
+                return false
+            }
+        }
+
+        let swiftUIURL = URL(fileURLWithPath: prefs).appendingPathComponent("com.apple.SwiftUI.plist")
+        let accessibilityURL = URL(fileURLWithPath: prefs).appendingPathComponent("com.apple.Accessibility.plist")
+
+        var swiftUI = (NSMutableDictionary(contentsOf: swiftUIURL) ?? NSMutableDictionary())
+        var accessibility = (NSMutableDictionary(contentsOf: accessibilityURL) ?? NSMutableDictionary())
+
+        if disable {
+            swiftUI["com.apple.SwiftUI.DisableSolarium"] = true
+            swiftUI["com.apple.SwiftUI.IgnoreSolariumLinkedOnCheck"] = true
+            accessibility["ReduceTransparencyEnabled"] = true
+            accessibility["ReduceMotionEnabled"] = true
+            accessibility["IncreaseContrastEnabled"] = true
+        } else {
+            swiftUI.removeObject(forKey: "com.apple.SwiftUI.DisableSolarium")
+            swiftUI.removeObject(forKey: "com.apple.SwiftUI.IgnoreSolariumLinkedOnCheck")
+            accessibility.removeObject(forKey: "ReduceTransparencyEnabled")
+            accessibility.removeObject(forKey: "ReduceMotionEnabled")
+            accessibility.removeObject(forKey: "IncreaseContrastEnabled")
+        }
+
+        do {
+            let swiftUIData = try PropertyListSerialization.data(fromPropertyList: swiftUI, format: .xml, options: 0)
+            let accessibilityData = try PropertyListSerialization.data(fromPropertyList: accessibility, format: .xml, options: 0)
+            try swiftUIData.write(to: swiftUIURL)
+            try accessibilityData.write(to: accessibilityURL)
+            return true
+        } catch {
+            print("(mg) liquid glass: failed to write the preference files: \(error.localizedDescription)")
+            return false
+        }
+    }
+
     // MARK: - Safe iOS 27 Siri AI (Beta) activation
 
     struct SiriAIChangeResult {

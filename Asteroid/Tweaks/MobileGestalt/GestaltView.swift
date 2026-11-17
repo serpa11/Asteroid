@@ -45,6 +45,35 @@ struct GestaltView: View {
     // iOS draw the Duo's wide-aspect layout, but it can also stop SpringBoard
     // from rendering at all - hence the four warnings before every respring.
     @State private var mgDuoGeometry = false
+    // Eligibility extras. Each one maps to a real MobileGestalt capability
+    // answer; nothing is written until Apply, exactly like every other toggle.
+    @State private var mgSiriAIMode = false
+    @State private var mgSiriCachePatch = false
+    @State private var mgLiquidGlass = false
+    @State private var mgModelNumber = ""
+    @State private var mgOgModelNumber = ""
+    @State private var mgSalesRegion = ""
+    @State private var mgOgSalesRegion = ""
+    @State private var mgRegionCode = ""
+    @State private var mgOgRegionCode = ""
+
+    // Chooser options. Model numbers are Apple's regulatory A-numbers; regions
+    // are the sales-region bundles and the two-letter region codes iOS ships.
+    private enum MGModelNumber {
+        static let all = ["A2849", "A2895", "A2896", "A3090", "A3093", "A3101", "A3104",
+                          "A3290", "A3293", "A3296", "A3403", "A3404", "A3420", "A3421",
+                          "A3438", "A3439", "A3447"]
+    }
+    private enum MGSalesRegion {
+        static let all = ["LL/A", "ZA/A", "CH/A", "HK/A", "JP/A", "KR/A", "IN/A", "AU/A",
+                          "CA/A", "BR/A", "MX/A", "DE/A", "FR/A", "IT/A", "ES/A", "RU/A",
+                          "X/A", "Y/A"]
+    }
+    private enum MGRegionCode {
+        static let all = ["LL", "ZA", "CH", "HK", "JP", "KR", "IN", "AU", "CA", "BR",
+                          "MX", "DE", "FR", "IT", "ES", "RU", "AB", "BC", "B", "C",
+                          "X", "Y", "Z", "FC", "FD", "GP", "GH", "GK", "GL", "GT", "HW"]
+    }
     
     @State private var showInfoSheet = false
     @State private var idiotButtonTimerComplete = false
@@ -99,6 +128,7 @@ struct GestaltView: View {
                             if doubleSysVrs() >= 26.0 {
                                 Text("iPhone Air").tag(2736)
                                 Text("iPhone 18 Pro").tag(2738)
+                                Text("iPhone Duo").tag(2034)
                             }
                             if isHomeButtonHD() {
                                 Text("iPhone X Gestures").tag(2436)
@@ -115,7 +145,6 @@ struct GestaltView: View {
                     }
                     }
                     Toggle("Custom Device Name", isOn: $mgEnableDeviceName)
-                        .modifier(SectionPlatter())
                     if mgEnableDeviceName {
                         TextField("Device Name", text: $mgDeviceName)
                     }
@@ -205,6 +234,86 @@ struct GestaltView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                    }
+                    // Eligibility extras - each one is a real MobileGestalt
+                    // capability answer that Settings and the system services
+                    // read to decide whether to offer the feature.
+                    PlainToggle("Photos Cleanup", infoType: .info, infoTitle: "Photos Cleanup", infoMessage: MGMsg.photosCleanup, isOn: store.mgKeyBinding([MGKey.photosCleanup, MGKey.photosPostFx, MGKey.photosAnalysis]))
+                    PlainToggle("Personal Translator", infoType: .info, infoTitle: "Personal Translator", infoMessage: MGMsg.translator, minVrs: 26.0, isOn: store.mgKeyBinding([MGKey.translator]))
+                    PlainToggle("Handwriting Synthesis", infoType: .info, infoTitle: "Handwriting Synthesis", infoMessage: MGMsg.handwrit, minVrs: 26.4, isOn: store.mgKeyBinding([MGKey.handwrit]))
+                    PlainToggle("Always-Listening Hey Siri", infoType: .info, infoTitle: "Always-Listening Hey Siri", infoMessage: MGMsg.heySiri, minVrs: 27.0, isOn: store.mgKeyBinding([MGKey.heySiri]))
+                    PlainToggle("Audio Intelligence", infoType: .info, infoTitle: "Audio Intelligence", infoMessage: MGMsg.audioIntel, minVrs: 27.0, isOn: store.mgKeyBinding([MGKey.audioIntel]))
+                    PlainToggle("On-Device Siri", infoType: .info, infoTitle: "On-Device Siri", infoMessage: MGMsg.onDeviceSiri, minVrs: 17.0, isOn: store.mgKeyBinding([MGKey.onDeviceSiri, MGKey.siriOnDevice, MGKey.siriOffline]))
+                    PlainToggle("Audio Mix", infoType: .info, infoTitle: "Audio Mix", infoMessage: MGMsg.audioMix, minVrs: 26.0, isOn: store.mgKeyBinding([MGKey.audioMix]))
+                    PlainToggle("Spatial FaceTime Audio", infoType: .info, infoTitle: "Spatial FaceTime Audio", infoMessage: MGMsg.spatialFT, minVrs: 15.0, isOn: store.mgKeyBinding([MGKey.spatialFT]))
+                    PlainToggle("WAPI", infoType: .info, infoTitle: "WAPI", infoMessage: MGMsg.wapi, isOn: store.mgKeyBinding([MGKey.wapi]))
+                    PlainToggle("Internal Settings Bundle", infoType: .info, infoTitle: "Internal Settings Bundle", infoMessage: MGMsg.internalSettings, isOn: store.mgKeyBinding([MGKey.internalSettings]))
+                    PlainToggle("HDR Photo Display", infoType: .info, infoTitle: "HDR Photo Display", infoMessage: MGMsg.hdrPhoto, minVrs: 14.5, isOn: store.mgKeyBinding([MGKey.hdrPhoto]))
+
+                    PlainToggle("Photos Local Light", infoType: .info, infoTitle: "Photos Local Light", infoMessage: MGMsg.photosLocalLight, minVrs: 12.0, isOn: store.mgKeyBinding([MGKey.photosLocalLight]))
+                    PlainToggle("Live Photo Auto", infoType: .info, infoTitle: "Live Photo Auto", infoMessage: MGMsg.livePhotoAuto, minVrs: 12.0, isOn: store.mgKeyBinding([MGKey.livePhotoAuto]))
+                    PlainToggle("Spatial Over Capture", infoType: .info, infoTitle: "Spatial Over Capture", infoMessage: MGMsg.spatialOverCapture, minVrs: 13.4, isOn: store.mgKeyBinding([MGKey.spatialOverCapture]))
+                    PlainToggle("Offline Dictation", infoType: .info, infoTitle: "Offline Dictation", infoMessage: MGMsg.offlineDictation, isOn: store.mgKeyBinding([MGKey.offlineDictation]))
+                    PlainToggle("Siri Barge-In", infoType: .info, infoTitle: "Siri Barge-In", infoMessage: MGMsg.siriBargeIn, minVrs: 13.4, isOn: store.mgKeyBinding([MGKey.siriBargeIn]))
+                    PlainToggle("HDR Deferred Processing", infoType: .info, infoTitle: "HDR Deferred Processing", infoMessage: MGMsg.hdrDeferred, minVrs: 13.0, isOn: store.mgKeyBinding([MGKey.hdrDeferred]))
+                    PlainToggle("Photo Stream", infoType: .info, infoTitle: "Photo Stream", infoMessage: MGMsg.photosStream, isOn: store.mgKeyBinding([MGKey.photosStream]))
+                    PlainToggle("Photo Sharing", infoType: .info, infoTitle: "Photo Sharing", infoMessage: MGMsg.photoSharing, minVrs: 11.0, isOn: store.mgKeyBinding([MGKey.photoSharing]))
+                    PlainToggle("Secure Microphone", infoType: .warning, infoTitle: "Secure Microphone", infoMessage: MGMsg.secureMic, minVrs: 13.4, isOn: store.mgKeyBinding([MGKey.secureMic]))
+
+                    PlainToggle("Siri AI Mode (Experimental)", icon: "exclamationmark.triangle.fill", infoType: .warning, infoTitle: "Siri AI Mode", infoMessage: MGMsg.siriAIMode, minVrs: 27.0, critical: true, isOn: $mgSiriAIMode)
+                        .onChange(of: mgSiriAIMode) { (_, enabled) in
+                            setSiriAIMode(enabled)
+                        }
+                    PlainToggle("Siri AI Cache Patch", icon: "exclamationmark.triangle.fill", infoType: .warning, infoTitle: "Siri AI Cache Patch", infoMessage: MGMsg.siriCachePatch, critical: true, isOn: $mgSiriCachePatch)
+                        .onChange(of: mgSiriCachePatch) { (_, enabled) in
+                            setSiriAICachePatch(enabled)
+                        }
+                    PlainToggle("Liquid Glass (iOS 18 Look)", icon: "exclamationmark.octagon.fill", infoType: .warning, infoTitle: "Liquid Glass (iOS 18 Look)", infoMessage: MGMsg.liquidGlass, critical: true, isOn: $mgLiquidGlass)
+                        .onChange(of: mgLiquidGlass) { (_, enabled) in
+                            setLiquidGlassDisabled(enabled)
+                        }
+
+                    HStack {
+                        Picker("Model Number", selection: $mgModelNumber) {
+                            Text("Original (\(mgOgModelNumber))").tag("")
+                            ForEach(MGModelNumber.all, id: \.self) { Text($0).tag($0) }
+                        }
+                        Spacer()
+                        Button {
+                            Alertinator.shared.alert(title: "Model Number", body: MGMsg.modelNumber)
+                        } label: {
+                            Image(systemName: "info.circle")
+                                .frame(width: 24, height: 22)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    HStack {
+                        Picker("Sales Region", selection: $mgSalesRegion) {
+                            Text("Original (\(mgOgSalesRegion))").tag("")
+                            ForEach(MGSalesRegion.all, id: \.self) { Text($0).tag($0) }
+                        }
+                        Spacer()
+                        Button {
+                            Alertinator.shared.alert(title: "Sales Region", body: MGMsg.salesRegion)
+                        } label: {
+                            Image(systemName: "info.circle")
+                                .frame(width: 24, height: 22)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    HStack {
+                        Picker("Region Code", selection: $mgRegionCode) {
+                            Text("Original (\(mgOgRegionCode))").tag("")
+                            ForEach(MGRegionCode.all, id: \.self) { Text($0).tag($0) }
+                        }
+                        Spacer()
+                        Button {
+                            Alertinator.shared.alert(title: "Region Code", body: MGMsg.regionCode)
+                        } label: {
+                            Image(systemName: "info.circle")
+                                .frame(width: 24, height: 22)
+                        }
+                        .buttonStyle(.plain)
                     }
                 } header: {
                     HeaderLabel("Eligibility", symbol: "flag")
@@ -340,9 +449,7 @@ struct GestaltView: View {
                                 
                                 Section {
                                     Toggle("Restore Tweaks on Launch", isOn: $mgWriteAtomically)
-                                        .modifier(SectionPlatter())
                                     Toggle("Show Custom Keys", isOn: $showCustomKeys)
-                                        .modifier(SectionPlatter())
                                 } footer: {
                                     Text("Restore Tweaks on Launch re-applies your saved MobileGestalt the moment the app opens, before anything else reads it. That is what keeps your tweaks alive across a reboot or a respring.")
                                 }
@@ -514,6 +621,52 @@ struct GestaltView: View {
         store.objectWillChange.send()
     }
 
+    // MARK: eligibility extras
+    // Siri AI Mode writes SiriMode = 2 and spoofs the product type the
+    // eligibility checks look at. Turning it off puts the original model back.
+    private func setSiriAIMode(_ enable: Bool) {
+        if enable {
+            store.cacheExtra[MGKey.siriMode] = 2
+            mgProductType = "iPhone19,2"
+        } else {
+            store.cacheExtra.removeObject(forKey: MGKey.siriMode)
+            if mgProductType == "iPhone19,2" {
+                mgProductType = ogMachineName.isEmpty ? machineName() : ogMachineName
+            }
+        }
+        store.objectWillChange.send()
+    }
+
+    // The Filza line-104 byte edit, done here instead of Filza. The store
+    // refuses the write unless it finds a genuinely cleared capability slot, so
+    // a mismatched cache aborts instead of being corrupted.
+    private func setSiriAICachePatch(_ enable: Bool) {
+        guard store.mgSetSiriAICachePatch(enable: enable) else {
+            mgSiriCachePatch = false
+            Alertinator.shared.alert(title: "Siri AI Cache Patch failed", body: "MobileGestalt's CacheData did not contain a capability slot this patch can write, so nothing was changed. Check the logs for details.")
+            return
+        }
+        if enable {
+            // The patch is only ever used together with the 17 Pro identity and
+            // the charge-limit menu, which is what the eligibility checks read.
+            mgProductType = "iPhone18,1"
+            store.cacheExtra[MGKey.chargeLim] = 1
+        }
+        store.objectWillChange.send()
+    }
+
+    // Liquid Glass lives in the system preferences, not MobileGestalt, so this
+    // writes real files. A failure reverts the toggle rather than leaving the
+    // switch on while nothing changed.
+    private func setLiquidGlassDisabled(_ disable: Bool) {
+        guard store.mgSetLiquidGlassDisabled(disable) else {
+            mgLiquidGlass = false
+            Alertinator.shared.alert(title: "Could not change Liquid Glass", body: "Asteroid could not write the system preference files, so nothing was changed.")
+            return
+        }
+        print("(mg) liquid glass disabled: \(disable)")
+    }
+
     private func mgLoadData() -> NSMutableDictionary {
         do {
             let mgData = try Data(contentsOf: MGURL.fsGestaltURL)
@@ -529,6 +682,9 @@ struct GestaltView: View {
                let ogArtwork = ogCacheExtra[MGKey.artwork] as? NSDictionary {
                 mgOgSubtype = ogArtwork["ArtworkDeviceSubType"] as? Int ?? 0
                 mgOgDeviceName = ogArtwork["ArtworkDeviceProductDescription"] as? String ?? ""
+                mgOgModelNumber = ogCacheExtra[MGKey.modelNumber] as? String ?? ""
+                mgOgSalesRegion = ogCacheExtra[MGKey.regionInfo] as? String ?? ""
+                mgOgRegionCode = ogCacheExtra[MGKey.regionCode] as? String ?? ""
             } else {
                 throw "failed to get information from mobilegestalt"
             }
@@ -547,6 +703,14 @@ struct GestaltView: View {
                 }
                 mgProductType = cacheExtra[MGKey.prodType] as? String
                     ?? (ogMachineName.isEmpty ? machineName() : ogMachineName)
+                // Chooser state follows what is actually on disk, so reopening
+                // the app after a respring still shows the applied value.
+                mgModelNumber = cacheExtra[MGKey.modelNumber] as? String ?? ""
+                mgSalesRegion = cacheExtra[MGKey.regionInfo] as? String ?? ""
+                mgRegionCode = cacheExtra[MGKey.regionCode] as? String ?? ""
+                mgSiriAIMode = (cacheExtra[MGKey.siriMode] as? Int) == 2
+                mgSiriCachePatch = store.mgSiriCachePatchIsActive()
+                mgLiquidGlass = store.mgLiquidGlassIsDisabled()
                 // The experimental display spoof is read back from MobileGestalt
                 // so the four respring warnings still fire after a reboot.
                 if (cacheExtra["g7YQ1Djxh4YiKlEeaoGhzg"] as? Int) == Duo.screenWidth,
@@ -616,6 +780,37 @@ struct GestaltView: View {
                 cacheExtra[MGKey.prodType] = mgProductType
             }
 
+            // Choosers. "Original" resolves back to the value that was captured
+            // from the untouched MobileGestalt, so picking it restores things.
+            // The model chooser yields to iPhone Duo Mode, which owns the same
+            // regulatory key for its own spoof.
+            if !mgDuoMode {
+                let resolvedModel = mgModelNumber.isEmpty ? mgOgModelNumber : mgModelNumber
+                if resolvedModel.isEmpty {
+                    cacheExtra.removeObject(forKey: MGKey.modelNumber)
+                    cacheExtra.removeObject(forKey: MGKey.regulatoryModel)
+                } else {
+                    cacheExtra[MGKey.modelNumber] = resolvedModel
+                    cacheExtra[MGKey.regulatoryModel] = resolvedModel
+                }
+            }
+
+            let resolvedRegion = mgSalesRegion.isEmpty ? mgOgSalesRegion : mgSalesRegion
+            if resolvedRegion.isEmpty {
+                cacheExtra.removeObject(forKey: MGKey.regionInfo)
+                cacheExtra.removeObject(forKey: MGKey.regionActivation)
+            } else {
+                cacheExtra[MGKey.regionInfo] = resolvedRegion
+                cacheExtra[MGKey.regionActivation] = resolvedRegion
+            }
+
+            // The region code is deliberately only ever written, never removed:
+            // "Disable Region Restrictions" uses the same key and would be
+            // silently undone by a restore here.
+            if !mgRegionCode.isEmpty {
+                cacheExtra[MGKey.regionCode] = mgRegionCode
+            }
+
             for item in customKeys {
                 if item.isOn {
                     // Written as 1 instead of true so isEnabled() and the
@@ -673,6 +868,12 @@ struct GestaltView: View {
                 // experimental-respring warnings are no longer needed.
                 mgDuoGeometry = false
                 mgr.duoGeometryActive = false
+                mgSiriAIMode = false
+                mgSiriCachePatch = store.mgSiriCachePatchIsActive()
+                mgLiquidGlass = store.mgLiquidGlassIsDisabled()
+                mgModelNumber = mgOgModelNumber
+                mgSalesRegion = mgOgSalesRegion
+                mgRegionCode = mgOgRegionCode
                 refreshStateFromStore()
                 Alertinator.shared.alert(title: "Successfully reverted MobileGestalt tweaks!", body: MGMsg.revertComp)
             } else {

@@ -53,6 +53,5 @@ struct InfoSheetCell: View {
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .modifier(SectionPlatter())
     }
 }

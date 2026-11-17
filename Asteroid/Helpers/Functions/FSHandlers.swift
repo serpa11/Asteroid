@@ -18,8 +18,15 @@ class FSHandlers {
                 return
             }
             defer { free(res) }
-            
-            let string = String(cString: res)
+
+            // String(cString:) traps when the bytes are not valid UTF-8, and
+            // container paths returned by containermanagerd can contain raw
+            // bytes. Decode defensively so a bad entry cannot crash the app.
+            let bytes = Data(bytes: res, count: strlen(res))
+            guard let string = String(data: bytes, encoding: .utf8) else {
+                print("(fs) container listing was not valid UTF-8")
+                return
+            }
             array = string.split(separator: "\n", omittingEmptySubsequences: true).map(String.init)
         }
         return array

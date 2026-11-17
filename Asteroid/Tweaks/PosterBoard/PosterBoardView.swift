@@ -255,6 +255,13 @@ struct PosterBoardView: View {
         if pbContainerPath.isEmpty {
             pbContainerPath = fsHandlers.getContainerPath(forMatch: "com.apple.PosterBoard")
         }
+        // No PosterBoard container yet is normal on a fresh install. Returning
+        // here instead of granting access to an empty path is what stopped the
+        // screen from opening at all.
+        if pbContainerPath.isEmpty {
+            print("(pb) no PosterBoard container found yet")
+            return
+        }
         if !fm.isReadableFile(atPath: pbContainerPath) {
             let _ = bq.grantAccess(atPath: pbContainerPath)
         }
@@ -323,8 +330,10 @@ struct PosterBoardView: View {
                 withAnimation {
                     tendiesArray.append(tendies)
                 }
+                return true
             }
-            return true
+            print("(pb) imported file contained no usable descriptors")
+            return false
         case .failure(let error):
             print("(pb) failed to import file: \(error.localizedDescription)")
             return false

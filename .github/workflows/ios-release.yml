@@ -63,6 +63,14 @@ jobs:
           name: fahkahaka
           path: fahkahaka/dist
 
+      - name: Fetch AirliftFFI
+        run: |
+          set -euo pipefail
+          mkdir -p Asteroid/AirliftFFI.xcframework/ios-arm64
+          curl -sL -o Asteroid/AirliftFFI.xcframework/ios-arm64/libairlift_ffi.a \
+            "https://raw.githubusercontent.com/adnan120hz/aircard-ios/40640c4d827aeab8d798285b57d24fcf6be070d0/AirliftFFI.xcframework/ios-arm64/libairlift_ffi.a"
+          ls -lh Asteroid/AirliftFFI.xcframework/ios-arm64/libairlift_ffi.a
+
       - name: build Asteroid
         run: |
           set -euo pipefail
@@ -80,6 +88,27 @@ jobs:
           mkdir -p Payload
 
           APP_PATH="$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' -print -quit)"
+          PLIST="$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Delete :NSBonjourServices" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSBonjourServices array" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSBonjourServices:0 string _remotepairing-pairable-host._tcp" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSBonjourServices:1 string _asteroidprobe._tcp" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Delete :UIBackgroundModes" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes array" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes:0 string audio" "$PLIST"
+          if /usr/libexec/PlistBuddy -c "Print :CFBundleIcons" "$PLIST" >/dev/null 2>&1; then
+            /usr/libexec/PlistBuddy -c "Delete :CFBundleIcons:CFBundleAlternateIcons" "$PLIST" 2>/dev/null || true
+          else
+            /usr/libexec/PlistBuddy -c "Add :CFBundleIcons dict" "$PLIST"
+          fi
+          /usr/libexec/PlistBuddy -c "Add :CFBundleIcons:CFBundleAlternateIcons dict" "$PLIST"
+          for ALT in ID CN VN RU; do
+            /usr/libexec/PlistBuddy -c "Add :CFBundleIcons:CFBundleAlternateIcons:AppIcon-$ALT dict" "$PLIST"
+            /usr/libexec/PlistBuddy -c "Add :CFBundleIcons:CFBundleAlternateIcons:AppIcon-$ALT:CFBundleIconFiles array" "$PLIST"
+            /usr/libexec/PlistBuddy -c "Add :CFBundleIcons:CFBundleAlternateIcons:AppIcon-$ALT:CFBundleIconFiles:0 string AppIcon-$ALT" "$PLIST"
+            /usr/libexec/PlistBuddy -c "Add :CFBundleIcons:CFBundleAlternateIcons:AppIcon-$ALT:UIPrerenderedIcon bool false" "$PLIST"
+          done
+
           cp -R "$APP_PATH" Payload/
 
           ditto -c -k --keepParent Payload Asteroid.ipa

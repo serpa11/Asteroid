@@ -5,7 +5,7 @@ import Darwin
 /// It must match `Asteroid.entitlements` — changing this string alone
 /// (without creating and provisioning a new App Group in Xcode) breaks
 /// the sandbox escape, so it stays as the original Asteroid group.
-let asteroidAppGroup = "group.$(PRODUCT_BUNDLE_IDENTIFIER)"
+let asteroidAppGroup = "group.com.jbdotparty.Asteroid"
 
 // MARK: - App Group resolution
 
@@ -111,7 +111,7 @@ enum AppGroupResolver {
         list.append(contentsOf: signedAppGroups)
         list.append(configuredGroup)
         list.append(contentsOf: derivedCandidates())
-        list.append("group.$(PRODUCT_BUNDLE_IDENTIFIER)")
+        list.append("group.com.jbdotparty.Asteroid")
         list.append("group.com.jbdotparty.Asteroid")
         var seen = Set<String>()
         return list.filter { seen.insert($0).inserted }

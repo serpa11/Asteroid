@@ -6,161 +6,123 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		1541E9D33036B49300C8AF93 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 1541E9D23036B49300C8AF93 /* ZIPFoundation */; };
-		1541E9D63036B56800C8AF93 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1541E9D53036B56800C8AF93 /* MobileCoreServices.framework */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
-		151457FF302FE21A00DDFE07 /* Asteroid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Asteroid.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1541E9D53036B56800C8AF93 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = DEVELOPER_DIR; };
+		3657C2D9303730E800908AE2 /* Asteroid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Asteroid.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D3A243CE36F84FEDACB5046F /* AirliftFFI.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = Asteroid/AirliftFFI.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		15556FFF303C04DB006C2969 /* Exceptions for "Asteroid" folder in "Asteroid" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 151457FE302FE21A00DDFE07 /* Asteroid */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+/* Begin PBXBuildFile section */
+		029B5ED6420541498F75A3FF /* AirliftFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3A243CE36F84FEDACB5046F /* AirliftFFI.xcframework */; };
+/* End PBXBuildFile section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		15145801302FE21A00DDFE07 /* Asteroid */ = {
+		3657C2DB303730E800908AE2 /* Asteroid */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				15556FFF303C04DB006C2969 /* Exceptions for "Asteroid" folder in "Asteroid" target */,
-			);
 			path = Asteroid;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		151457FC302FE21A00DDFE07 /* Frameworks */ = {
+		3657C2D6303730E800908AE2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
-				1541E9D63036B56800C8AF93 /* MobileCoreServices.framework in Frameworks */,
-				1541E9D33036B49300C8AF93 /* ZIPFoundation in Frameworks */,
+				029B5ED6420541498F75A3FF /* AirliftFFI.xcframework in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		151457F6302FE21A00DDFE07 = {
+		3657C2D0303730E800908AE2 = {
 			isa = PBXGroup;
 			children = (
-				15145801302FE21A00DDFE07 /* Asteroid */,
-				1541E9D43036B56800C8AF93 /* Frameworks */,
-				15145800302FE21A00DDFE07 /* Products */,
+				3657C2DB303730E800908AE2 /* Asteroid */,
+				3657C2DA303730E800908AE2 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		15145800302FE21A00DDFE07 /* Products */ = {
+		3657C2DA303730E800908AE2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				151457FF302FE21A00DDFE07 /* Asteroid.app */,
+				3657C2D9303730E800908AE2 /* Asteroid.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		1541E9D43036B56800C8AF93 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				1541E9D53036B56800C8AF93 /* MobileCoreServices.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		151457FE302FE21A00DDFE07 /* Asteroid */ = {
+		3657C2D8303730E800908AE2 /* Asteroid */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1514580A302FE21C00DDFE07 /* Build configuration list for PBXNativeTarget "Asteroid" */;
+			buildConfigurationList = 3657C2E4303730E900908AE2 /* Build configuration list for PBXNativeTarget "Asteroid" */;
 			buildPhases = (
-				151457FB302FE21A00DDFE07 /* Sources */,
-				151457FC302FE21A00DDFE07 /* Frameworks */,
-				151457FD302FE21A00DDFE07 /* Resources */,
+				3657C2D5303730E800908AE2 /* Sources */,
+				3657C2D6303730E800908AE2 /* Frameworks */,
+				3657C2D7303730E800908AE2 /* Resources */,
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			fileSystemSynchronizedGroups = (
-				15145801302FE21A00DDFE07 /* Asteroid */,
+				3657C2DB303730E800908AE2 /* Asteroid */,
 			);
 			name = Asteroid;
-			packageProductDependencies = (
-				1541E9D23036B49300C8AF93 /* ZIPFoundation */,
-			);
 			productName = Asteroid;
-			productReference = 151457FF302FE21A00DDFE07 /* Asteroid.app */;
+			productReference = 3657C2D9303730E800908AE2 /* Asteroid.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		151457F7302FE21A00DDFE07 /* Project object */ = {
+		3657C2D1303730E800908AE2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2620;
-				LastUpgradeCheck = 2630;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
-					151457FE302FE21A00DDFE07 = {
-						CreatedOnToolsVersion = 26.2;
+					3657C2D8303730E800908AE2 = {
+						CreatedOnToolsVersion = 27.0;
 						LastSwiftMigration = 2700;
 					};
 				};
 			};
-			buildConfigurationList = 151457FA302FE21A00DDFE07 /* Build configuration list for PBXProject "Asteroid" */;
+			buildConfigurationList = 3657C2D4303730E800908AE2 /* Build configuration list for PBXProject "Asteroid" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 151457F6302FE21A00DDFE07;
+			mainGroup = 3657C2D0303730E800908AE2;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				1541E9D13036B49300C8AF93 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
-			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 15145800302FE21A00DDFE07 /* Products */;
+			productRefGroup = 3657C2DA303730E800908AE2 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				151457FE302FE21A00DDFE07 /* Asteroid */,
+				3657C2D8303730E800908AE2 /* Asteroid */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		151457FD302FE21A00DDFE07 /* Resources */ = {
+		3657C2D7303730E800908AE2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		151457FB302FE21A00DDFE07 /* Sources */ = {
+		3657C2D5303730E800908AE2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		15145808302FE21C00DDFE07 /* Debug */ = {
+		3657C2E2303730E900908AE2 /* Debug configuration for PBXProject "Asteroid" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -194,9 +156,8 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = HTH7RGGR9D;
+				DEVELOPMENT_TEAM = K976G5HK7K;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -214,18 +175,18 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
-		15145809302FE21C00DDFE07 /* Release */ = {
+		3657C2E3303730E900908AE2 /* Release configuration for PBXProject "Asteroid" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -259,9 +220,8 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = HTH7RGGR9D;
+				DEVELOPMENT_TEAM = K976G5HK7K;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -273,157 +233,140 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		1514580B302FE21C00DDFE07 /* Debug */ = {
+		3657C2E5303730E900908AE2 /* Debug configuration for PBXNativeTarget "Asteroid" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = Asteroid.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Asteroid/Asteroid.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = "";
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
+				DEVELOPMENT_TEAM = K976G5HK7K;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Asteroid/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Asteroid;
-				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_NSBonjourServices = (
+					"_remotepairing-pairable-host._tcp",
+					"_asteroidprobe._tcp",
+				);
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Asteroid needs Local Network access to pair this iPhone on-device and obtain the pairing file.";
+				INFOPLIST_KEY_UIBackgroundModes = (
+					audio,
+				);
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 26.2;
-				MARKETING_VERSION = 2.3.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.Asteroid;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 7.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jbdotparty.Asteroid";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
-				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = Asteroid/bridge.h;
+				SWIFT_OBJC_BRIDGING_HEADER = "Asteroid/Asteroid-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				XROS_DEPLOYMENT_TARGET = 26.2;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
-		1514580C302FE21C00DDFE07 /* Release */ = {
+		3657C2E6303730E900908AE2 /* Release configuration for PBXNativeTarget "Asteroid" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = Asteroid.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Asteroid/Asteroid.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = "";
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
+				DEVELOPMENT_TEAM = K976G5HK7K;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Asteroid/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Asteroid;
-				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_NSBonjourServices = (
+					"_remotepairing-pairable-host._tcp",
+					"_asteroidprobe._tcp",
+				);
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Asteroid needs Local Network access to pair this iPhone on-device and obtain the pairing file.";
+				INFOPLIST_KEY_UIBackgroundModes = (
+					audio,
+				);
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 26.2;
-				MARKETING_VERSION = 2.3.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.Asteroid;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 7.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jbdotparty.Asteroid";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
-				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = Asteroid/bridge.h;
+				SWIFT_OBJC_BRIDGING_HEADER = "Asteroid/Asteroid-Bridging-Header.h";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				XROS_DEPLOYMENT_TARGET = 26.2;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		151457FA302FE21A00DDFE07 /* Build configuration list for PBXProject "Asteroid" */ = {
+		3657C2D4303730E800908AE2 /* Build configuration list for PBXProject "Asteroid" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				15145808302FE21C00DDFE07 /* Debug */,
-				15145809302FE21C00DDFE07 /* Release */,
+				3657C2E2303730E900908AE2 /* Debug configuration for PBXProject "Asteroid" */,
+				3657C2E3303730E900908AE2 /* Release configuration for PBXProject "Asteroid" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1514580A302FE21C00DDFE07 /* Build configuration list for PBXNativeTarget "Asteroid" */ = {
+		3657C2E4303730E900908AE2 /* Build configuration list for PBXNativeTarget "Asteroid" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1514580B302FE21C00DDFE07 /* Debug */,
-				1514580C302FE21C00DDFE07 /* Release */,
+				3657C2E5303730E900908AE2 /* Debug configuration for PBXNativeTarget "Asteroid" */,
+				3657C2E6303730E900908AE2 /* Release configuration for PBXNativeTarget "Asteroid" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		1541E9D13036B49300C8AF93 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.20;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		1541E9D23036B49300C8AF93 /* ZIPFoundation */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 1541E9D13036B49300C8AF93 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
-			productName = ZIPFoundation;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = 151457F7302FE21A00DDFE07 /* Project object */;
+	rootObject = 3657C2D1303730E800908AE2 /* Project object */;
+	validationLevel = 1;
 }

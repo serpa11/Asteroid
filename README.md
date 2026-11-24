@@ -1,34 +1,20 @@
-<div align="center">
-  <br>
-  <a href="https://jailbreak.party/discord"><img src="https://github.com/jailbreakdotparty/Asteroid/blob/main/PreviewIcon.png?raw=true" alt="App Icon" width="150"></a>
-  <br>
-  <h1>Asteroid</h1>
-  <p>iOS customization toolbox using the <a href="https://github.com/forcequitOS/bad_query">bad_query</a> sandbox escape.</p>
-  <p>Supports iOS 27.0 - 27.3 (every build: 27.0, 27.0.1, 27.1, 27.2, 27.2.1, 27.3 beta & the 27 betas).</p>
-</div>
+﻿# Asteroid
 
-### Before you begin...
-- Please create a backup of your device before usage! While Asteroid has been extensively tested, there is still a possibility that you could lose your data by using this tool.
-- If a tweak doesn't work how you were expecting, **do not open an issue or ask for support regarding it!** All tweaks are reliant on your device cooperating properly, and in some cases this can even involve Apple's servers. We'll be unable to help you.
+Asteroid is a MobileGestalt tweak app for iOS, rebuilt on the latest [WorkTweaks](https://github.com/adnan120hz/WorkTweaks) foundation by Adnan. It uses the `worse_query` sandbox escape to apply MobileGestalt tweaks on-device, with backup/restore, and keeps the Asteroid icon and identity.
 
-### Supported Versions
->[!NOTE]
->If your version doesn't show up on this list, your device is not supported. **Do not ask us for any support regarding extending version support!** Exploits that apps like these rely on are very rare to come by, so there's nothing we can do if your device isn't supported.
-- iOS/iPadOS 26.0 - 26.6.2 **(limited functionality, e.g. no gestalt tweaks)**
-- iOS/iPadOS 27.0 (24A427 / 24A437 / 24A8428) -> Release
-- iOS/iPadOS 27.0.1 (24A446) -> Release
-- iOS/iPadOS 27.1 (24A94425) -> iPhone Duo launch build
-- iOS/iPadOS 27.2 (24B119 / 24B91020) and 27.2.1 (24B91034) -> Release
-- iOS/iPadOS 27.3 beta 1 (24C5037i) -> Beta
-- iOS/iPadOS 27.0 betas (24A5355q, 24A5370h, 24A5380h, 24A5380i, 24A5380l, 24A5390f) -> Beta 1-4
+## Highlights
 
-Every iOS 27 build is accepted, so a new point release or beta does not need an Asteroid update to keep working.
+- **Siri AI Cache Patch (line 104)** - does the real Filza line-104 CacheData edit in-app: finds the 51-byte CacheData slot (guide line 104 / chunk 97 first, then scans every byte offset for the pattern on any iOS version), flips the byte at offset 21 (`0x00` -> `0x02`), and refuses to write when the pattern is missing or ambiguous.
+- **MobileGestalt tweaks** - Dynamic Island, AOD, Apple Intelligence / Siri AI, Stage Manager, Charge Limit, Action Button, Camera Control, iPadOS mode, device spoofing, and more, with per-key backup and restore.
+- **Airlift & pairing** - on-device pairing flow and Airlift utilities (where supported).
+- **App Data / Cache / PosterBoard / Deploy** - the WorkTweaks utility suite, rebranded as Asteroid.
+- **Backups** - original backup, after-apply snapshots, and manual snapshots with whole/per-tweak/per-key restore.
 
-All iOS 26 versions cannot use some of the tweaks that this toolbox contains. The section below tells you what tweaks work on what versions. iOS 26 cannot be used with this tool for gestalt modification please download nugget or any other gestalt tool for it.
+## Build
 
-iOS 18 is not supported at all with asteroid. You will need iOS 26 for limited functionality aka no gestalt only few things and iOS 27 for the full experience!
+Pushes to `main` build unsigned IPAs in GitHub Actions (`build and release` workflow) and publish them to the `development` pre-release.
 
-### FAQ
-1. **Why can't I use MobileGestalt tweaks on iOS 26?** The exploit that Asteroid relies on, `bad_query`, is *not* capable of writing to MobileGestalt, therefore those tweaks do not work.
-2. **Why aren't PosterBoard wallpapers showing up?** Sometimes, you'll have to reset Collections, which can be done in-app. If the wallpaper still doesn't show up after that, then it's likely a wallpaper-based issue rather than something that Asteroid can solve.
-3. **Where can I get dialer themes and custom wallpapers?** Check out https://cowabun.ga/wallpapers for these features.
+## Credits / License
+
+Asteroid is based on [WorkTweaks](https://github.com/adnan120hz/WorkTweaks) by Adnan (@adnan120hz) and the upstream projects it credits (worse_query / ForceQuit OS, mond, Nugget, Pocket Poster, and others).  
+WorkTweaks/derived code is distributed under **AGPL-3.0** - see [LICENSE](LICENSE).

@@ -1,126 +1,23 @@
-//
-//  AsteroidApp.swift
-//  Asteroid
-//
-//  Created by lunginspector on 8/14/26.
-//
-
 import SwiftUI
-import Combine
-import UniformTypeIdentifiers
-
-let device = UIDevice.current
-let fm = FileManager.default
-var weOnADebugBuild = false
-var pipe = Pipe()
-var sema = DispatchSemaphore(value: 0)
 
 @main
 struct AsteroidApp: App {
-    @StateObject private var mgr = AsteroidManager.shared
-    @State private var currentTab = 0
-
     init() {
-        setvbuf(stdout, nil, _IONBF, 0)
-        UserDefaults.standard.register(defaults: ["mgWriteAtomically": true, "appHaptics": true])
-        dup2(pipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
-        
-        // fix file picker
-        let fixMethod = class_getInstanceMethod(UIDocumentPickerViewController.self, #selector(UIDocumentPickerViewController.fix_init(forOpeningContentTypes:asCopy:)))!
-        let origMethod = class_getInstanceMethod(UIDocumentPickerViewController.self, #selector(UIDocumentPickerViewController.init(forOpeningContentTypes:asCopy:)))!
-        method_exchangeImplementations(origMethod, fixMethod)
-        
-        #if DEBUG
-        weOnADebugBuild = true
-        #else
-        weOnADebugBuild = false
-        #endif
-
-        // Capture the real device model once, before any view reads it to
-        // compute its hardware gates (views render before ContentView.onAppear).
-        let defaults = UserDefaults.standard
-        if defaults.string(forKey: "ogMachineName")?.isEmpty ?? true {
-            defaults.set(machineName(), forKey: "ogMachineName")
-        }
-
-        // Restore saved tweaks BEFORE the first view reads MobileGestalt.
-        // Restoring afterwards left the Home screen showing the pre-restore
-        // (freshly regenerated) state: every toggle looked off after a reboot
-        // and the next Apply overwrote the tweaks that had just been restored.
-        if defaults.bool(forKey: "mgWriteAtomically") {
-            switch mgRestorePersistedChanges() {
-            case .restored:
-                print("[*] restored saved MobileGestalt tweaks")
-            case .failed(let reason):
-                AsteroidManager.shared.pendingRestoreWarning = reason
-            case .none:
-                break
-            }
-        }
+        // mond (mond.swift) registers these defaults; `atomic_write`
+        // is mond's "Persist after reboot" — MobileGestalt is rewritten
+        // in place on the same inode so iOS does not regenerate the
+        // cache (and wipe the tweaks) on reboot/respring.
+        UserDefaults.standard.register(defaults: [
+            "atomic_write": true,
+            // Language default: English (US) is the main language.
+            "wt.language": "en-US"
+        ])
     }
-    
+
     var body: some Scene {
         WindowGroup {
-            TabView {
-                ContentView()
-                    .tabItem {
-                        Image(systemName: "house")
-                            .accessibilityLabel("Home")
-                    }
-                    .id(0)
-                TweaksView()
-                    .tabItem {
-                        Image(systemName: "wrench.and.screwdriver")
-                            .accessibilityLabel("More Tweaks")
-                    }
-                    .id(1)
-                FMRootView()
-                    .tabItem {
-                        Image(systemName: "folder")
-                            .accessibilityLabel("File Browser")
-                    }
-                    .id(2)
-            }
-            .tint(.orange)
-            .environmentObject(mgr)
-            .onAppear {
-                pipe.fileHandleForReading.readabilityHandler = { fh in
-                    let data = fh.availableData
-                    
-                    if data.isEmpty {
-                        fh.readabilityHandler = nil
-                        sema.signal()
-                        return
-                    }
-                    
-                    guard let text = String(data: data, encoding: .utf8) else {
-                        return
-                    }
-                    
-                    DispatchQueue.main.async {
-                        mgr.logOutput.append(text)
-                    }
-                }
-                print("")
-                print("[*] Asteroid v\(AppInfo.appVersion) (\(AppInfo.appBuild))")
-                print("[*] Running on \(UIDevice.current.systemName) \(UIDevice.current.systemVersion), \(machineName())")
-                if !isSupported() && !weOnADebugBuild {
-                    Alertinator.shared.alert(title: "Your \(device.systemName) version is not supported!", body: AppMsg.unsupported, showCancel: false, actionLabel: "Exit", action: { exitinator() })
-                }
-            }
-            .overlay {
-                if mgr.shouldRespring {
-                    RespringView()
-                        .brightness(-1.0)
-                        .ignoresSafeArea()
-                }
-            }
+            RootView()
+                .environmentObject(WTLangStore.shared)
         }
-    }
-}
-
-extension UIDocumentPickerViewController {
-    @objc func fix_init(forOpeningContentTypes contentTypes: [UTType], asCopy: Bool) -> UIDocumentPickerViewController {
-        return fix_init(forOpeningContentTypes: contentTypes, asCopy: true)
     }
 }

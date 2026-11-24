@@ -1,0 +1,154 @@
+import SwiftUI
+
+// MARK: - Tutorials
+//
+// Two step-by-step installation guides (A and B: the desktop route
+// via iLoader and the on-device route via Signed Apps, the companion
+// signer app) plus the Siri AI guide (C). Reachable from the Welcome
+// screen, the unsupported screen, and the Tweaks tab toolbar.
+//
+// Since v3.8 the page renders as Liquid Glass cards (WTGlassPage),
+// like every other page — the guides' text is unchanged.
+
+struct TutorialsView: View {
+    @EnvironmentObject private var wtLang: WTLangStore
+
+    var body: some View {
+        WTGlassPage {
+            WTSectionCard {
+                Text(wtLang.tr("Asteroid only works when its App Group is part of the signing profile. Guides A and B make sure that happens — pick the one that fits you. Guide C turns on the new Siri AI."))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+            }
+
+            WTSectionCard(header: wtLang.tr("Guide A — Install with iLoader (Desktop)"), footer: wtLang.tr("Free Apple ID installs expire after about 7 days — reinstall with iLoader to renew.")) {
+                VStack(alignment: .leading, spacing: 0) {
+                    step(1, wtLang.tr("Download the latest Asteroid IPA from the GitHub Releases page."))
+                    Divider().padding(.leading, 14)
+                    step(2, wtLang.tr("On a computer, download iLoader from iloader.app — the official site only — and open it."))
+                    Divider().padding(.leading, 14)
+                    step(3, wtLang.tr("Connect your iPhone by USB, then sign in with your Apple ID in iLoader."))
+                    Divider().padding(.leading, 14)
+                    step(4, wtLang.tr("Choose the Asteroid IPA and install it."))
+                    Divider().padding(.leading, 14)
+                    step(5, wtLang.tr("If iOS asks, enable Developer Mode (Settings → Privacy & Security → Developer Mode) and trust the developer profile."))
+                    Divider().padding(.leading, 14)
+                    step(6, wtLang.tr("Open Asteroid and you're done."))
+                }
+                .padding(.vertical, 4)
+            }
+
+            WTSectionCard(header: wtLang.tr("Guide B — Sign with Signed Apps (Mobile)")) {
+                VStack(alignment: .leading, spacing: 0) {
+                    step(1, wtLang.tr("Download the Asteroid IPA from GitHub."))
+                    Divider().padding(.leading, 14)
+                    step(2, wtLang.tr("Open Signed Apps and sign in with your Apple ID."))
+                    Divider().padding(.leading, 14)
+                    step(3, wtLang.tr("Certificates tab: create your certificate if needed. A free team can hold only one active development certificate — if creation fails with error 7460, revoke an old unused certificate there first."))
+                    Divider().padding(.leading, 14)
+                    step(4, wtLang.tr("Install tab → Provisioning: fill in the fields below, tap Provision, and wait for \"profile OK\". Your Team ID is shown in the app's Certificates tab.")) {
+                        monoLine("Bundle ID: com.jbdotparty.Asteroid.<Your Team ID>")
+                        monoLine("App name: Asteroid")
+                        monoLine("App Group ID: group.$(PRODUCT_BUNDLE_IDENTIFIER).<Your Team ID>")
+                    }
+                    Divider().padding(.leading, 14)
+                    step(5, wtLang.tr("Pick the Asteroid IPA, set the Signing Bundle ID field to the same identifier, then tap Sign IPA."))
+                    Divider().padding(.leading, 14)
+                    step(6, wtLang.tr("Export the signed IPA and install it with ESign (or any IPA installer)."))
+                    Divider().padding(.leading, 14)
+                    step(7, wtLang.tr("Open Asteroid and you're done."))
+                }
+                .padding(.vertical, 4)
+            }
+
+            WTSectionCard(header: wtLang.tr("Guide C — Turn On New Siri AI"), footer: wtLang.tr("This only makes the Join Waitlist button appear. The Siri AI model may still refuse to download — that part is not solved by this method yet.")) {
+                VStack(alignment: .leading, spacing: 0) {
+                    // The patch is manual now (the automatic
+                    // pattern is ambiguous on some devices):
+                    // steps 1–3 are the shared Siri guide.
+                    step(1, wtLang.tr(SiriManualGuide.plistSteps[0]))
+                    Divider().padding(.leading, 14)
+                    step(2, wtLang.tr(SiriManualGuide.plistSteps[1]))
+                    Divider().padding(.leading, 14)
+                    step(3, wtLang.tr(SiriManualGuide.plistSteps[2]))
+                    Divider().padding(.leading, 14)
+                    step(4, wtLang.tr("Set the Spoofing picker (under Apple Intelligence) to iPhone 17 Pro (iPhone18,1)."))
+                    Divider().padding(.leading, 14)
+                    step(5, wtLang.tr("Turn on the Apple Intelligence toggle and the Charge Limit Menu toggle (Add feature section)."))
+                    Divider().padding(.leading, 14)
+                    step(6, wtLang.tr("Go to the Apply/Revert section and tap Apply, then Respring. When the respring finishes, restart your iPhone."))
+                    Divider().padding(.leading, 14)
+                    step(7, wtLang.tr("Open Settings → Apple Intelligence & Siri and tap Join Waitlist. Wait about 15 minutes for it to be accepted."))
+                    Divider().padding(.leading, 14)
+                    step(8, wtLang.tr("Connect your iPhone to power, connect to Wi-Fi, and leave the Settings → General → iPhone Storage tab open for about 1 hour while the model downloads."))
+                }
+                .padding(.vertical, 4)
+            }
+
+            WTSectionCard(header: wtLang.tr("Good to Know")) {
+                VStack(alignment: .leading, spacing: 0) {
+                    note(wtLang.tr("The original identifiers are already registered to another developer account, which is why the Team ID suffix is required."))
+                    Divider().padding(.leading, 14)
+                    note(wtLang.tr("Never share your certificate .p12 file with anyone — it contains your private signing key."))
+                    Divider().padding(.leading, 14)
+                    note(wtLang.tr("A signed IPA only works on the device registered in its profile."))
+                }
+                .padding(.vertical, 4)
+            }
+        }
+        .navigationTitle(wtLang.tr("Tutorials"))
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    // MARK: Rows
+
+    private func step(_ number: Int, _ text: String) -> some View {
+        step(number, text) { EmptyView() }
+    }
+
+    private func step<Extra: View>(_ number: Int, _ text: String, @ViewBuilder extra: () -> Extra) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(Color.accentColor)
+                    .frame(width: 26, height: 26)
+                Text("\(number)")
+                    .font(.footnote.weight(.bold))
+                    .foregroundStyle(.white)
+            }
+            VStack(alignment: .leading, spacing: 6) {
+                Text(text)
+                    .font(.subheadline)
+                    .fixedSize(horizontal: false, vertical: true)
+                extra()
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 7)
+    }
+
+    private func monoLine(_ text: String) -> some View {
+        Text(text)
+            .font(.system(.caption, design: .monospaced))
+            .foregroundStyle(.secondary)
+            .textSelection(.enabled)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private func note(_ text: String) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "info.circle.fill")
+                .foregroundStyle(Color.accentColor)
+                .font(.subheadline)
+            Text(text)
+                .font(.subheadline)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 6)
+    }
+}

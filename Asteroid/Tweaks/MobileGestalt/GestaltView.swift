@@ -57,6 +57,14 @@ struct GestaltView: View {
         static let hwModel = "V68AP"     // oYicEKzVTz4/CxxE05pEgQ
         static let platform = "t8160"    // 5pYKlGnYYBzGvAlIU8RjEQ
         static let modelNumber = "A3447" // 97JDvERpVwO+GHtthIh7hA
+        // The rest of the Duo's MobileGestalt identity, so the device reports
+        // as an iPhone Duo everywhere instead of only for the artwork subtype.
+        static let marketingName = "iPhone Duo"         // Z/dqyWS6OZTRy10UcmUAhw
+        static let subProductType = "iPhone19,4"        // GqAdWRLnC7oYQrNYF48VYA
+        static let thinningProductType = "iPhone19,4"   // 0+nc/Udy4WNG8S+Q7a/s1A
+        static let largeFormatPhone = 1 // iBLsDETxB4ATmspGucaJyg
+        static let thinBezel = 1        // RA3I5nhSK65i1ZxkRxQKfg
+        static let cornerRadius = 59    // y5dppxx/LzxoNuW+iIKR3g
     }
     
     var body: some View {
@@ -192,7 +200,7 @@ struct GestaltView: View {
                 
                 if showDeviceSpoofing {
                 Section {
-                    PlainToggle("iPhone Duo Mode", infoType: .warning, infoTitle: "iPhone Duo Mode", infoMessage: "Turns a normal iPhone into an iPhone Duo: ProductType is spoofed to iPhone19,4, the artwork subtype switches to the Duo's 2034, the Duo board keys (V68AP / t8160 / A3447) are written, and the Dynamic Island is switched on. Duo-only features that are gated behind the Duo subtype, such as Edge Light, unlock with it too.\n\nPress Apply, then respring. Spoofing your device model may break Face ID as well as other features.", isOn: $mgDuoMode)
+                    PlainToggle("iPhone Duo Mode", infoType: .warning, infoTitle: "iPhone Duo Mode", infoMessage: "Turns a normal iPhone into an iPhone Duo on every MobileGestalt level: ProductType is spoofed to iPhone19,4, the artwork subtype switches to the Duo's 2034, the Duo board keys (V68AP / t8160 / A3447) are written, the marketing name becomes \"iPhone Duo\", and the Duo's large-format, thin-bezel and corner-radius values are applied. The Dynamic Island is switched on, and Duo-only features gated behind the subtype, such as Edge Light, unlock with it too.\n\nThe foldable-only parts of the Duo UI - the side rail with the controls on the right, the vertical Dynamic Island, Split View and the second home screen - are driven by the Duo's hinge and its two physical displays, not by MobileGestalt, so they cannot be enabled on any other iPhone.\n\nPress Apply, then respring. Spoofing your device model may break Face ID as well as other features.", isOn: $mgDuoMode)
                         .onChange(of: mgDuoMode) { (_, enabled) in
                             setDuoMode(enabled)
                         }
@@ -420,8 +428,12 @@ struct GestaltView: View {
         }
     }
 
-    // iPhone Duo mode: identity keys plus the Dynamic Island. Everything here
-    // stays in memory until Apply is pressed, exactly like every other toggle.
+    // iPhone Duo mode: the full Duo identity plus the Dynamic Island. Everything
+    // here stays in memory until Apply is pressed, exactly like every other
+    // toggle. The foldable-only parts of the Duo UI (the side rail, the vertical
+    // Dynamic Island, Split View, the second home screen) are driven by the
+    // hinge and by the two physical displays, so no MobileGestalt key can turn
+    // them on - see the toggle's info text.
     private func setDuoMode(_ enable: Bool) {
         if enable {
             mgProductType = Duo.productType
@@ -430,6 +442,12 @@ struct GestaltView: View {
             store.cacheExtra["oYicEKzVTz4/CxxE05pEgQ"] = Duo.hwModel
             store.cacheExtra["5pYKlGnYYBzGvAlIU8RjEQ"] = Duo.platform
             store.cacheExtra["97JDvERpVwO+GHtthIh7hA"] = Duo.modelNumber
+            store.cacheExtra["Z/dqyWS6OZTRy10UcmUAhw"] = Duo.marketingName
+            store.cacheExtra["GqAdWRLnC7oYQrNYF48VYA"] = Duo.subProductType
+            store.cacheExtra["0+nc/Udy4WNG8S+Q7a/s1A"] = Duo.thinningProductType
+            store.cacheExtra["iBLsDETxB4ATmspGucaJyg"] = Duo.largeFormatPhone
+            store.cacheExtra["RA3I5nhSK65i1ZxkRxQKfg"] = Duo.thinBezel
+            store.cacheExtra["y5dppxx/LzxoNuW+iIKR3g"] = Duo.cornerRadius
         } else {
             if mgProductType == Duo.productType {
                 mgProductType = ogMachineName.isEmpty ? machineName() : ogMachineName
@@ -437,9 +455,13 @@ struct GestaltView: View {
             if mgSubtype == Duo.subtype {
                 mgSubtype = mgOgSubtype
             }
-            store.cacheExtra.removeObject(forKey: "oYicEKzVTz4/CxxE05pEgQ")
-            store.cacheExtra.removeObject(forKey: "5pYKlGnYYBzGvAlIU8RjEQ")
-            store.cacheExtra.removeObject(forKey: "97JDvERpVwO+GHtthIh7hA")
+            for key in ["oYicEKzVTz4/CxxE05pEgQ", "5pYKlGnYYBzGvAlIU8RjEQ",
+                        "97JDvERpVwO+GHtthIh7hA", "Z/dqyWS6OZTRy10UcmUAhw",
+                        "GqAdWRLnC7oYQrNYF48VYA", "0+nc/Udy4WNG8S+Q7a/s1A",
+                        "iBLsDETxB4ATmspGucaJyg", "RA3I5nhSK65i1ZxkRxQKfg",
+                        "y5dppxx/LzxoNuW+iIKR3g"] {
+                store.cacheExtra.removeObject(forKey: key)
+            }
             store.cacheExtra.removeObject(forKey: MGKey.island)
         }
         store.objectWillChange.send()
